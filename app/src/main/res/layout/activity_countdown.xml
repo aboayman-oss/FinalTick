@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black">
+
+    <include
+        layout="@layout/header_countdown"
+        android:id="@+id/headerInclude"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:padding="24dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <!-- Countdown Timer -->
+            <TextView
+                android:id="@+id/tvCountdownTimer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00 : 00 : 00 : 00"
+                android:textColor="@android:color/holo_green_light"
+                android:textSize="36sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="24dp" />
+
+            <!-- Modern Switches -->
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/cbDays"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Show Days"
+                android:checked="true"
+                android:textColor="@android:color/white"
+                android:layout_marginTop="8dp"/>
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/cbHours"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Show Hours"
+                android:checked="true"
+                android:textColor="@android:color/white"
+                android:layout_marginTop="8dp"/>
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/cbMinutes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Show Minutes"
+                android:checked="true"
+                android:textColor="@android:color/white"
+                android:layout_marginTop="8dp"/>
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/cbSeconds"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Show Seconds"
+                android:checked="true"
+                android:textColor="@android:color/white"
+                android:layout_marginTop="8dp"/>
+
+            <!-- Live Countdown Breakdown -->
+            <TextView
+                android:id="@+id/countdownText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Countdown will appear here"
+                android:textColor="@android:color/white"
+                android:textSize="24sp"
+                android:layout_marginTop="24dp"/>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_alignParentBottom="true"
+        android:background="?android:attr/windowBackground"
+        app:menu="@menu/bottom_nav_menu" />
+</LinearLayout>

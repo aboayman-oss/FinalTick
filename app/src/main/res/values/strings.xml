@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">FinalTick</string>
+    <string name="welcome">Welcome</string>
+    <string name="what_do_you_have">What do you have?</string>
+    <string name="title_hint">Title</string>
+    <string name="select_date">Select the date</string>
+</resources>
