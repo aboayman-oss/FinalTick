@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black">
+    android:background="?android:attr/colorBackground">
 
     <!-- ✅ 1. Header -->
     <include
@@ -31,6 +31,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Daily Sleep Hours"
+                android:textColor="?attr/colorOnBackground"
                 android:textSize="18sp"
                 android:textStyle="bold"/>
 
@@ -38,8 +39,10 @@
                 android:id="@+id/sleepSlider"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:valueFrom="1"
-                android:valueTo="12"
+                app:haloColor="?attr/colorPrimary"
+                app:thumbTint="?attr/colorPrimary"
+                android:valueFrom="0"
+                android:valueTo="16"
                 android:stepSize="1"
                 android:value="8" />
 
@@ -48,6 +51,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Selected: 8 hours"
+                android:textColor="?attr/colorOnBackground"
                 android:layout_marginBottom="16dp"/>
 
             <!-- Total Course Hours -->
@@ -60,6 +64,8 @@
                     android:id="@+id/etCourseHours"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/onSurface"
+                    android:textColorHint="@color/onBackgroundMedium"
                     android:inputType="numberDecimal" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -68,6 +74,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Playback Speed"
+                android:textColor="?attr/colorOnBackground"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:layout_marginTop="16dp"/>
@@ -76,8 +83,10 @@
                 android:id="@+id/speedSlider"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:haloColor="?attr/colorPrimary"
+                app:thumbTint="?attr/colorPrimary"
                 android:valueFrom="1"
-                android:valueTo="3"
+                android:valueTo="4"
                 android:stepSize="0.5"
                 android:value="1" />
 
@@ -86,6 +95,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Selected: 1x"
+                android:textColor="?attr/colorOnBackground"
                 android:layout_marginBottom="16dp"/>
 
             <!-- ✨ Summary Cards Start Here -->
@@ -434,7 +444,7 @@
                 android:layout_marginBottom="32dp"
                 app:cardCornerRadius="32dp"
                 app:cardElevation="8dp"
-                android:backgroundTint="@android:color/holo_green_light"
+                android:backgroundTint="@color/colorSuccess"
                 android:layout_gravity="center"
                 android:padding="24dp">
 
@@ -450,7 +460,7 @@
                         android:text="Remaining Time"
                         android:textAppearance="?attr/textAppearanceBodyLarge"
                         android:textStyle="bold"
-                        android:textColor="@android:color/white"
+                        android:textColor="@color/onSuccess"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="4dp" />
@@ -460,7 +470,7 @@
                         android:text="00:00:00"
                         android:textAppearance="?attr/textAppearanceDisplayMedium"
                         android:textStyle="bold"
-                        android:textColor="@android:color/white"
+                        android:textColor="@color/onSuccess"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="monospace" />

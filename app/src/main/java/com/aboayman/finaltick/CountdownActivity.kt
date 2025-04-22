@@ -3,15 +3,18 @@ package com.aboayman.finaltick
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.*
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.materialswitch.MaterialSwitch
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import com.google.android.material.materialswitch.MaterialSwitch
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 class CountdownActivity : AppCompatActivity() {
 
@@ -59,6 +62,12 @@ class CountdownActivity : AppCompatActivity() {
                 if (timeLeft <= 0) {
                     topTimer.text = "00 : 00 : 00 : 00"
                     countdownText.text = "⏳ Time's up!"
+                    countdownText.setTextColor(
+                        ContextCompat.getColor(
+                            this@CountdownActivity,
+                            R.color.colorDanger
+                        )
+                    )
                     break
                 }
 

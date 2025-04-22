@@ -12,5 +12,4 @@
         android:id="@+id/nav_calculate"
         android:icon="@drawable/calc"
         android:title="Calculate" />
-
 </menu>

@@ -4,14 +4,14 @@
     android:padding="24dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black">
+    android:background="?android:attr/colorBackground">
 
     <TextView
         android:id="@+id/tvDeadlinePickerTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Pick a deadline for the widget"
-        android:textColor="@android:color/white"
+        android:textColor="?attr/colorOnBackground"
         android:textSize="20sp"
         android:textStyle="bold"
         android:paddingBottom="16dp" />

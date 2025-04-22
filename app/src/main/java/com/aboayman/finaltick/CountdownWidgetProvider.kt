@@ -6,8 +6,6 @@ import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
 import android.widget.RemoteViews
-import java.text.SimpleDateFormat
-import java.util.*
 
 class CountdownWidgetProvider : AppWidgetProvider() {
 
@@ -38,6 +36,7 @@ class CountdownWidgetProvider : AppWidgetProvider() {
                 views.setTextViewText(R.id.widgetTimer, formatted)
             } else {
                 views.setTextViewText(R.id.widgetTimer, "00:00:00:00")
+                views.setTextColor(R.id.widgetTimer, context.getColor(R.color.colorDanger))
             }
 
             // Make clicking the widget open the main app

@@ -111,6 +111,7 @@ class CountdownWidget : AppWidgetProvider() {
                 views.setTextViewText(R.id.widgetTimer, parts.joinToString(":"))
             } else {
                 views.setTextViewText(R.id.widgetTimer, "00:00:00:00")
+                views.setTextColor(R.id.widgetTimer, context.getColor(R.color.colorDanger))
             }
 
             // 🔁 Refresh button logic

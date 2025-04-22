@@ -1,5 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="colorBackground">#FFFFFF</color>
+    <color name="onBackground">#000000</color>
+    <color name="onBackgroundHigh">#000000</color>
+    <color name="onBackgroundMedium">#666666</color>
+    <color name="onBackgroundDisabled">#999999</color>
+
+    <color name="colorSurface">#F5F5F5</color>
+    <color name="onSurface">#000000</color>
+    <color name="onSurfaceVariant">#6D6D6D</color> <!-- subtle gray tone -->
+    <color name="colorSurfaceVariant">#E0E0E0</color>
+
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryVariant">#3700B3</color>
+    <color name="onPrimary">#FFFFFF</color>
+
+    <color name="colorSecondary">#03DAC6</color>
+    <color name="colorSecondaryVariant">#018786</color>
+    <color name="onSecondary">#000000</color>
+
+    <color name="colorError">#B00020</color>
+    <color name="onError">#FFFFFF</color>
+
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="colorSuccess">#4CAF50</color> <!-- Material Green 500 -->
+    <color name="onSuccess">#FFFFFF</color>
+    <color name="colorDanger">#D32F2F</color> <!-- Material Red 700 -->
+
 </resources>

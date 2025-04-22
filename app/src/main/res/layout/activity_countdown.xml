@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black">
+    android:background="?android:attr/colorBackground">
 
     <include
         layout="@layout/header_countdown"
@@ -32,7 +32,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="00 : 00 : 00 : 00"
-                android:textColor="@android:color/holo_green_light"
+                android:textColor="@color/colorSuccess"
                 android:textSize="36sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="24dp" />
@@ -44,7 +44,7 @@
                 android:layout_height="wrap_content"
                 android:text="Show Days"
                 android:checked="true"
-                android:textColor="@android:color/white"
+                android:textColor="?attr/colorOnBackground"
                 android:layout_marginTop="8dp"/>
 
             <com.google.android.material.materialswitch.MaterialSwitch
@@ -53,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:text="Show Hours"
                 android:checked="true"
-                android:textColor="@android:color/white"
+                android:textColor="?attr/colorOnBackground"
                 android:layout_marginTop="8dp"/>
 
             <com.google.android.material.materialswitch.MaterialSwitch
@@ -62,7 +62,7 @@
                 android:layout_height="wrap_content"
                 android:text="Show Minutes"
                 android:checked="true"
-                android:textColor="@android:color/white"
+                android:textColor="?attr/colorOnBackground"
                 android:layout_marginTop="8dp"/>
 
             <com.google.android.material.materialswitch.MaterialSwitch
@@ -71,7 +71,7 @@
                 android:layout_height="wrap_content"
                 android:text="Show Seconds"
                 android:checked="true"
-                android:textColor="@android:color/white"
+                android:textColor="?attr/colorOnBackground"
                 android:layout_marginTop="8dp"/>
 
             <!-- Live Countdown Breakdown -->
@@ -80,7 +80,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Countdown will appear here"
-                android:textColor="@android:color/white"
+                android:textColor="?attr/colorOnBackground"
                 android:textSize="24sp"
                 android:layout_marginTop="24dp"/>
         </LinearLayout>

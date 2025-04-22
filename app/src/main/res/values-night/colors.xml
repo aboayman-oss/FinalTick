@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- This is the night version -->
+    <color name="colorBackground">#121212</color>
+    <color name="onBackground">#DEFFFFFF</color>
+    <color name="onBackgroundHigh">#DEFFFFFF</color>
+    <color name="onBackgroundMedium">#99FFFFFF</color>
+    <color name="onBackgroundDisabled">#61FFFFFF</color>
+
+    <color name="colorSurface">#1E1E1E</color>
+    <color name="onSurface">#DEFFFFFF</color>
+    <color name="onSurfaceVariant">#B3FFFFFF</color> <!-- ~70% white -->
+    <color name="colorSurfaceVariant">#2C2C2C</color>
+
+    <color name="colorPrimary">#5C6BC0</color>
+    <color name="colorPrimaryVariant">#3949AB</color>
+    <color name="onPrimary">#FFFFFF</color>
+
+    <color name="colorSecondary">#00ACC1</color>
+    <color name="colorSecondaryVariant">#00838F</color>
+    <color name="onSecondary">#000000</color>
+
+    <color name="colorError">#CF6679</color>
+    <color name="onError">#FFFFFF</color>
+
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="colorSuccess">#4CAF50</color> <!-- same green for visual consistency -->
+    <color name="onSuccess">#FFFFFF</color>     <!-- still white text for contrast -->
+    <color name="colorDanger">#EF5350</color> <!-- Material Red 400 (more vibrant on dark) -->
+
+</resources>

@@ -1,14 +1,12 @@
 package com.aboayman.finaltick
 
-import android.appwidget.AppWidgetManager
-import android.content.ComponentName
 import android.content.Context
 import android.os.Bundle
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import android.widget.TextView
 
 class SelectDeadlineActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,6 +43,7 @@ class SelectDeadlineActivity : AppCompatActivity() {
             CountdownWidget.forceUpdateAll(this)
             Toast.makeText(this, "Selected: ${selected.title}", Toast.LENGTH_SHORT).show()
             finish()
+
         }
     }
 }

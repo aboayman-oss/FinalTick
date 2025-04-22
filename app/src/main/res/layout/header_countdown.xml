@@ -17,7 +17,7 @@
         android:text="Your Countdown Title"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:textColor="@android:color/white" />
+        android:textColor="@color/onSurface" />
 
     <TextView
         android:id="@+id/tvHeaderDateTime"
@@ -25,6 +25,6 @@
         android:layout_height="wrap_content"
         android:text="Apr 28, 2025 – 10:00 PM"
         android:textSize="14sp"
-        android:textColor="@android:color/darker_gray"
+        android:textColor="@color/onSurfaceVariant"
         android:layout_marginTop="4dp" />
 </LinearLayout>

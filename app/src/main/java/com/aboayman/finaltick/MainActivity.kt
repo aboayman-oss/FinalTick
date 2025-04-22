@@ -1,27 +1,35 @@
 package com.aboayman.finaltick
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.widget.*
-import android.content.Intent
-import android.content.Context
 import android.view.inputmethod.EditorInfo
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import com.aboayman.finaltick.databinding.ActivityMainBinding
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         setTheme(R.style.Theme_FinalTick)
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -78,12 +86,20 @@ class MainActivity : AppCompatActivity() {
                 val row = LinearLayout(this).apply {
                     orientation = LinearLayout.HORIZONTAL
                     setPadding(0, 8, 0, 8)
+                    setBackgroundColor(
+                        ContextCompat.getColor(
+                            this@MainActivity,
+                            R.color.colorSurfaceVariant
+                        )
+                    )
                 }
 
                 // Create TextView for deadline info
                 val tv = TextView(this@MainActivity).apply {
                     text = "\uD83D\uDCC5 $title — ${formatter.format(Date(timestamp))}"
-                    setTextColor(resources.getColor(android.R.color.white))
+                    val color = ContextCompat.getColor(this@MainActivity, R.color.onBackground)
+                    // from your colors.xml
+                    setTextColor(color)
                     layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
                 }
 

@@ -16,7 +16,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.slider.Slider
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 class CalculateActivity : AppCompatActivity() {
 
@@ -88,12 +89,11 @@ class CalculateActivity : AppCompatActivity() {
             val rem = (millisUntil - totalSleepMs - courseMs).coerceAtLeast(0)
 
             valueRemaining.text = formatHMS(rem)
-            valueRemaining.setTextColor(
-                ContextCompat.getColor(
-                    this,
-                    if (rem > 0) android.R.color.white else android.R.color.holo_red_light
-                )
+            val remainingColor = ContextCompat.getColor(
+                this,
+                if (rem > 0) R.color.onSuccess else R.color.colorDanger
             )
+            valueRemaining.setTextColor(remainingColor)
         }
 
         fun calculateStatic() {
@@ -126,10 +126,15 @@ class CalculateActivity : AppCompatActivity() {
                 valueSleepGain.text = (if (gain) "+" else "-") + "%.1f hours".format(gainHours)
                 labelSleepGain.text = if (gain) "Time Gained by Sleeping Less" else "Time Lost by Oversleeping"
 
-                val bgColor = ContextCompat.getColor(this, if (gain) android.R.color.holo_green_light else android.R.color.holo_red_light)
+                val bgColor = ContextCompat.getColor(
+                    this,
+                    if (gain) R.color.colorSuccess else R.color.colorDanger
+                )
                 cardSleepGain.setCardBackgroundColor(bgColor)
-                labelSleepGain.setTextColor(ContextCompat.getColor(this, android.R.color.white))
-                valueSleepGain.setTextColor(ContextCompat.getColor(this, android.R.color.white))
+
+                val fgColor = ContextCompat.getColor(this, R.color.onSuccess)
+                labelSleepGain.setTextColor(fgColor)
+                valueSleepGain.setTextColor(fgColor)
             }
 
             if (playbackSpeed <= 1f) {
@@ -142,10 +147,12 @@ class CalculateActivity : AppCompatActivity() {
                 val speedGain = courseHours - adjustedCourseTime
                 valueSpeedGain.text = "+%.1f hours".format(speedGain)
 
-                val green = ContextCompat.getColor(this, android.R.color.holo_green_light)
+                val green = ContextCompat.getColor(this, R.color.colorSuccess)
+                val white = ContextCompat.getColor(this, R.color.onSuccess)
+
                 cardSpeedGain.setCardBackgroundColor(green)
-                labelSpeedGain.setTextColor(ContextCompat.getColor(this, android.R.color.white))
-                valueSpeedGain.setTextColor(ContextCompat.getColor(this, android.R.color.white))
+                labelSpeedGain.setTextColor(white)
+                valueSpeedGain.setTextColor(white)
             }
         }
 
