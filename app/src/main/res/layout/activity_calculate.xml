@@ -28,12 +28,13 @@
 
             <!-- Sleep Hours Slider -->
             <TextView
+                android:id="@+id/tvSleepLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Daily Sleep Hours"
+                style="@style/TextAppearance.Material3.TitleMedium"
                 android:textColor="?attr/colorOnBackground"
-                android:textSize="18sp"
-                android:textStyle="bold"/>
+                android:layout_marginBottom="8dp" />
 
             <com.google.android.material.slider.Slider
                 android:id="@+id/sleepSlider"
@@ -71,13 +72,13 @@
 
             <!-- Playback Speed Slider -->
             <TextView
+                android:id="@+id/tvSpeedLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Playback Speed"
+                style="@style/TextAppearance.Material3.TitleMedium"
                 android:textColor="?attr/colorOnBackground"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginTop="16dp"/>
+                android:layout_marginBottom="8dp" />
 
             <com.google.android.material.slider.Slider
                 android:id="@+id/speedSlider"
@@ -484,6 +485,14 @@
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?attr/colorSurface"
+        android:elevation="8dp"
         app:menu="@menu/bottom_nav_menu"
-        android:background="?android:attr/windowBackground" />
+        app:itemIconTint="?attr/colorOnSurfaceVariant"
+        app:itemTextColor="?attr/colorOnSurfaceVariant"
+        app:labelVisibilityMode="labeled"
+        app:itemRippleColor="?attr/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 </LinearLayout>
