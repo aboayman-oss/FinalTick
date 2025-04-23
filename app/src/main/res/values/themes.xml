@@ -21,5 +21,6 @@
         <!-- Error -->
         <item name="colorError">@color/colorError</item>
         <item name="colorOnError">@color/onError</item>
+
     </style>
 </resources>

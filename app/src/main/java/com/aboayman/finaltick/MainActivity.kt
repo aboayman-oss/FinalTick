@@ -7,21 +7,16 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.aboayman.finaltick.databinding.ActivityMainBinding
 import com.google.android.material.datepicker.MaterialDatePicker
-import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
@@ -35,12 +30,11 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val titleEditText = findViewById<TextInputEditText>(R.id.etTitle)
-        val selectDateBtn = findViewById<Button>(R.id.btnSelectDate)
-        val countdownBtn = findViewById<Button>(R.id.btnCountdown)
-        val calculateBtn = findViewById<Button>(R.id.btnCalculate)
-        val deadlineListContainer = findViewById<LinearLayout>(R.id.deadlineListContainer)
-        val btnClearAllDeadlines = findViewById<Button>(R.id.btnClearAllDeadlines)
+        val titleEditText = binding.etTitle
+        val selectDateBtn = binding.btnSelectDate
+        val countdownBtn = binding.btnCountdown
+        val calculateBtn = binding.btnCalculate
+        val btnClearAllDeadlines = binding.btnClearAllDeadlines
 
         // Show the date button only when a title is entered
         selectDateBtn.visibility = View.GONE
@@ -66,88 +60,41 @@ class MainActivity : AppCompatActivity() {
 
         val prefs = getSharedPreferences("finaltick_prefs", Context.MODE_PRIVATE)
         val saved = prefs.getStringSet("deadlines", mutableSetOf())!!.toMutableSet()
+        val adapter = DeadlineAdapter(mutableListOf()) { item ->
+            prefs.edit()
+                .putLong("deadline_timestamp", item.timestamp)
+                .putString("countdown_title", item.title)
+                .apply()
 
-        fun refreshList() {
-            deadlineListContainer.removeAllViews()
-            if (saved.isEmpty()) {
-                btnClearAllDeadlines.visibility = View.GONE
-                return
+            Toast.makeText(this, "Activated: ${item.title}", Toast.LENGTH_SHORT).show()
+
+            binding.btnCountdown.visibility = View.VISIBLE
+            binding.btnCalculate.visibility = View.VISIBLE
+
+            binding.btnCountdown.setOnClickListener {
+                startActivity(Intent(this, CountdownActivity::class.java))
             }
 
-            btnClearAllDeadlines.visibility = View.VISIBLE
-            val formatter = SimpleDateFormat("EEE, MMM d • h:mm a", Locale.getDefault())
-
-            saved.sorted().forEach { entry ->
-                val parts = entry.split("|", limit = 2)
-                val timestamp = parts[0].toLongOrNull() ?: return@forEach
-                val title = parts.getOrElse(1) { "(No title)" }
-
-                // Create horizontal row layout
-                val row = LinearLayout(this).apply {
-                    orientation = LinearLayout.HORIZONTAL
-                    setPadding(0, 8, 0, 8)
-                    setBackgroundColor(
-                        ContextCompat.getColor(
-                            this@MainActivity,
-                            R.color.colorSurfaceVariant
-                        )
-                    )
-                }
-
-                // Create TextView for deadline info
-                val tv = TextView(this@MainActivity).apply {
-                    text = "\uD83D\uDCC5 $title — ${formatter.format(Date(timestamp))}"
-                    val color = ContextCompat.getColor(this@MainActivity, R.color.onBackground)
-                    // from your colors.xml
-                    setTextColor(color)
-                    layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-                }
-
-                // Create delete button
-                val delete = Button(this@MainActivity).apply {
-                    text = "✕"
-                    setOnClickListener {
-                        saved.remove(entry)
-                        prefs.edit().putStringSet("deadlines", saved).apply()
-                        refreshList()
-                    }
-                }
-
-                // Add views to the row
-                row.addView(tv)
-                row.addView(delete)
-
-                // Set onClick to activate this deadline
-                row.setOnClickListener {
-                    prefs.edit()
-                        .putLong("deadline_timestamp", timestamp)
-                        .putString("countdown_title", title) // ✅ Add this line to fix the title
-                        .apply()
-                    Toast.makeText(this, "Activated: $title", Toast.LENGTH_SHORT).show()
-                    countdownBtn.visibility = View.VISIBLE
-                    calculateBtn.visibility = View.VISIBLE
-                    countdownBtn.setOnClickListener {
-                        startActivity(Intent(this, CountdownActivity::class.java))
-                    }
-                    calculateBtn.setOnClickListener {
-                        startActivity(Intent(this, CalculateActivity::class.java))
-                    }
-                }
-
-                // Add the row to the container
-                deadlineListContainer.addView(row)
+            binding.btnCalculate.setOnClickListener {
+                startActivity(Intent(this, CalculateActivity::class.java))
             }
         }
 
-        btnClearAllDeadlines.setOnClickListener {
+        binding.deadlineRecyclerView.adapter = adapter
+        binding.deadlineRecyclerView.layoutManager = LinearLayoutManager(this)
+        refreshList(adapter, saved)
+
+
+
+        binding.btnClearAllDeadlines.setOnClickListener {
             saved.clear()
             prefs.edit().putStringSet("deadlines", saved).apply()
-            refreshList()
+            refreshList(adapter, saved)
         }
 
-        refreshList()
+        refreshList(adapter, saved)
 
-        selectDateBtn.setOnClickListener {
+        binding.btnSelectDate.setOnClickListener {
             val title = titleEditText.text.toString().trim()
             if (title.isBlank()) {
                 Toast.makeText(this, "Please enter a title first.", Toast.LENGTH_SHORT).show()
@@ -195,9 +142,27 @@ class MainActivity : AppCompatActivity() {
                         .apply()
 
                     Toast.makeText(this, "Deadline saved!", Toast.LENGTH_SHORT).show()
-                    refreshList()
+                    refreshList(adapter, saved)
                 }
             }
         }
+    }
+
+    private fun refreshList(
+        adapter: DeadlineAdapter,
+        saved: Set<String>
+    ) {
+        val formatter = SimpleDateFormat("EEE, MMM d • h:mm a", Locale.getDefault())
+
+        val deadlines = saved.mapNotNull { entry ->
+            val parts = entry.split("|", limit = 2)
+            val timestamp = parts.getOrNull(0)?.toLongOrNull() ?: return@mapNotNull null
+            val title = parts.getOrNull(1) ?: "(No title)"
+            DeadlineItem(title, timestamp)
+        }.sortedBy { it.timestamp }
+
+        adapter.updateData(deadlines)
+        binding.btnClearAllDeadlines.visibility =
+            if (deadlines.isEmpty()) View.GONE else View.VISIBLE
     }
 }

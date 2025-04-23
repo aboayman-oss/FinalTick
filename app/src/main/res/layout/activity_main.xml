@@ -13,6 +13,7 @@
     <!-- Title -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/titleInputLayout"
+        style="@style/Widget.Material3.TextInputLayout.FilledBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Enter Title"
@@ -29,6 +30,7 @@
             android:inputType="text" />
     </com.google.android.material.textfield.TextInputLayout>
 
+
     <!-- Info Text -->
     <TextView
         android:id="@+id/tvSavedDeadlineInfo"
@@ -38,13 +40,13 @@
         android:text=""
         android:visibility="gone"
         android:layout_marginTop="8dp"
-        android:textSize="14sp"
+        style="@style/TextAppearance.Material3.BodySmall"
         app:layout_constraintTop_toBottomOf="@id/titleInputLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
     <!-- Date -->
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnSelectDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -54,8 +56,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+
     <!-- Countdown -->
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnCountdown"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -65,7 +68,7 @@
         app:layout_constraintStart_toStartOf="parent"/>
 
     <!-- Calculate -->
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnCalculate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -77,43 +80,41 @@
     <!-- "Saved Deadlines" Label -->
     <TextView
         android:id="@+id/tvSavedLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/TextAppearance.Material3.TitleMedium"
         android:text="Saved Deadlines"
-        android:textColor="?attr/colorSecondary"
-        android:textStyle="bold"
-        android:layout_marginTop="16dp"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="8dp"
         app:layout_constraintTop_toBottomOf="@id/btnCalculate"
         app:layout_constraintStart_toStartOf="parent"/>
 
+
     <!-- Scrollable List of Deadlines -->
-    <ScrollView
-        android:id="@+id/deadlineScroll"
-        android:layout_width="0dp"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/deadlineRecyclerView"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
+        android:clipToPadding="false"
+        android:paddingBottom="8dp"
         app:layout_constraintTop_toBottomOf="@id/tvSavedLabel"
         app:layout_constraintBottom_toTopOf="@id/btnClearAllDeadlines"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <LinearLayout
-            android:id="@+id/deadlineListContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"/>
-    </ScrollView>
 
     <!-- Clear All Button -->
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnClearAllDeadlines"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Clear All"
         android:layout_marginBottom="16dp"
+        android:insetLeft="16dp"
+        android:insetRight="16dp"
+        app:cornerRadius="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
