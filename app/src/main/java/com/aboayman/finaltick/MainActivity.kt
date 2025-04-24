@@ -80,6 +80,7 @@ class MainActivity : AppCompatActivity() {
 
             binding.btnCountdown.setOnClickListener {
                 startActivity(Intent(this, CountdownActivity::class.java))
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
             }
 
             binding.btnCalculate.setOnClickListener {

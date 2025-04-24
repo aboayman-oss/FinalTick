@@ -29,4 +29,6 @@
     <color name="onSuccess">#FFFFFF</color>
     <color name="colorDanger">#D32F2F</color> <!-- Material Red 700 -->
 
+    <color name="colorSurfaceGlassy">#CCFFFFFF</color> <!-- semi-transparent white -->
+
 </resources>

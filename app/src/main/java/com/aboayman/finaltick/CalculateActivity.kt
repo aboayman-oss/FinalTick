@@ -10,6 +10,7 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -192,6 +193,7 @@ class CalculateActivity : AppCompatActivity() {
                 R.id.nav_home -> {
                     if (this::class != MainActivity::class) {
                         startActivity(Intent(this, MainActivity::class.java))
+                        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
                         finish()
                     }
                     true
@@ -199,6 +201,7 @@ class CalculateActivity : AppCompatActivity() {
                 R.id.nav_countdown -> {
                     if (this::class != CountdownActivity::class) {
                         startActivity(Intent(this, CountdownActivity::class.java))
+                        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
                         finish()
                     }
                     true
@@ -206,6 +209,7 @@ class CalculateActivity : AppCompatActivity() {
                 R.id.nav_calculate -> {
                     if (this::class != CalculateActivity::class) {
                         startActivity(Intent(this, CalculateActivity::class.java))
+                        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
                         finish()
                     }
                     true
@@ -213,6 +217,12 @@ class CalculateActivity : AppCompatActivity() {
                 else -> false
             }
         }
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                finish()
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+            }
+        })
     }
 
     private fun setupHeader() {

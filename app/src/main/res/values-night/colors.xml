@@ -30,4 +30,6 @@
     <color name="onSuccess">#FFFFFF</color>     <!-- still white text for contrast -->
     <color name="colorDanger">#EF5350</color> <!-- Material Red 400 (more vibrant on dark) -->
 
+    <color name="colorSurfaceGlassy">#CC1E1E1E</color> <!-- semi-transparent dark gray -->
+
 </resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Shape for less-rounded buttons -->
+    <style name="LessRoundedButtonShape">
+        <item name="cornerSize">8dp</item>
+    </style>
+
+</resources>
