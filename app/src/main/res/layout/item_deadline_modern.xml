@@ -17,15 +17,16 @@
         android:gravity="center_vertical">
 
         <!-- Icon -->
-        <ImageView
-            android:id="@+id/deadlineIcon"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginEnd="12dp"
-            android:src="@android:drawable/ic_menu_today"
-            android:tint="?attr/colorOnSurface" />
 
         <!-- Texts -->
+        <ImageView
+            android:id="@+id/deadlineIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="12dp"
+            android:src="@android:drawable/ic_menu_today"
+            app:tint="?attr/colorOnSurface" />
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -37,8 +38,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Title"
-                android:textSize="16sp"
-                android:textStyle="bold"
+                android:textSize="22sp"
+                android:fontFamily="sans-serif-medium"
                 android:textColor="?attr/colorOnSurface" />
 
             <TextView
@@ -46,22 +47,24 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Wed, Apr 24 • 2:00 PM"
-                android:textSize="14sp"
+                android:textSize="18sp"
+                android:fontFamily="sans-serif"
                 android:textColor="?attr/colorOnSurfaceVariant" />
         </LinearLayout>
 
-        <!-- Delete Icon (optional for future) -->
-
+        <!-- Delete Button -->
         <ImageButton
             android:id="@+id/btnDelete"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
             android:src="@android:drawable/ic_menu_delete"
             android:contentDescription="Delete"
             android:background="?attr/selectableItemBackgroundBorderless"
-            app:tint="?attr/colorError" />
-
-
+            android:scaleType="centerInside"
+            android:scaleX="1.4"
+            android:scaleY="1.4"
+            app:tint="@color/colorDanger" />
     </LinearLayout>
-
 </com.google.android.material.card.MaterialCardView>

@@ -10,14 +10,26 @@
         android:id="@+id/tvDeadlinePickerTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingTop="20dp"
         android:text="Pick a deadline for the widget"
-        android:textColor="?attr/colorOnBackground"
+        android:textColor="@color/onBackground"
         android:textSize="20sp"
-        android:textStyle="bold"
-        android:paddingBottom="16dp" />
+        android:fontFamily="sans-serif-medium"
+        android:layout_marginBottom="8dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="16dp"
+        android:background="@color/onBackgroundMedium" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvDeadlineList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingBottom="8dp"
+        android:overScrollMode="ifContentScrolls"
+        android:scrollbars="vertical" />
 </LinearLayout>

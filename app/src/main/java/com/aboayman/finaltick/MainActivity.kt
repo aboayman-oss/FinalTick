@@ -28,6 +28,7 @@ import java.util.Locale
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var adapter: DeadlineAdapterModern
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
@@ -67,26 +68,39 @@ class MainActivity : AppCompatActivity() {
         val prefs = getSharedPreferences("finaltick_prefs", Context.MODE_PRIVATE)
         val saved = prefs.getStringSet("deadlines", mutableSetOf())!!.toMutableSet()
 
-        val adapter = DeadlineAdapterModern(mutableListOf()) { item ->
-            prefs.edit()
-                .putLong("deadline_timestamp", item.timestamp)
-                .putString("countdown_title", item.title)
-                .apply()
+        adapter = DeadlineAdapterModern(
+            mutableListOf(),
+            onClick = { item ->
+                prefs.edit()
+                    .putLong("deadline_timestamp", item.timestamp)
+                    .putString("countdown_title", item.title)
+                    .apply()
 
-            Toast.makeText(this, "Activated: ${item.title}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Activated: ${item.title}", Toast.LENGTH_SHORT).show()
 
-            binding.btnCountdown.visibility = View.VISIBLE
-            binding.btnCalculate.visibility = View.VISIBLE
+                binding.btnCountdown.visibility = View.VISIBLE
+                binding.btnCalculate.visibility = View.VISIBLE
 
-            binding.btnCountdown.setOnClickListener {
-                startActivity(Intent(this, CountdownActivity::class.java))
-                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+                binding.btnCountdown.setOnClickListener {
+                    startActivity(Intent(this, CountdownActivity::class.java))
+                    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+                }
+
+                binding.btnCalculate.setOnClickListener {
+                    startActivity(Intent(this, CalculateActivity::class.java))
+                }
+            },
+            onDelete = { item ->
+                val updated = prefs.getStringSet("deadlines", mutableSetOf())!!.toMutableSet()
+                val toRemove = updated.find { it.startsWith("${item.timestamp}|") }
+                if (toRemove != null) {
+                    updated.remove(toRemove)
+                    prefs.edit().putStringSet("deadlines", updated).apply()
+                    refreshList(adapter, updated)
+                    Toast.makeText(this, "Deleted: ${item.title}", Toast.LENGTH_SHORT).show()
+                }
             }
-
-            binding.btnCalculate.setOnClickListener {
-                startActivity(Intent(this, CalculateActivity::class.java))
-            }
-        }
+        )
 
         binding.deadlineRecyclerView.adapter = adapter
         binding.deadlineRecyclerView.layoutManager = LinearLayoutManager(this)

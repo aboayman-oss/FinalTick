@@ -7,7 +7,7 @@
     android:background="@drawable/widget_background"
     android:padding="12dp">
 
-    <!-- Horizontal container for title + timer -->
+    <!-- Countdown block -->
     <LinearLayout
         android:id="@+id/timerBlock"
         android:layout_width="wrap_content"
@@ -26,8 +26,8 @@
             android:layout_height="wrap_content"
             android:text="(Deadline Title)"
             android:textColor="@color/onSurface"
-            android:textSize="14sp"
-            android:textStyle="bold"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-medium"
             android:maxLines="1"
             android:ellipsize="end"
             android:gravity="center" />
@@ -39,16 +39,16 @@
             android:layout_height="wrap_content"
             android:text="00:00:00:00"
             android:textColor="@color/onSurface"
-            android:textSize="26sp"
-            android:textStyle="bold"
+            android:textSize="28sp"
+            android:fontFamily="sans-serif-medium"
             android:layout_marginTop="4dp" />
     </LinearLayout>
 
-    <!-- Larger Refresh Icon -->
+    <!-- Refresh Icon -->
     <ImageView
         android:id="@+id/widgetRefreshBtn"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:layout_marginEnd="4dp"

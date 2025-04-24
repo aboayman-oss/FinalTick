@@ -68,7 +68,7 @@
                 android:hint="Total Course Hours"
                 app:boxBackgroundMode="outline"
                 app:boxStrokeColor="@color/colorPrimary"
-                app:boxStrokeWidth="1dp"
+                app:boxStrokeWidth="2dp"
                 app:boxCornerRadiusTopStart="6dp"
                 app:boxCornerRadiusTopEnd="6dp"
                 app:boxCornerRadiusBottomStart="6dp"
@@ -117,6 +117,13 @@
                 android:text="Selected: 1x"
                 android:textColor="?attr/colorOnBackground"
                 android:layout_marginBottom="16dp"/>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_marginVertical="2dp"
+                app:dividerColor="@color/onSurfaceVariant" />
+
 
             <!-- ✨ Summary Cards Start Here -->
             <FrameLayout
