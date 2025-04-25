@@ -8,12 +8,9 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aboayman.finaltick.databinding.ActivityMainBinding
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -22,7 +19,6 @@ import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
@@ -106,84 +102,13 @@ class MainActivity : AppCompatActivity() {
         binding.deadlineRecyclerView.layoutManager = LinearLayoutManager(this)
         refreshList(adapter, saved)
 
-
-        fun refreshList() {
-            if (saved.isEmpty()) {
-                btnClearAllDeadlines.visibility = View.GONE
-                return
-            }
-
-            btnClearAllDeadlines.visibility = View.VISIBLE
-            val formatter = SimpleDateFormat("EEE, MMM d • h:mm a", Locale.getDefault())
-
-            saved.sorted().forEach { entry ->
-                val parts = entry.split("|", limit = 2)
-                val timestamp = parts[0].toLongOrNull() ?: return@forEach
-                val title = parts.getOrElse(1) { "(No title)" }
-
-                // Create horizontal row layout
-                val row = LinearLayout(this).apply {
-                    orientation = LinearLayout.HORIZONTAL
-                    setPadding(0, 8, 0, 8)
-                    setBackgroundColor(
-                        ContextCompat.getColor(
-                            this@MainActivity,
-                            R.color.colorSurfaceVariant
-                        )
-                    )
-                }
-
-                // Create TextView for deadline info
-                val tv = TextView(this@MainActivity).apply {
-                    text = "\uD83D\uDCC5 $title — ${formatter.format(Date(timestamp))}"
-                    val color = ContextCompat.getColor(this@MainActivity, R.color.onBackground)
-                    // from your colors.xml
-                    setTextColor(color)
-                    layoutParams =
-                        LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-                }
-
-                // Create delete button
-                val delete = Button(this@MainActivity).apply {
-                    text = "✕"
-                    setOnClickListener {
-                        saved.remove(entry)
-                        prefs.edit().putStringSet("deadlines", saved).apply()
-                        refreshList()
-                    }
-                }
-
-                // Add views to the row
-                row.addView(tv)
-                row.addView(delete)
-
-                // Set onClick to activate this deadline
-                row.setOnClickListener {
-                    prefs.edit()
-                        .putLong("deadline_timestamp", timestamp)
-                        .putString("countdown_title", title) // ✅ Add this line to fix the title
-                        .apply()
-                    Toast.makeText(this, "Activated: $title", Toast.LENGTH_SHORT).show()
-                    countdownBtn.visibility = View.VISIBLE
-                    calculateBtn.visibility = View.VISIBLE
-                    countdownBtn.setOnClickListener {
-                        startActivity(Intent(this, CountdownActivity::class.java))
-                    }
-                    calculateBtn.setOnClickListener {
-                        startActivity(Intent(this, CalculateActivity::class.java))
-                    }
-                }
-
-            }
-        }
-
         binding.btnClearAllDeadlines.setOnClickListener {
             saved.clear()
             prefs.edit().putStringSet("deadlines", saved).apply()
             refreshList(adapter, saved)
         }
 
-        refreshList()
+        refreshList(adapter, saved) // ✅ Already called earlier
 
         selectDateBtn.setOnClickListener {
             val title = titleEditText.text.toString().trim()
@@ -233,7 +158,7 @@ class MainActivity : AppCompatActivity() {
                         .apply()
 
                     Toast.makeText(this, "Deadline saved!", Toast.LENGTH_SHORT).show()
-                    refreshList()
+                    refreshList(adapter, saved)
                 }
             }
         }

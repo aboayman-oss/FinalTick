@@ -52,7 +52,7 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:layout_marginEnd="4dp"
-        android:src="@android:drawable/ic_popup_sync"
+        android:src="@drawable/cycle"
         android:contentDescription="Refresh"
         app:tint="@color/onSurface" />
 </RelativeLayout>

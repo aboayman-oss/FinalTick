@@ -7,7 +7,7 @@
     android:layout_marginTop="4dp"
     app:cardCornerRadius="16dp"
     app:cardElevation="2dp"
-    app:cardBackgroundColor="?attr/colorSurfaceVariant">
+    app:cardBackgroundColor="?attr/colorSurface">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,7 +24,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginEnd="12dp"
-            android:src="@android:drawable/ic_menu_today"
+            android:src="@drawable/event"
             app:tint="?attr/colorOnSurface" />
 
         <LinearLayout
@@ -38,7 +38,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Title"
-                android:textSize="22sp"
+                android:textSize="16sp"
                 android:fontFamily="sans-serif-medium"
                 android:textColor="?attr/colorOnSurface" />
 
@@ -47,7 +47,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Wed, Apr 24 • 2:00 PM"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 android:fontFamily="sans-serif"
                 android:textColor="?attr/colorOnSurfaceVariant" />
         </LinearLayout>
@@ -59,7 +59,7 @@
             android:layout_height="40dp"
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"
-            android:src="@android:drawable/ic_menu_delete"
+            android:src="@drawable/close"
             android:contentDescription="Delete"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="centerInside"

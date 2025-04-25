@@ -27,7 +27,7 @@ class DeadlineAdapterModern(
         holder.binding.deadlineTitle.text = item.title
         holder.binding.deadlineSubtitle.text =
             android.text.format.DateFormat.format("EEE, MMM d • h:mm a", item.timestamp)
-        holder.binding.deadlineIcon.setImageResource(android.R.drawable.ic_menu_today)
+        holder.binding.deadlineIcon.setImageResource(R.drawable.event)
         holder.binding.root.setOnClickListener { onClick(item) }
         holder.binding.btnDelete.setOnClickListener {
             onDelete(item)

@@ -66,7 +66,7 @@
         android:textColor="@color/onPrimary"
         shapeAppearanceOverlay="@style/Widget.Material3.Button"
         app:shapeAppearanceOverlay="@style/LessRoundedButtonShape"
-        app:icon="@drawable/ic_calendar"
+        app:icon="@drawable/calendar_clock"
         app:iconSize="50dp"
         app:iconGravity="top"
         app:iconPadding="4dp"
@@ -86,7 +86,7 @@
         android:textColor="@color/onPrimary"
         shapeAppearanceOverlay="@style/Widget.Material3.Button"
         app:shapeAppearanceOverlay="@style/LessRoundedButtonShape"
-        app:icon="@drawable/countdown"
+        app:icon="@drawable/hourglass_arrow_down"
         app:iconGravity="top"
         app:iconPadding="4dp"
         app:iconSize="45dp"
@@ -113,13 +113,14 @@
         app:layout_constraintTop_toBottomOf="@id/btnSelectDate"
         app:layout_constraintEnd_toEndOf="parent" />
 
+
     <!-- "Saved Deadlines" Label -->
     <TextView
         android:id="@+id/tvSavedLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Saved Deadlines"
-        android:textColor="@color/colorSecondary"
+        android:textColor="@color/onBackgroundDisabled"
         android:textSize="25sp"
         android:fontFamily="sans-serif-medium"
         android:layout_marginTop="16dp"
@@ -127,20 +128,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- List of Deadlines -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/deadlineRecyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:clipToPadding="false"
+        android:overScrollMode="ifContentScrolls"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
-        android:overScrollMode="ifContentScrolls"
+        android:paddingStart="0dp"
+        android:paddingEnd="0dp"
         android:scrollbars="vertical"
-        app:layout_constraintTop_toBottomOf="@id/tvSavedLabel"
         app:layout_constraintBottom_toTopOf="@id/btnClearAllDeadlines"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/tvSavedLabel" />
 
     <!-- Clear All Button -->
     <com.google.android.material.button.MaterialButton
@@ -151,10 +153,10 @@
         android:layout_marginBottom="16dp"
         android:backgroundTint="@color/colorPrimary"
         android:textColor="@color/onPrimary"
-        app:icon="@drawable/snoze"
+        app:icon="@drawable/clear_all"
         app:iconGravity="top"
         app:iconPadding="4dp"
-        app:iconSize="32dp"
+        app:iconSize="40dp"
         app:iconTint="@color/onPrimary"
         app:shapeAppearanceOverlay="@style/LessRoundedButtonShape"
         app:layout_constraintBottom_toBottomOf="parent"

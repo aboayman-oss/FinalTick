@@ -29,7 +29,7 @@ class DeadlineAdapter(
         holder.title.text = item.title
         holder.subtitle.text =
             android.text.format.DateFormat.format("EEE, MMM d • h:mm a", item.timestamp)
-        holder.icon.setImageResource(R.drawable.ic_calendar) // replace with your calendar icon
+        holder.icon.setImageResource(R.drawable.radio_button_checked) // replace with your calendar icon
 
         holder.itemView.setOnClickListener { onClick(item) }
     }
