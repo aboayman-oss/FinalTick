@@ -1,5 +1,6 @@
 package com.aboayman.finaltick
 
+import android.Manifest
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
@@ -7,23 +8,99 @@ import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.os.Build
+import android.os.PowerManager
+import android.view.View
 import android.widget.RemoteViews
+import androidx.annotation.RequiresApi
+import androidx.annotation.RequiresPermission
 
 class CountdownWidget : AppWidgetProvider() {
 
+    @RequiresPermission(Manifest.permission.SCHEDULE_EXACT_ALARM)
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         for (appWidgetId in appWidgetIds) {
             updateWidget(context, appWidgetManager, appWidgetId)
         }
-        startRepeatingUpdate(context)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            startRepeatingUpdate(context)
+        }
     }
 
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
+
         if (intent.action == "com.aboayman.finaltick.REFRESH_WIDGET") {
-            forceUpdateAll(context)
+            val widgetManager = AppWidgetManager.getInstance(context)
+            val widgetIds =
+                widgetManager.getAppWidgetIds(ComponentName(context, CountdownWidget::class.java))
+
+            for (widgetId in widgetIds) {
+                val views = RemoteViews(context.packageName, R.layout.widget_countdown)
+
+                // List of frame drawables
+                val frameDrawables = listOf(
+                    R.drawable.refresh_cycle_10,
+                    R.drawable.refresh_cycle_20,
+                    R.drawable.refresh_cycle_30,
+                    R.drawable.refresh_cycle_40,
+                    R.drawable.refresh_cycle_50,
+                    R.drawable.refresh_cycle_60,
+                    R.drawable.refresh_cycle_70,
+                    R.drawable.refresh_cycle_80,
+                    R.drawable.refresh_cycle_90,
+                    R.drawable.refresh_cycle_100,
+                    R.drawable.refresh_cycle_110,
+                    R.drawable.refresh_cycle_120,
+                    R.drawable.refresh_cycle_130,
+                    R.drawable.refresh_cycle_140,
+                    R.drawable.refresh_cycle_150,
+                    R.drawable.refresh_cycle_160,
+                    R.drawable.refresh_cycle_170,
+                    R.drawable.refresh_cycle_180,
+                    R.drawable.refresh_cycle_190,
+                    R.drawable.refresh_cycle_200,
+                    R.drawable.refresh_cycle_210,
+                    R.drawable.refresh_cycle_220,
+                    R.drawable.refresh_cycle_230,
+                    R.drawable.refresh_cycle_240,
+                    R.drawable.refresh_cycle_250,
+                    R.drawable.refresh_cycle_260,
+                    R.drawable.refresh_cycle_270,
+                    R.drawable.refresh_cycle_280,
+                    R.drawable.refresh_cycle_290,
+                    R.drawable.refresh_cycle_300,
+                    R.drawable.refresh_cycle_310,
+                    R.drawable.refresh_cycle_320,
+                    R.drawable.refresh_cycle_330,
+                    R.drawable.refresh_cycle_340,
+                    R.drawable.refresh_cycle_350
+                )
+
+
+                // ⏳ Animate frames one by one
+                Thread {
+                    for (drawableRes in frameDrawables) {
+                        views.setImageViewResource(R.id.widgetRefreshBtn, drawableRes)
+                        widgetManager.updateAppWidget(widgetId, views)
+                        Thread.sleep(20) // ~40 milliseconds per frame
+                    }
+
+                    // After spin finished, set normal icon
+                    views.setImageViewResource(
+                        R.id.widgetRefreshBtn,
+                        R.drawable.refresh_cycle_normal
+                    )
+                    widgetManager.updateAppWidget(widgetId, views)
+
+                }.start()
+
+                // Also update the main widget content (timer) after refresh
+                updateWidget(context, widgetManager, widgetId)
+            }
         }
     }
+
 
     companion object {
         fun updateWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
@@ -90,7 +167,7 @@ class CountdownWidget : AppWidgetProvider() {
                         val leftover = bonus % 3600
                         if (cbMinutes) {
                             minutes += leftover / 60
-                            seconds += leftover % 60
+                            seconds += leftover
                         } else {
                             seconds += leftover
                         }
@@ -109,6 +186,11 @@ class CountdownWidget : AppWidgetProvider() {
                 if (cbSeconds) parts.add(String.format("%02d", seconds))
 
                 views.setTextViewText(R.id.widgetTimer, parts.joinToString(":"))
+
+                // 🔥 simple fake fade effect (re-draw)
+                views.setViewVisibility(R.id.widgetTimer, View.INVISIBLE)
+                views.setViewVisibility(R.id.widgetTimer, View.VISIBLE)
+
             } else {
                 views.setTextViewText(R.id.widgetTimer, "00:00:00:00")
                 views.setTextColor(R.id.widgetTimer, context.getColor(R.color.colorDanger))
@@ -124,7 +206,8 @@ class CountdownWidget : AppWidgetProvider() {
             )
             views.setOnClickPendingIntent(R.id.widgetRefreshBtn, refreshPending)
 
-            // 📅 Tap = SelectDeadlineActivity instead of MainActivity
+
+            // 📅 Tap = SelectDeadlineActivity
             val pickIntent = Intent(context, SelectDeadlineActivity::class.java)
             val pendingPick = PendingIntent.getActivity(
                 context, 0, pickIntent,
@@ -135,7 +218,15 @@ class CountdownWidget : AppWidgetProvider() {
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }
 
+        @RequiresApi(Build.VERSION_CODES.S)
+        @RequiresPermission(Manifest.permission.SCHEDULE_EXACT_ALARM)
         fun startRepeatingUpdate(context: Context) {
+            scheduleNextUpdate(context)
+        }
+
+        @RequiresApi(Build.VERSION_CODES.S)
+        @RequiresPermission(Manifest.permission.SCHEDULE_EXACT_ALARM)
+        fun scheduleNextUpdate(context: Context) {
             val intent = Intent(context, CountdownWidgetUpdater::class.java)
             val pendingIntent = PendingIntent.getBroadcast(
                 context, 0, intent,
@@ -143,12 +234,28 @@ class CountdownWidget : AppWidgetProvider() {
             )
 
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            alarmManager.setRepeating(
-                AlarmManager.RTC_WAKEUP,
-                System.currentTimeMillis(),
-                1000L,
-                pendingIntent
-            )
+            val delay = if (isScreenOn(context)) 1000L else 2000L
+
+            // 🔥 FIX: Check if exact alarms allowed
+            if (alarmManager.canScheduleExactAlarms()) {
+                alarmManager.setExactAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP,
+                    System.currentTimeMillis() + delay,
+                    pendingIntent
+                )
+            } else {
+                // 👇 Optional: You can fallback to non-exact alarm here if you want (less accurate)
+                alarmManager.set(
+                    AlarmManager.RTC_WAKEUP,
+                    System.currentTimeMillis() + delay,
+                    pendingIntent
+                )
+            }
+        }
+
+        fun isScreenOn(context: Context): Boolean {
+            val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
+            return powerManager.isInteractive
         }
 
         fun forceUpdateAll(context: Context) {
