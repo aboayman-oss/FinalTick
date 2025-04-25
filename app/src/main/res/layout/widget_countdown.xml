@@ -52,7 +52,7 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:layout_marginEnd="4dp"
-        android:src="@drawable/cycle"
+        android:src="@drawable/refresh_cycle_normal"
         android:contentDescription="Refresh"
         app:tint="@color/onSurface" />
 </RelativeLayout>
