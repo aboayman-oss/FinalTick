@@ -8,7 +8,6 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -39,7 +38,6 @@ class MainActivity : AppCompatActivity() {
         val calculateBtn = findViewById<Button>(R.id.btnCalculate)
         val btnClearAllDeadlines = findViewById<Button>(R.id.btnClearAllDeadlines)
 
-        // Show the date button only when a title is entered
         selectDateBtn.visibility = View.GONE
         countdownBtn.visibility = View.GONE
         calculateBtn.visibility = View.GONE
@@ -62,7 +60,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         val prefs = getSharedPreferences("finaltick_prefs", Context.MODE_PRIVATE)
-        val saved = prefs.getStringSet("deadlines", mutableSetOf())!!.toMutableSet()
 
         adapter = DeadlineAdapterModern(
             mutableListOf(),
@@ -72,7 +69,11 @@ class MainActivity : AppCompatActivity() {
                     .putString("countdown_title", item.title)
                     .apply()
 
-                Toast.makeText(this, "Activated: ${item.title}", Toast.LENGTH_SHORT).show()
+                showSuccessSnackbar(
+                    root = findViewById(android.R.id.content),
+                    message = "${item.title} → Activated",
+                    onClose = { dismissCurrentSnackbar() }
+                )
 
                 binding.btnCountdown.visibility = View.VISIBLE
                 binding.btnCalculate.visibility = View.VISIBLE
@@ -93,27 +94,49 @@ class MainActivity : AppCompatActivity() {
                     updated.remove(toRemove)
                     prefs.edit().putStringSet("deadlines", updated).apply()
                     refreshList(adapter, updated)
-                    Toast.makeText(this, "Deleted: ${item.title}", Toast.LENGTH_SHORT).show()
+                    val deletedEntry = toRemove
+                    showErrorSnackbar(
+                        root = findViewById(android.R.id.content),
+                        message = "${item.title} → Deleted"
+                    ) {
+                        updated.add(deletedEntry!!)
+                        prefs.edit().putStringSet("deadlines", updated).apply()
+                        refreshList(adapter, updated)
+                    }
                 }
             }
         )
 
         binding.deadlineRecyclerView.adapter = adapter
         binding.deadlineRecyclerView.layoutManager = LinearLayoutManager(this)
-        refreshList(adapter, saved)
 
-        binding.btnClearAllDeadlines.setOnClickListener {
-            saved.clear()
-            prefs.edit().putStringSet("deadlines", saved).apply()
-            refreshList(adapter, saved)
+        // ✅ Fresh load from preferences on start
+        val fresh = prefs.getStringSet("deadlines", mutableSetOf())!!.toMutableSet()
+        refreshList(adapter, fresh)
+
+        btnClearAllDeadlines.setOnClickListener {
+            val current = prefs.getStringSet("deadlines", mutableSetOf())!!.toMutableSet()
+            prefs.edit().putStringSet("deadlines", mutableSetOf()).apply()
+            refreshList(adapter, mutableSetOf())
+
+            showErrorSnackbar(
+                root = findViewById(android.R.id.content),
+                message = "Cleared all deadlines"
+            ) {
+                prefs.edit().putStringSet("deadlines", current).apply()
+                refreshList(adapter, current)
+            }
         }
-
-        refreshList(adapter, saved) // ✅ Already called earlier
 
         selectDateBtn.setOnClickListener {
             val title = titleEditText.text.toString().trim()
             if (title.isBlank()) {
-                Toast.makeText(this, "Please enter a title first.", Toast.LENGTH_SHORT).show()
+                showWarningSnackbar(
+                    root = findViewById(android.R.id.content),
+                    message = "Enter a title first.",
+                    onClose = { dismissCurrentSnackbar() }
+                )
+
                 return@setOnClickListener
             }
 
@@ -146,19 +169,31 @@ class MainActivity : AppCompatActivity() {
 
                     val finalTimestamp = calendar.timeInMillis
                     if (finalTimestamp <= System.currentTimeMillis()) {
-                        Toast.makeText(this, "⚠️ Please select a future time.", Toast.LENGTH_LONG).show()
+                        showWarningSnackbar(
+                            root = findViewById(android.R.id.content),
+                            message = "Select a future time.",
+                            onClose = { dismissCurrentSnackbar() }
+                        )
                         return@addOnPositiveButtonClickListener
                     }
 
-                    saved.add("$finalTimestamp|$title")
-                    prefs.edit().putStringSet("deadlines", saved).apply()
+                    val current = prefs.getStringSet("deadlines", mutableSetOf())!!.toMutableSet()
+                    current.add("$finalTimestamp|$title")
+                    prefs.edit().putStringSet("deadlines", current).apply()
+
                     prefs.edit()
                         .putLong("deadline_timestamp", finalTimestamp)
-                        .putString("countdown_title", title) // ✅ Save title for widget
+                        .putString("countdown_title", title)
                         .apply()
 
-                    Toast.makeText(this, "Deadline saved!", Toast.LENGTH_SHORT).show()
-                    refreshList(adapter, saved)
+                    val item = DeadlineItem(title, finalTimestamp)
+
+                    showSuccessSnackbar(
+                        root = findViewById(android.R.id.content),
+                        message = "${item.title} → Saved!",
+                        onClose = { dismissCurrentSnackbar() }
+                    )
+                    refreshList(adapter, current)
                 }
             }
         }
@@ -178,5 +213,8 @@ class MainActivity : AppCompatActivity() {
         binding.btnClearAllDeadlines.visibility =
             if (deadlines.isEmpty()) View.GONE else View.VISIBLE
     }
-
+    override fun onPause() {
+        super.onPause()
+        dismissCurrentSnackbar()
+    }
 }

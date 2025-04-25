@@ -53,7 +53,16 @@ class CountdownActivity : AppCompatActivity() {
 
         val MaterialSwitches = listOf(cbDays, cbHours, cbMinutes, cbSeconds)
         MaterialSwitches.forEach { box ->
-            box.setOnCheckedChangeListener { _, _ -> saveFormatPrefs() }
+            box.setOnCheckedChangeListener { _, _ ->
+                saveFormatPrefs()
+
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                    val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as android.os.Vibrator
+                    vibrator.vibrate(android.os.VibrationEffect.createPredefined(android.os.VibrationEffect.EFFECT_HEAVY_CLICK))
+                } else {
+                    box.performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS)
+                }
+            }
         }
 
         lifecycleScope.launch {

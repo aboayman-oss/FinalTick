@@ -32,4 +32,10 @@
     <color name="colorSurfaceGlassy">#CCFFFFFF</color> <!-- semi-transparent white -->
     <color name="gray">#C0C0C0</color>
 
+    <color name="strokeSnackbar">#33FFFFFF</color> <!-- semi-transparent white stroke -->
+    <color name="strokeSnackbarSuccess">#99FFFFFF</color> <!-- light white -->
+    <color name="strokeSnackbarError">#99FFFFFF</color> <!-- light white -->
+    <color name="strokeSnackbarInfo">#99FFFFFF</color> <!-- light white -->
+    <color name="strokeSnackbarDefault">#99FFFFFF</color> <!-- fallback -->
+
 </resources>

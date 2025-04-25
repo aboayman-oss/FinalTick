@@ -41,7 +41,7 @@ class SelectDeadlineActivity : AppCompatActivity() {
                 .apply()
 
             CountdownWidget.forceUpdateAll(this)
-            Toast.makeText(this, "Selected: ${selected.title}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "${selected.title} → Selected!", Toast.LENGTH_SHORT).show()
             finish()
 
         }

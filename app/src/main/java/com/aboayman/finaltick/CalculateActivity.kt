@@ -45,6 +45,9 @@ class CalculateActivity : AppCompatActivity() {
         val speedSlider = findViewById<Slider>(R.id.speedSlider)
         val speedLabel = findViewById<TextView>(R.id.speedLabel)
 
+        var lastSleep = sleepSlider.value.toInt()
+        var lastSpeed = speedSlider.value.toInt()
+
         val valueSleep = findViewById<TextView>(R.id.valueSleep)
         val valueCourse = findViewById<TextView>(R.id.valueCourse)
         val valueSleepGain = findViewById<TextView>(R.id.valueSleepGain)
@@ -166,14 +169,33 @@ class CalculateActivity : AppCompatActivity() {
         }
         handler.post(countdownRunnable)
 
-        sleepSlider.addOnChangeListener { _, v, _ ->
-            sleepLabel.text = "Selected: ${v.toInt()} hours"
+        sleepSlider.addOnChangeListener { slider, value, fromUser ->
+            val newValue = value.toInt()
+            if (fromUser && newValue != lastSleep) {
+                slider.performHapticFeedback(android.view.HapticFeedbackConstants.CLOCK_TICK)
+                lastSleep = newValue
+            }
+            sleepLabel.text = "Selected: $newValue hours"
             calculateStatic()
         }
-        speedSlider.addOnChangeListener { _, v, _ ->
-            speedLabel.text = "Selected: ${v}x"
+        var lastSpeedStep = (speedSlider.value * 2).toInt() / 2f
+
+        speedSlider.addOnChangeListener { slider, value, fromUser ->
+            val newValue = (value * 2).toInt() / 2f
+            if (fromUser && newValue != lastSpeedStep) {
+                lastSpeedStep = newValue
+
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                    val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as android.os.Vibrator
+                    vibrator.vibrate(android.os.VibrationEffect.createPredefined(android.os.VibrationEffect.EFFECT_HEAVY_CLICK))
+                } else {
+                    slider.performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS)
+                }
+            }
+            speedLabel.text = "Selected: ${value}x"
             calculateStatic()
         }
+
         etCourseHours.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) = calculateStatic()
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -227,18 +249,18 @@ class CalculateActivity : AppCompatActivity() {
 
     private fun setupHeader() {
         val prefs = getSharedPreferences("finaltick_prefs", Context.MODE_PRIVATE)
-        val title = prefs.getString("latest_title", "Untitled Countdown")
+        val title = prefs.getString("countdown_title", "Untitled Countdown")
         val deadline = prefs.getLong("deadline_timestamp", 0L)
 
-        val formatted = if (deadline > 0) {
+        val dateFormatted = if (deadline != 0L) {
             val sdf = SimpleDateFormat("MMM dd, yyyy – hh:mm a", Locale.getDefault())
             sdf.format(Date(deadline))
         } else {
-            "No deadline set"
+            "No date selected"
         }
 
         findViewById<TextView>(R.id.tvHeaderTitle).text = title
-        findViewById<TextView>(R.id.tvHeaderDateTime).text = formatted
+        findViewById<TextView>(R.id.tvHeaderDateTime).text = dateFormatted
     }
 
     override fun onDestroy() {

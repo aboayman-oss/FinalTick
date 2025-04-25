@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/customSnackbarSuccessLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="80dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="@drawable/bg_snackbar_success"
+    android:paddingStart="20dp"
+    android:paddingEnd="16dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp"
+    android:elevation="8dp">
+
+    <ImageView
+        android:id="@+id/snackbar_icon"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="12dp"
+        android:contentDescription="icon"
+        android:src="@drawable/succ"
+        app:tint="@android:color/white" />
+
+    <TextView
+        android:id="@+id/snackbar_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        android:fontFamily="sans-serif-medium"
+        android:text="Test"
+        android:layout_marginEnd="8dp" />
+
+    <ImageButton
+        android:id="@+id/snackbar_action_icon"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:src="@drawable/close"
+        android:contentDescription="action"
+        android:background="@null"
+        android:layout_marginEnd="12dp"
+        android:scaleType="fitXY"
+        android:paddingEnd="0dp"
+        android:cropToPadding="true"
+        android:adjustViewBounds="false"
+        android:visibility="visible"
+        app:tint="@android:color/white" />
+
+
+</LinearLayout>
