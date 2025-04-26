@@ -26,11 +26,20 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter: DeadlineAdapterModern
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        val prefs = getSharedPreferences("finaltick_prefs", MODE_PRIVATE)
+
+        val savedTheme = prefs.getInt("theme_mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        AppCompatDelegate.setDefaultNightMode(savedTheme)
+
         setTheme(R.style.Theme_FinalTick)
         super.onCreate(savedInstanceState)
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.btnSettings.setOnClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
+        }
 
         val titleEditText = findViewById<TextInputEditText>(R.id.etTitle)
         val selectDateBtn = findViewById<Button>(R.id.btnSelectDate)
@@ -58,8 +67,6 @@ class MainActivity : AppCompatActivity() {
                 true
             } else false
         }
-
-        val prefs = getSharedPreferences("finaltick_prefs", Context.MODE_PRIVATE)
 
         adapter = DeadlineAdapterModern(
             mutableListOf(),

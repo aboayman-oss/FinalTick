@@ -5,6 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -27,6 +29,26 @@ class CalculateActivity : AppCompatActivity() {
 
     private lateinit var valueTimeUntil: TextView
     private lateinit var valueRemaining: TextView
+
+    private fun triggerVibrationIfEnabled(context: Context, durationMs: Long = 100) {
+        val prefs = context.getSharedPreferences("finaltick_prefs", Context.MODE_PRIVATE)
+        val hapticEnabled = prefs.getBoolean("haptic_feedback", true)
+
+        if (hapticEnabled) {
+            val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                vibrator.vibrate(
+                    VibrationEffect.createOneShot(
+                        durationMs,
+                        VibrationEffect.DEFAULT_AMPLITUDE
+                    )
+                )
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(durationMs)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -172,7 +194,10 @@ class CalculateActivity : AppCompatActivity() {
         sleepSlider.addOnChangeListener { slider, value, fromUser ->
             val newValue = value.toInt()
             if (fromUser && newValue != lastSleep) {
-                slider.performHapticFeedback(android.view.HapticFeedbackConstants.CLOCK_TICK)
+                val prefs = getSharedPreferences("finaltick_prefs", MODE_PRIVATE)
+                if (prefs.getBoolean("haptic_feedback", true)) {
+                    slider.performHapticFeedback(android.view.HapticFeedbackConstants.CLOCK_TICK)
+                }
                 lastSleep = newValue
             }
             sleepLabel.text = "Selected: $newValue hours"
@@ -185,10 +210,8 @@ class CalculateActivity : AppCompatActivity() {
             if (fromUser && newValue != lastSpeedStep) {
                 lastSpeedStep = newValue
 
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-                    val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as android.os.Vibrator
-                    vibrator.vibrate(android.os.VibrationEffect.createPredefined(android.os.VibrationEffect.EFFECT_HEAVY_CLICK))
-                } else {
+                val prefs = getSharedPreferences("finaltick_prefs", MODE_PRIVATE)
+                if (prefs.getBoolean("haptic_feedback", true)) {
                     slider.performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS)
                 }
             }
