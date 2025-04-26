@@ -113,8 +113,12 @@ class CountdownWidget : AppWidgetProvider() {
             val cbMinutes = prefs.getBoolean("widget_show_minutes", true)
             val cbSeconds = prefs.getBoolean("widget_show_seconds", true)
 
-            val current = all?.firstOrNull { it.startsWith(deadline.toString()) }
-            val title = current?.split("|")?.getOrNull(1) ?: "(No title)"
+            val current = all?.firstOrNull {
+                val parts = it.split("|", limit = 3)
+                val ts = parts.getOrNull(1)?.toLongOrNull()
+                ts == deadline
+            }
+            val title = current?.split("|", limit = 3)?.getOrNull(2) ?: "(No title)"
 
             val views = RemoteViews(context.packageName, R.layout.widget_countdown)
             views.setTextViewText(R.id.widgetTitle, title)

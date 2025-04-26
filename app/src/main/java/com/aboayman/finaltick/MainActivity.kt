@@ -103,7 +103,12 @@ class MainActivity : AppCompatActivity() {
                 // (your delete logic)
                 val prefs = getSharedPreferences("finaltick_prefs", MODE_PRIVATE)
                 val updated = prefs.getStringSet("deadlines", mutableSetOf())!!.toMutableSet()
-                val toRemove = updated.find { it.startsWith("${item.timestamp}|") }
+                val toRemove = updated.find { entry ->
+                    val parts = entry.split("|", limit = 3)
+                    val createdAt = parts.getOrNull(0)?.toLongOrNull()
+                    val timestamp = parts.getOrNull(1)?.toLongOrNull()
+                    createdAt == item.createdAt && timestamp == item.timestamp
+                }
                 if (toRemove != null) {
                     updated.remove(toRemove)
                     prefs.edit().putStringSet("deadlines", updated).apply()
@@ -155,7 +160,12 @@ class MainActivity : AppCompatActivity() {
                             val prefs = getSharedPreferences("finaltick_prefs", MODE_PRIVATE)
                             val updated =
                                 prefs.getStringSet("deadlines", mutableSetOf())!!.toMutableSet()
-                            val toRemove = updated.find { it.startsWith("${item.timestamp}|") }
+                            val toRemove = updated.find { entry ->
+                                val parts = entry.split("|", limit = 3)
+                                val createdAt = parts.getOrNull(0)?.toLongOrNull()
+                                val timestamp = parts.getOrNull(1)?.toLongOrNull()
+                                createdAt == item.createdAt && timestamp == item.timestamp
+                            }
                             if (toRemove != null) {
                                 updated.remove(toRemove)
                                 prefs.edit().putStringSet("deadlines", updated).apply()
@@ -250,7 +260,8 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     val current = prefs.getStringSet("deadlines", mutableSetOf())!!.toMutableSet()
-                    current.add("$finalTimestamp|$title")
+                    val createdAt = System.currentTimeMillis()
+                    current.add("$createdAt|$finalTimestamp|$title")
                     prefs.edit().putStringSet("deadlines", current).apply()
 
                     prefs.edit()
@@ -258,7 +269,7 @@ class MainActivity : AppCompatActivity() {
                         .putString("countdown_title", title)
                         .apply()
 
-                    val item = DeadlineItem(title, finalTimestamp)
+                    val item = DeadlineItem(title, finalTimestamp, createdAt)
 
                     showSuccessSnackbar(
                         root = findViewById(android.R.id.content),
@@ -275,10 +286,11 @@ class MainActivity : AppCompatActivity() {
         val formatter = SimpleDateFormat("EEE, MMM d • h:mm a", Locale.getDefault())
 
         val deadlines = saved.mapNotNull { entry ->
-            val parts = entry.split("|", limit = 2)
-            val timestamp = parts.getOrNull(0)?.toLongOrNull() ?: return@mapNotNull null
-            val title = parts.getOrNull(1) ?: "(No title)"
-            DeadlineItem(title, timestamp)
+            val parts = entry.split("|", limit = 3)
+            val createdAt = parts.getOrNull(0)?.toLongOrNull() ?: System.currentTimeMillis()
+            val timestamp = parts.getOrNull(1)?.toLongOrNull() ?: return@mapNotNull null
+            val title = parts.getOrNull(2) ?: "(No title)"
+            DeadlineItem(title, timestamp, createdAt)
         }.sortedBy { it.timestamp }
 
         adapter.updateData(deadlines)
