@@ -1,15 +1,15 @@
 package com.aboayman.finaltick
 
-import android.Manifest
+import android.app.AlarmManager
 import android.appwidget.AppWidgetManager
 import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import androidx.annotation.RequiresPermission
+import android.os.Build
+import android.util.Log
 
 class CountdownWidgetUpdater : BroadcastReceiver() {
-    @RequiresPermission(Manifest.permission.SCHEDULE_EXACT_ALARM)
     override fun onReceive(context: Context, intent: Intent) {
         val widgetManager = AppWidgetManager.getInstance(context)
         val ids = widgetManager.getAppWidgetIds(
@@ -19,7 +19,18 @@ class CountdownWidgetUpdater : BroadcastReceiver() {
             CountdownWidget.updateWidget(context, widgetManager, id)
         }
 
-        // 🔥 RESCHEDULE after 1s or 2s (depending if screen ON/OFF)
-        CountdownWidget.scheduleNextUpdate(context)
+        // 🔥 RESCHEDULE only if allowed + on Android 12+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            if (alarmManager.canScheduleExactAlarms()) {
+                try {
+                    CountdownWidget.scheduleNextUpdate(context)
+                } catch (e: SecurityException) {
+                    Log.e("CountdownWidgetUpdater", "Exact alarm permission not granted", e)
+                }
+            } else {
+                Log.w("CountdownWidgetUpdater", "Exact alarms not permitted for this app")
+            }
+        }
     }
 }
