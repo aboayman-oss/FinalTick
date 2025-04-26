@@ -61,7 +61,7 @@
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="0dp"
+        android:layout_marginTop="5dp"
         android:hint="Title of the Deadline"
         app:boxBackgroundMode="outline"
         app:boxStrokeColor="?attr/colorPrimary"

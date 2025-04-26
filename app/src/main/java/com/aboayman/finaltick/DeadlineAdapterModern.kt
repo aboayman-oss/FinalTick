@@ -1,6 +1,7 @@
 package com.aboayman.finaltick
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.aboayman.finaltick.databinding.ItemDeadlineModernBinding
@@ -8,7 +9,8 @@ import com.aboayman.finaltick.databinding.ItemDeadlineModernBinding
 class DeadlineAdapterModern(
     private val deadlines: MutableList<DeadlineItem>,
     private val onClick: (DeadlineItem) -> Unit,
-    private val onDelete: (DeadlineItem) -> Unit
+    private val onDelete: (DeadlineItem) -> Unit,
+    private val onLongPress: (DeadlineItem, View) -> Unit
 ) : RecyclerView.Adapter<DeadlineAdapterModern.ViewHolder>() {
 
     inner class ViewHolder(val binding: ItemDeadlineModernBinding) :
@@ -29,6 +31,10 @@ class DeadlineAdapterModern(
             android.text.format.DateFormat.format("EEE, MMM d • h:mm a", item.timestamp)
         holder.binding.deadlineIcon.setImageResource(R.drawable.event)
         holder.binding.root.setOnClickListener { onClick(item) }
+        holder.binding.root.setOnLongClickListener {
+            onLongPress(item, holder.binding.root) // <-- added
+            true
+        }
         holder.binding.btnDelete.setOnClickListener {
             onDelete(item)
         }

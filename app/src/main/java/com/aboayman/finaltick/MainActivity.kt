@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aboayman.finaltick.databinding.ActivityMainBinding
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.timepicker.MaterialTimePicker
@@ -71,6 +72,9 @@ class MainActivity : AppCompatActivity() {
         adapter = DeadlineAdapterModern(
             mutableListOf(),
             onClick = { item ->
+                // (you already have this logic to activate)
+                val prefs = getSharedPreferences("finaltick_prefs", MODE_PRIVATE)
+
                 prefs.edit()
                     .putLong("deadline_timestamp", item.timestamp)
                     .putString("countdown_title", item.title)
@@ -94,23 +98,84 @@ class MainActivity : AppCompatActivity() {
                     startActivity(Intent(this, CalculateActivity::class.java))
                 }
             },
+
             onDelete = { item ->
+                // (your delete logic)
+                val prefs = getSharedPreferences("finaltick_prefs", MODE_PRIVATE)
                 val updated = prefs.getStringSet("deadlines", mutableSetOf())!!.toMutableSet()
                 val toRemove = updated.find { it.startsWith("${item.timestamp}|") }
                 if (toRemove != null) {
                     updated.remove(toRemove)
                     prefs.edit().putStringSet("deadlines", updated).apply()
                     refreshList(adapter, updated)
-                    val deletedEntry = toRemove
                     showErrorSnackbar(
                         root = findViewById(android.R.id.content),
                         message = "${item.title} → Deleted"
                     ) {
-                        updated.add(deletedEntry!!)
+                        updated.add(toRemove)
                         prefs.edit().putStringSet("deadlines", updated).apply()
                         refreshList(adapter, updated)
                     }
                 }
+            },
+
+            onLongPress = { item, view ->
+
+                val popup = androidx.appcompat.widget.PopupMenu(this, view)
+                popup.menuInflater.inflate(R.menu.menu_deadline_options, popup.menu)
+                // Force icons to appear
+                try {
+                    val fields = popup.javaClass.declaredFields
+                    for (field in fields) {
+                        if (field.name == "mPopup") {
+                            field.isAccessible = true
+                            val menuPopupHelper = field.get(popup)
+                            val classPopupHelper = Class.forName(menuPopupHelper.javaClass.name)
+                            val setForceIcons = classPopupHelper.getMethod(
+                                "setForceShowIcon",
+                                Boolean::class.javaPrimitiveType
+                            )
+                            setForceIcons.invoke(menuPopupHelper, true)
+                            break
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
+                popup.setOnMenuItemClickListener { menuItem ->
+                    when (menuItem.title) {
+                        "Edit" -> {
+                            // (We'll do edit in Step 3 next)
+                            showEditDialog(item)
+                            true
+                        }
+
+                        "Delete" -> {
+                            val prefs = getSharedPreferences("finaltick_prefs", MODE_PRIVATE)
+                            val updated =
+                                prefs.getStringSet("deadlines", mutableSetOf())!!.toMutableSet()
+                            val toRemove = updated.find { it.startsWith("${item.timestamp}|") }
+                            if (toRemove != null) {
+                                updated.remove(toRemove)
+                                prefs.edit().putStringSet("deadlines", updated).apply()
+                                refreshList(adapter, updated)
+                                showErrorSnackbar(
+                                    root = findViewById(android.R.id.content),
+                                    message = "${item.title} → Deleted"
+                                ) {
+                                    updated.add(toRemove)
+                                    prefs.edit().putStringSet("deadlines", updated).apply()
+                                    refreshList(adapter, updated)
+                                }
+                            }
+                            true
+                        }
+
+                        else -> false
+                    }
+                }
+                popup.show()
             }
         )
 
@@ -220,6 +285,110 @@ class MainActivity : AppCompatActivity() {
         binding.btnClearAllDeadlines.visibility =
             if (deadlines.isEmpty()) View.GONE else View.VISIBLE
     }
+
+    private fun showEditDialog(item: DeadlineItem) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_edit_deadline, null)
+
+        val editTitle = dialogView.findViewById<TextInputEditText>(R.id.etEditTitle)
+        val btnPickDate = dialogView.findViewById<MaterialButton>(R.id.btnPickDate)
+        val btnPickTime = dialogView.findViewById<MaterialButton>(R.id.btnPickTime)
+
+        editTitle.setText(item.title)
+
+        var newTimestamp = item.timestamp
+
+        btnPickDate.setOnClickListener {
+            val datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText("Edit deadline date")
+                .setSelection(newTimestamp)
+                .build()
+
+            datePicker.show(supportFragmentManager, "editDatePicker")
+            datePicker.addOnPositiveButtonClickListener { selectedDateMillis ->
+                val calendar = Calendar.getInstance()
+                calendar.timeInMillis = selectedDateMillis
+
+                val oldCalendar = Calendar.getInstance()
+                oldCalendar.timeInMillis = newTimestamp
+
+                calendar.set(Calendar.HOUR_OF_DAY, oldCalendar.get(Calendar.HOUR_OF_DAY))
+                calendar.set(Calendar.MINUTE, oldCalendar.get(Calendar.MINUTE))
+                calendar.set(Calendar.SECOND, 0)
+                calendar.set(Calendar.MILLISECOND, 0)
+
+                newTimestamp = calendar.timeInMillis
+            }
+        }
+
+        btnPickTime.setOnClickListener {
+            val oldCalendar = Calendar.getInstance()
+            oldCalendar.timeInMillis = newTimestamp
+
+            val timePicker = MaterialTimePicker.Builder()
+                .setTimeFormat(TimeFormat.CLOCK_12H)
+                .setHour(oldCalendar.get(Calendar.HOUR_OF_DAY))
+                .setMinute(oldCalendar.get(Calendar.MINUTE))
+                .setTitleText("Edit deadline time")
+                .build()
+
+            timePicker.show(supportFragmentManager, "editTimePicker")
+            timePicker.addOnPositiveButtonClickListener {
+                val calendar = Calendar.getInstance()
+                calendar.timeInMillis = newTimestamp
+                calendar.set(Calendar.HOUR_OF_DAY, timePicker.hour)
+                calendar.set(Calendar.MINUTE, timePicker.minute)
+                calendar.set(Calendar.SECOND, 0)
+                calendar.set(Calendar.MILLISECOND, 0)
+
+                newTimestamp = calendar.timeInMillis
+            }
+        }
+
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        dialog.show()
+        val btnSave = dialogView.findViewById<MaterialButton>(R.id.btnSave)
+        val btnCancel = dialogView.findViewById<MaterialButton>(R.id.btnCancel)
+
+        btnSave.setOnClickListener {
+            val newTitle = editTitle.text.toString().trim()
+            if (newTitle.isNotEmpty() && newTimestamp > System.currentTimeMillis()) {
+                val prefs = getSharedPreferences("finaltick_prefs", MODE_PRIVATE)
+                val current = prefs.getStringSet("deadlines", mutableSetOf())!!.toMutableSet()
+
+                val oldEntry = current.find { it.startsWith("${item.timestamp}|") }
+                if (oldEntry != null) {
+                    current.remove(oldEntry)
+                }
+
+                current.add("$newTimestamp|$newTitle")
+                prefs.edit().putStringSet("deadlines", current).apply()
+
+                showSuccessSnackbar(
+                    root = findViewById(android.R.id.content),
+                    message = "Deadline updated!",
+                    onClose = { dismissCurrentSnackbar() }
+                )
+
+                refreshList(adapter, current)
+                dialog.dismiss()
+            } else {
+                showWarningSnackbar(
+                    root = findViewById(android.R.id.content),
+                    message = "Invalid title or time selected.",
+                    onClose = { dismissCurrentSnackbar() }
+                )
+            }
+        }
+
+        btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+    }
+
     override fun onPause() {
         super.onPause()
         dismissCurrentSnackbar()
