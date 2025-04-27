@@ -1,46 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- This is the night version -->
+    <!-- App background color for night mode -->
     <color name="colorBackground">#121212</color>
-    <color name="onBackground">#DEFFFFFF</color>
-    <color name="onBackgroundHigh">#DEFFFFFF</color>
-    <color name="onBackgroundMedium">#99FFFFFF</color>
-    <color name="onBackgroundDisabled">#61FFFFFF</color>
 
-    <color name="colorSurface">#1E1E1E</color>
-    <color name="onSurface">#DEFFFFFF</color>
-    <color name="onSurfaceVariant">#B3FFFFFF</color> <!-- ~70% white -->
-    <color name="colorSurfaceVariant">#2C2C2C</color>
+    <!-- Text color on top of background -->
+    <color name="onBackground">#E6FFFFFF</color> <!-- ~90% white -->
+    <color name="onBackgroundHigh">#E6FFFFFF</color>
+    <color name="onBackgroundMedium">#99FFFFFF</color> <!-- ~60% white -->
+    <color name="onBackgroundDisabled">#61FFFFFF</color> <!-- ~38% white -->
 
-    <color name="colorPrimary">#5C6BC0</color>
-    <color name="colorPrimaryVariant">#3949AB</color>
+    <!-- Surface background (cards, dialogs, etc) -->
+    <color name="colorSurface">#1E1E1E</color> <!-- dark surface -->
+    <color name="onSurface">#E6FFFFFF</color> <!-- text on surface -->
+    <color name="colorSurfaceVariant">#2A2A2A</color> <!-- slightly lighter surface -->
+    <color name="onSurfaceVariant">#B3FFFFFF</color> <!-- subtle text on surface variant -->
+
+    <!-- Primary brand color -->
+    <color name="colorPrimary">#8F9BFF</color> <!-- Soft Indigo -->
+    <color name="colorPrimaryVariant">#6573FF</color> <!-- Slightly darker Indigo -->
     <color name="onPrimary">#FFFFFF</color>
 
-    <color name="colorSecondary">#00ACC1</color>
-    <color name="colorSecondaryVariant">#00838F</color>
+    <!-- Secondary brand color -->
+    <color name="colorSecondary">#4DD0E1</color> <!-- Light Cyan-Blue -->
+    <color name="colorSecondaryVariant">#26C6DA</color> <!-- Deeper Cyan-Blue -->
     <color name="onSecondary">#000000</color>
 
-    <color name="colorError">#CF6679</color>
+    <!-- Tertiary brand color (optional extra highlight color) -->
+    <color name="colorTertiary">#F48FB1</color> <!-- Light pink accent for highlights -->
+    <color name="onTertiary">#000000</color> <!-- readable text on pink -->
+
+    <!-- Error color -->
+    <color name="colorError">#FF6B6B</color> <!-- Modern soft red -->
     <color name="onError">#FFFFFF</color>
 
+    <!-- Standard black and white -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="colorSuccess">#4CAF50</color> <!-- same green for visual consistency -->
-    <color name="onSuccess">#FFFFFF</color>     <!-- still white text for contrast -->
-    <color name="colorDanger">#EF5350</color> <!-- Material Red 400 (more vibrant on dark) -->
+    <!-- Success (green) color -->
+    <color name="colorSuccess">#66BB6A</color> <!-- Modern Green -->
+    <color name="onSuccess">#FFFFFF</color>
 
-    <color name="colorSurfaceGlassy">#CC1E1E1E</color>
-    <color name="gray">#222222</color> <!-- semi-transparent dark gray -->
+    <!-- Danger (important red) color -->
+    <color name="colorDanger">#EF5350</color> <!-- Material Red 400 -->
+    <color name="onDanger">#FFFFFF</color> <!-- White text on red background -->
 
-    <color name="strokeSnackbar">#33FFFFFF</color> <!-- semi-transparent white stroke -->
-    <color name="strokeSnackbarSuccess">#99FFFFFF</color> <!-- light white -->
-    <color name="strokeSnackbarError">#99FFFFFF</color> <!-- light white -->
-    <color name="strokeSnackbarInfo">#99FFFFFF</color> <!-- light white -->
-    <color name="strokeSnackbarDefault">#99FFFFFF</color> <!-- fallback -->
+    <!-- Semi-transparent surface (e.g., glassy effects) -->
+    <color name="colorSurfaceGlassy">#CC1E1E1E</color> <!-- semi-transparent surface -->
 
-    <color name="progressSoftGreen">#66BB6A</color>
-    <color name="progressCyanBlue">#26C6DA</color>
-    <color name="progressAmber">#FFB300</color>
+    <!-- Neutral dark gray tone -->
+    <color name="gray">#222222</color>
+
+    <!-- Outline color (subtle borders between surfaces) -->
+    <color name="colorOutline">#4DFFFFFF</color> <!-- soft white outline (~30% opacity) -->
+
+    <!-- Inverse surfaces (e.g., dark text on light surfaces for special sheets) -->
+    <color name="inverseSurface">#E6FFFFFF</color> <!-- light surface over dark background -->
+    <color name="inverseOnSurface">#121212</color> <!-- dark text on light surface -->
+
+    <!-- Snackbar border strokes -->
+    <color name="strokeSnackbar">#33FFFFFF</color> <!-- subtle white stroke -->
+    <color name="strokeSnackbarSuccess">#80FFFFFF</color>
+    <color name="strokeSnackbarError">#80FFFFFF</color>
+    <color name="strokeSnackbarInfo">#80FFFFFF</color>
+    <color name="strokeSnackbarDefault">#80FFFFFF</color>
+
+    <!-- Progress indicator colors -->
+    <color name="progressSoftGreen">#81C784</color> <!-- Soft Green Progress -->
+    <color name="progressCyanBlue">#4DD0E1</color> <!-- Cyan-Blue Progress -->
+    <color name="progressAmber">#FFB74D</color> <!-- Warm Amber Progress -->
+
+    <color name="colorWidgetBackground">#AA212121
+    </color> <!-- Semi-transparent dark grey for dark theme -->
 
 </resources>

@@ -31,6 +31,7 @@ class SelectDeadlineActivity : AppCompatActivity() {
 
         if (items.isEmpty()) {
             titleText.text = "No deadlines saved."
+            titleText.setTextColor(getColor(R.color.onSurfaceVariant))
             return
         }
 

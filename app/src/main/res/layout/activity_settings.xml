@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@color/colorBackground">
 
     <!-- Title -->
     <TextView
@@ -11,6 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Settings"
+        android:textColor="?attr/colorOnBackground"
         android:textSize="28sp"
         android:textStyle="bold"
         android:layout_marginBottom="24dp"
@@ -103,18 +105,23 @@
     <!-- Reset App Button -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnReset"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:text="Reset App"
+        android:textSize="20sp"
         app:backgroundTint="@color/colorDanger"
         android:textAllCaps="false"
         app:cornerRadius="16dp"
         app:icon="@drawable/clear_all"
-        app:iconPadding="8dp"
+        app:iconSize="40dp"
+        app:iconPadding="12dp"
         app:iconGravity="textStart"
         app:layout_constraintTop_toBottomOf="@id/cardHaptic"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

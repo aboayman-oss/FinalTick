@@ -31,7 +31,7 @@ private fun showCustomSnackbar(
     val snackbarView = snackbar.view
 
     // Make the Snackbar background fully transparent
-    snackbarView.setBackgroundColor(android.graphics.Color.TRANSPARENT)
+    snackbarView.setBackgroundResource(android.R.color.transparent)
     snackbarView.alpha = 1f
     snackbarView.elevation = 8f
 

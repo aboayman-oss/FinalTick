@@ -175,10 +175,9 @@ class CountdownActivity : AppCompatActivity() {
                 progressPercentText.text = "$progress%"
 
                 val colorRes = when (progress) {
-                    in 0..19 -> R.color.progressSoftGreen    // 🌱 Calm
-                    in 20..39 -> R.color.progressCyanBlue     // 🌊 Refresh
-                    in 40..59 -> R.color.colorPrimary         // 🔵 Focus
-                    in 60..79 -> R.color.progressAmber        // ⚡ Warning
+                    in 0..24 -> R.color.progressSoftGreen    // 🌱 Very early
+                    in 25..49 -> R.color.progressCyanBlue    // 🌊 Quarter to mid
+                    in 50..74 -> R.color.progressAmber       // ⚡ Getting late
                     else -> R.color.colorDanger               // 🔥 Critical
                 }
                 progressBar.setIndicatorColor(

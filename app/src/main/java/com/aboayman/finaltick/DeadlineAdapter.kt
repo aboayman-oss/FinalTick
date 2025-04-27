@@ -43,6 +43,18 @@ class DeadlineAdapter(
         holder.progressBar.setProgressCompat(progress.toInt(), true)
         holder.progressText.text = "${progress.toInt()}%"
 
+        // 🛠 New: Dynamic color based on progress %
+        val context = holder.itemView.context
+        val colorRes = when (progress) {
+            in 0f..24f -> R.color.progressSoftGreen   // 🌱
+            in 25f..49f -> R.color.progressCyanBlue   // 🌊
+            in 50f..74f -> R.color.progressAmber      // ⚡
+            else -> R.color.colorDanger               // 🔥
+        }
+        val color = context.getColor(colorRes)
+        holder.progressBar.setIndicatorColor(color)
+        holder.progressText.setTextColor(color)
+
         holder.itemView.setOnClickListener { onClick(item) }
     }
 

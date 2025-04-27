@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:attr/colorBackground">
+    android:background="@color/colorBackground">
 
     <!-- ✅ 1. Header -->
     <include
@@ -56,6 +56,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Selected: 8 hours"
+                android:textSize="16sp"
                 android:textColor="?attr/colorOnBackground"
                 android:layout_marginBottom="16dp"/>
 
@@ -84,7 +85,7 @@
                     android:paddingTop="15dp"
                     android:paddingBottom="15dp"
                     android:gravity="center_vertical"
-                    android:textColor="@color/onSurface"
+                    android:textColor="?attr/colorOnSurface"
                     android:textColorHint="@color/onBackgroundMedium"
                     android:inputType="numberDecimal" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -115,6 +116,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Selected: 1x"
+                android:textSize="16sp"
                 android:textColor="?attr/colorOnBackground"
                 android:layout_marginBottom="16dp"/>
 

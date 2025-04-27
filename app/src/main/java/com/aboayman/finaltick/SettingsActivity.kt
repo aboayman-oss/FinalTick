@@ -24,12 +24,13 @@ class SettingsActivity : AppCompatActivity() {
         // Theme Spinner Setup
         val themeOptions = arrayOf("Follow System", "Light Mode", "Dark Mode")
         val adapter =
-            android.widget.ArrayAdapter(this, android.R.layout.simple_spinner_item, themeOptions)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            android.widget.ArrayAdapter(this, R.layout.spinner_item, themeOptions)
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
         binding.spinnerTheme.adapter = adapter
 
-        binding.spinnerTheme.setOnTouchListener { _, _ ->
+        binding.spinnerTheme.setOnTouchListener { v, _ ->
             userInteracted = true
+            v.performClick()
             false
         }
 

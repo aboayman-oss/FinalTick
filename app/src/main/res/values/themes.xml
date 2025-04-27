@@ -1,26 +1,37 @@
 <resources>
     <style name="Theme.FinalTick" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- System UI -->
-        <item name="android:windowBackground">@color/colorBackground</item>
 
-        <!-- Primary color scheme -->
+        <!-- System background -->
+        <item name="android:windowBackground">@color/colorBackground</item>
+        <item name="android:colorBackground">@color/colorBackground</item>
+
+        <!-- Primary brand colors -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
         <item name="colorOnPrimary">@color/onPrimary</item>
 
-        <!-- Secondary color scheme -->
+        <!-- Secondary brand colors -->
         <item name="colorSecondary">@color/colorSecondary</item>
         <item name="colorSecondaryVariant">@color/colorSecondaryVariant</item>
         <item name="colorOnSecondary">@color/onSecondary</item>
 
-        <!-- Backgrounds and surfaces -->
-        <item name="android:colorBackground">@color/colorBackground</item>
+        <!-- Surface and content colors -->
         <item name="colorSurface">@color/colorSurface</item>
         <item name="colorOnSurface">@color/onSurface</item>
+        <item name="colorSurfaceVariant">@color/colorSurfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/onSurfaceVariant</item>
 
-        <!-- Error -->
+        <!-- Error colors -->
         <item name="colorError">@color/colorError</item>
         <item name="colorOnError">@color/onError</item>
+
+        <!-- Missing but needed -->
+        <item name="colorOnBackground">@color/onBackground</item>
+        <item name="colorOutline">@color/colorOutline</item>
+
+        <!-- Material 3 additions -->
+        <item name="colorTertiary">@color/colorTertiary</item>
+        <item name="colorOnTertiary">@color/onTertiary</item>
 
     </style>
 </resources>

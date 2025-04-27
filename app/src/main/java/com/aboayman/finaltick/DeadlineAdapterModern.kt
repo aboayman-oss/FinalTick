@@ -40,6 +40,18 @@ class DeadlineAdapterModern(
 
                 binding.deadlineProgress.progress = progress
                 binding.deadlineProgressText.text = "$progress%"
+
+                // 🛠 Dynamic color based on progress %
+                val context = binding.root.context
+                val colorRes = when (progress) {
+                    in 0..24 -> R.color.progressSoftGreen
+                    in 25..49 -> R.color.progressCyanBlue
+                    in 50..74 -> R.color.progressAmber
+                    else -> R.color.colorDanger
+                }
+                val color = context.getColor(colorRes)
+                binding.deadlineProgress.setIndicatorColor(color)
+                binding.deadlineProgressText.setTextColor(color) // Optional if you want text dynamic too
             }
 
             // Run immediately then every 5 seconds

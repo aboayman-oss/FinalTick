@@ -158,7 +158,10 @@ class CalculateActivity : AppCompatActivity() {
                 )
                 cardSleepGain.setCardBackgroundColor(bgColor)
 
-                val fgColor = ContextCompat.getColor(this, R.color.onSuccess)
+                val fgColor = ContextCompat.getColor(
+                    this,
+                    if (gain) R.color.onSuccess else R.color.onDanger
+                )
                 labelSleepGain.setTextColor(fgColor)
                 valueSleepGain.setTextColor(fgColor)
             }
