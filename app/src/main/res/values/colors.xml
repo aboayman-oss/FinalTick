@@ -38,4 +38,8 @@
     <color name="strokeSnackbarInfo">#99FFFFFF</color> <!-- light white -->
     <color name="strokeSnackbarDefault">#99FFFFFF</color> <!-- fallback -->
 
+    <color name="progressSoftGreen">#66BB6A</color>
+    <color name="progressCyanBlue">#26C6DA</color>
+    <color name="progressAmber">#FFB300</color>
+
 </resources>

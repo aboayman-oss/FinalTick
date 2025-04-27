@@ -3,9 +3,9 @@ package com.aboayman.finaltick
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.progressindicator.CircularProgressIndicator
 
 class DeadlineAdapter(
     private val deadlines: List<DeadlineItem>,
@@ -15,7 +15,8 @@ class DeadlineAdapter(
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView = view.findViewById(R.id.deadlineTitle)
         val subtitle: TextView = view.findViewById(R.id.deadlineSubtitle)
-        val icon: ImageView = view.findViewById(R.id.deadlineIcon)
+        val progressBar: CircularProgressIndicator = view.findViewById(R.id.deadlineProgress)
+        val progressText: TextView = view.findViewById(R.id.deadlineProgressText)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -29,7 +30,18 @@ class DeadlineAdapter(
         holder.title.text = item.title
         holder.subtitle.text =
             android.text.format.DateFormat.format("EEE, MMM d • h:mm a", item.timestamp)
-        holder.icon.setImageResource(R.drawable.radio_button_checked) // replace with your calendar icon
+
+        // 🔥 Progress Calculation
+        val totalDuration = item.timestamp - item.createdAt
+        val elapsed = System.currentTimeMillis() - item.createdAt
+        val progress = if (totalDuration > 0) {
+            (elapsed.toFloat() / totalDuration * 100).coerceIn(0f, 100f)
+        } else {
+            100f
+        }
+
+        holder.progressBar.setProgressCompat(progress.toInt(), true)
+        holder.progressText.text = "${progress.toInt()}%"
 
         holder.itemView.setOnClickListener { onClick(item) }
     }

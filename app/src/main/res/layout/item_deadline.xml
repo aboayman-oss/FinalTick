@@ -15,15 +15,37 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:gravity="center_vertical">
 
-        <ImageView
-            android:id="@+id/deadlineIcon"
+        <!-- Progress Circle replacing Icon -->
+        <FrameLayout
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginEnd="16dp"
-            android:src="@drawable/radio_button_checked"
-            app:tint="@color/onSurface" />
+            android:gravity="center">
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/deadlineProgress"
+                style="@style/Widget.Material3.CircularProgressIndicator"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:indicatorColor="?attr/colorPrimary"
+                app:indicatorInset="0dp"
+                app:trackColor="?attr/colorSurfaceVariant"
+                app:trackThickness="5dp" />
+
+            <TextView
+                android:id="@+id/deadlineProgressText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:text="100%"
+                android:textAlignment="center"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="10sp" />
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="0dp"
@@ -49,5 +71,6 @@
                 android:textSize="14sp"
                 android:fontFamily="sans-serif" />
         </LinearLayout>
+
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

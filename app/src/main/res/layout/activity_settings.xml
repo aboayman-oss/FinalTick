@@ -33,9 +33,10 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:padding="16dp">
+            android:padding="16dp"
+            android:layout_marginBottom="0dp">
 
             <TextView
                 android:id="@+id/labelTheme"
@@ -43,16 +44,21 @@
                 android:layout_height="wrap_content"
                 android:text="Select Theme"
                 android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="8dp" />
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
 
             <Spinner
                 android:id="@+id/spinnerTheme"
-                android:layout_width="match_parent"
+                android:layout_width="160dp"
                 android:layout_height="wrap_content"
-                android:spinnerMode="dropdown"
-                android:backgroundTint="?attr/colorSurfaceVariant"
-                android:padding="8dp" />
+                android:backgroundTint="@color/onBackgroundMedium"
+                android:minHeight="48dp"
+                android:padding="8dp"
+                android:spinnerMode="dropdown" />
 
         </LinearLayout>
 
@@ -101,6 +107,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:text="Reset App"
+        app:backgroundTint="@color/colorDanger"
         android:textAllCaps="false"
         app:cornerRadius="16dp"
         app:icon="@drawable/clear_all"

@@ -266,6 +266,7 @@ class MainActivity : AppCompatActivity() {
 
                     prefs.edit()
                         .putLong("deadline_timestamp", finalTimestamp)
+                        .putLong("countdown_createdAt", createdAt)
                         .putString("countdown_title", title)
                         .apply()
 
@@ -371,12 +372,19 @@ class MainActivity : AppCompatActivity() {
                 val prefs = getSharedPreferences("finaltick_prefs", MODE_PRIVATE)
                 val current = prefs.getStringSet("deadlines", mutableSetOf())!!.toMutableSet()
 
-                val oldEntry = current.find { it.startsWith("${item.timestamp}|") }
+                val oldEntry = current.find { entry ->
+                    val parts = entry.split("|", limit = 3)
+                    val createdAt = parts.getOrNull(0)?.toLongOrNull()
+                    val timestamp = parts.getOrNull(1)?.toLongOrNull()
+                    createdAt == item.createdAt && timestamp == item.timestamp
+                }
+
                 if (oldEntry != null) {
                     current.remove(oldEntry)
                 }
 
-                current.add("$newTimestamp|$newTitle")
+                current.add("${item.createdAt}|$newTimestamp|$newTitle") // 🔥 Add back createdAt!
+
                 prefs.edit().putStringSet("deadlines", current).apply()
 
                 showSuccessSnackbar(

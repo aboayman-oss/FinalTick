@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.materialswitch.MaterialSwitch
+import com.google.android.material.progressindicator.LinearProgressIndicator
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -33,7 +34,7 @@ class CountdownActivity : AppCompatActivity() {
             return
         }
 
-        setupHeader() // ✨ Set the title and date/time
+        setupHeader()
 
         val countdownText = findViewById<TextView>(R.id.countdownText)
         val topTimer = findViewById<TextView>(R.id.tvCountdownTimer)
@@ -41,6 +42,8 @@ class CountdownActivity : AppCompatActivity() {
         val cbHours = findViewById<MaterialSwitch>(R.id.cbHours)
         val cbMinutes = findViewById<MaterialSwitch>(R.id.cbMinutes)
         val cbSeconds = findViewById<MaterialSwitch>(R.id.cbSeconds)
+        val progressBar = findViewById<LinearProgressIndicator>(R.id.countdownProgressBar)
+        val progressPercentText = findViewById<TextView>(R.id.tvCountdownProgressPercent)
 
         fun saveFormatPrefs() {
             prefs.edit()
@@ -51,12 +54,9 @@ class CountdownActivity : AppCompatActivity() {
                 .apply()
         }
 
-
-        val MaterialSwitches = listOf(cbDays, cbHours, cbMinutes, cbSeconds)
-        MaterialSwitches.forEach { box ->
+        listOf(cbDays, cbHours, cbMinutes, cbSeconds).forEach { box ->
             box.setOnCheckedChangeListener { _, _ ->
                 saveFormatPrefs()
-
                 if (prefs.getBoolean("haptic_feedback", true)) {
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
                         val vibrator =
@@ -75,8 +75,16 @@ class CountdownActivity : AppCompatActivity() {
 
                 if (timeLeft <= 0) {
                     topTimer.text = "00 : 00 : 00 : 00"
-                    countdownText.text = "⏳ Time's up!"
+                    countdownText.text = "\u23F3 Time's up!"
                     countdownText.setTextColor(
+                        ContextCompat.getColor(
+                            this@CountdownActivity,
+                            R.color.colorDanger
+                        )
+                    )
+                    progressBar.progress = 100
+                    progressPercentText.text = "100%"
+                    progressBar.setIndicatorColor(
                         ContextCompat.getColor(
                             this@CountdownActivity,
                             R.color.colorDanger
@@ -99,24 +107,18 @@ class CountdownActivity : AppCompatActivity() {
                 topTimer.text = String.format("%02d : %02d : %02d : %02d", rawDays, rawHours, rawMinutes, rawSeconds)
 
                 if (cbDays.isChecked) {
-                    days = remaining / (24 * 3600)
-                    remaining %= (24 * 3600)
+                    days = remaining / (24 * 3600); remaining %= (24 * 3600)
                 }
-
                 if (cbHours.isChecked) {
-                    hours = remaining / 3600
-                    remaining %= 3600
+                    hours = remaining / 3600; remaining %= 3600
                 } else {
                     remaining += hours * 3600
                 }
-
                 if (cbMinutes.isChecked) {
-                    minutes = remaining / 60
-                    remaining %= 60
+                    minutes = remaining / 60; remaining %= 60
                 } else {
                     remaining += minutes * 60
                 }
-
                 if (cbSeconds.isChecked) {
                     seconds = remaining
                 }
@@ -127,8 +129,7 @@ class CountdownActivity : AppCompatActivity() {
                 if (!cbHours.isChecked && (cbMinutes.isChecked || cbSeconds.isChecked)) {
                     val bonus = hours * 3600
                     if (cbMinutes.isChecked) {
-                        minutes += bonus / 60
-                        seconds += bonus % 60
+                        minutes += bonus / 60; seconds += bonus % 60
                     } else {
                         seconds += bonus
                     }
@@ -139,8 +140,7 @@ class CountdownActivity : AppCompatActivity() {
                         hours += bonus / 3600
                         val leftover = bonus % 3600
                         if (cbMinutes.isChecked) {
-                            minutes += leftover / 60
-                            seconds += leftover % 60
+                            minutes += leftover / 60; seconds += leftover % 60
                         } else {
                             seconds += leftover
                         }
@@ -160,6 +160,34 @@ class CountdownActivity : AppCompatActivity() {
 
                 countdownText.text = parts.joinToString(" ")
 
+                val createdAt = prefs.getLong("countdown_createdAt", System.currentTimeMillis())
+                val totalDuration = deadline - createdAt
+                val elapsed = System.currentTimeMillis() - createdAt
+
+                val progress = when {
+                    totalDuration <= 0L -> 100
+                    elapsed <= 0L -> 0
+                    elapsed >= totalDuration -> 100
+                    else -> ((elapsed * 100) / totalDuration).toInt()
+                }
+
+                progressBar.progress = progress
+                progressPercentText.text = "$progress%"
+
+                val colorRes = when (progress) {
+                    in 0..19 -> R.color.progressSoftGreen    // 🌱 Calm
+                    in 20..39 -> R.color.progressCyanBlue     // 🌊 Refresh
+                    in 40..59 -> R.color.colorPrimary         // 🔵 Focus
+                    in 60..79 -> R.color.progressAmber        // ⚡ Warning
+                    else -> R.color.colorDanger               // 🔥 Critical
+                }
+                progressBar.setIndicatorColor(
+                    ContextCompat.getColor(
+                        this@CountdownActivity,
+                        colorRes
+                    )
+                )
+
                 delay(1000)
             }
         }
@@ -170,39 +198,39 @@ class CountdownActivity : AppCompatActivity() {
         bottomNav.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.nav_home -> {
-                    if (this::class != MainActivity::class) {
-                        startActivity(Intent(this, MainActivity::class.java))
-                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-                        finish()
-                    }
-                    true
+                    startActivity(
+                        Intent(
+                            this,
+                            MainActivity::class.java
+                        )
+                    ); overridePendingTransition(
+                        R.anim.slide_in_right,
+                        R.anim.slide_out_left
+                    ); finish(); true
                 }
-                R.id.nav_countdown -> {
-                    if (this !is CountdownActivity) {
-                        startActivity(Intent(this, CountdownActivity::class.java))
-                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-                        finish()
-                    }
-                    true
-                }
+
+                R.id.nav_countdown -> true
                 R.id.nav_calculate -> {
-                    if (this::class != CalculateActivity::class) {
-                        startActivity(Intent(this, CalculateActivity::class.java))
-                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-                        finish()
-                    }
-                    true
+                    startActivity(
+                        Intent(
+                            this,
+                            CalculateActivity::class.java
+                        )
+                    ); overridePendingTransition(
+                        R.anim.slide_in_right,
+                        R.anim.slide_out_left
+                    ); finish(); true
                 }
                 else -> false
             }
         }
+
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 finish()
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
             }
         })
-
     }
 
     private fun setupHeader() {

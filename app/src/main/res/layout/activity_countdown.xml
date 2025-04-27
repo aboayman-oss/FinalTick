@@ -43,66 +43,133 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="00 : 00 : 00 : 00"
+                android:layout_marginTop="24dp"
                 android:textColor="@color/colorSuccess"
                 android:textSize="36sp"
                 android:fontFamily="sans-serif-medium"
                 android:layout_marginBottom="24dp" />
 
             <!-- Modern Switches -->
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/cbDays"
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Show Days"
-                android:checked="true"
-                android:textColor="@color/onBackground"
-                android:textSize="14sp"
-                android:fontFamily="sans-serif"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:strokeColor="?attr/colorSurfaceVariant"
+                app:strokeWidth="1dp"
+                app:cardBackgroundColor="?attr/colorSurface">
 
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/cbHours"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Show Hours"
-                android:checked="true"
-                android:textColor="@color/onBackground"
-                android:textSize="14sp"
-                android:fontFamily="sans-serif"
-                android:layout_marginTop="8dp"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="center_horizontal">
 
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/cbMinutes"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Show Minutes"
-                android:checked="true"
-                android:textColor="@color/onBackground"
-                android:textSize="14sp"
-                android:fontFamily="sans-serif"
-                android:layout_marginTop="8dp"/>
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/cbDays"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Show Days"
+                        android:checked="true"
+                        android:textColor="@color/onBackground"
+                        android:textSize="14sp"
+                        android:fontFamily="sans-serif"
+                        android:layout_marginTop="8dp" />
 
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/cbSeconds"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Show Seconds"
-                android:checked="true"
-                android:textColor="@color/onBackground"
-                android:textSize="14sp"
-                android:fontFamily="sans-serif"
-                android:layout_marginTop="8dp"/>
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/cbHours"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Show Hours"
+                        android:checked="true"
+                        android:textColor="@color/onBackground"
+                        android:textSize="14sp"
+                        android:fontFamily="sans-serif"
+                        android:layout_marginTop="8dp" />
 
-            <!-- Breakdown Text -->
-            <TextView
-                android:id="@+id/countdownText"
-                android:layout_width="wrap_content"
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/cbMinutes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Show Minutes"
+                        android:checked="true"
+                        android:textColor="@color/onBackground"
+                        android:textSize="14sp"
+                        android:fontFamily="sans-serif"
+                        android:layout_marginTop="8dp" />
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/cbSeconds"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Show Seconds"
+                        android:checked="true"
+                        android:textColor="@color/onBackground"
+                        android:textSize="14sp"
+                        android:fontFamily="sans-serif"
+                        android:layout_marginTop="8dp" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <!-- Modern Progress Bar with Text -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Countdown will appear here"
-                android:textColor="@color/onBackground"
-                android:textSize="24sp"
-                android:fontFamily="sans-serif-medium"
-                android:layout_marginTop="24dp"/>
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:strokeColor="?attr/colorSurfaceVariant"
+                app:strokeWidth="1dp"
+                app:cardBackgroundColor="?attr/colorSurface">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    android:padding="16dp">
+
+                    <!-- Breakdown Text -->
+                    <TextView
+                        android:id="@+id/countdownText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:text="Countdown will appear here"
+                        android:textColor="@color/onBackground"
+                        android:textSize="24sp"
+                        android:fontFamily="sans-serif-medium" />
+
+                    <com.google.android.material.progressindicator.LinearProgressIndicator
+                        android:id="@+id/countdownProgressBar"
+                        style="@style/Widget.Material3.LinearProgressIndicator"
+                        android:layout_width="match_parent"
+                        android:layout_height="12dp"
+                        app:trackColor="?attr/colorSurfaceVariant"
+                        app:trackThickness="25dp"
+                        app:trackCornerRadius="12dp"
+                        android:layout_marginBottom="16dp" />
+
+                    <TextView
+                        android:id="@+id/tvCountdownProgressPercent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="70%"
+                        android:textColor="@color/onBackground"
+                        android:textSize="24sp"
+                        android:fontFamily="sans-serif-medium" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
         </LinearLayout>
     </ScrollView>
 
