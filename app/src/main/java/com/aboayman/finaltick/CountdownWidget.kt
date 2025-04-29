@@ -14,6 +14,8 @@ import android.view.View
 import android.widget.RemoteViews
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
+import com.aboayman.finaltick.widget.WidgetEditSettingsActivity
+import com.aboayman.finaltick.widget.WidgetPreferencesManager
 
 class CountdownWidget : AppWidgetProvider() {
 
@@ -38,7 +40,6 @@ class CountdownWidget : AppWidgetProvider() {
             for (widgetId in widgetIds) {
                 val views = RemoteViews(context.packageName, R.layout.widget_countdown)
 
-                // List of frame drawables
                 val frameDrawables = listOf(
                     R.drawable.refresh_cycle_10,
                     R.drawable.refresh_cycle_20,
@@ -77,48 +78,29 @@ class CountdownWidget : AppWidgetProvider() {
                     R.drawable.refresh_cycle_350
                 )
 
-
-                // ⏳ Animate frames one by one
                 Thread {
                     for (drawableRes in frameDrawables) {
                         views.setImageViewResource(R.id.widgetRefreshBtn, drawableRes)
                         widgetManager.updateAppWidget(widgetId, views)
-                        Thread.sleep(20) // ~40 milliseconds per frame
+                        Thread.sleep(20)
                     }
 
-                    // After spin finished, set normal icon
                     views.setImageViewResource(
                         R.id.widgetRefreshBtn,
                         R.drawable.refresh_cycle_normal
                     )
                     widgetManager.updateAppWidget(widgetId, views)
-
                 }.start()
 
-                // Also update the main widget content (timer) after refresh
                 updateWidget(context, widgetManager, widgetId)
             }
         }
     }
 
-
     companion object {
         fun updateWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
-            val prefs = context.getSharedPreferences("finaltick_prefs", Context.MODE_PRIVATE)
-            val deadline = prefs.getLong("deadline_timestamp", -1L)
-            val all = prefs.getStringSet("deadlines", null)
-
-            val cbDays = prefs.getBoolean("widget_show_days", true)
-            val cbHours = prefs.getBoolean("widget_show_hours", true)
-            val cbMinutes = prefs.getBoolean("widget_show_minutes", true)
-            val cbSeconds = prefs.getBoolean("widget_show_seconds", true)
-
-            val current = all?.firstOrNull {
-                val parts = it.split("|", limit = 3)
-                val ts = parts.getOrNull(1)?.toLongOrNull()
-                ts == deadline
-            }
-            val title = current?.split("|", limit = 3)?.getOrNull(2) ?: "(No title)"
+            val deadline = WidgetPreferencesManager.getDeadline(context, appWidgetId)
+            val title = WidgetPreferencesManager.getTitle(context, appWidgetId)
 
             val views = RemoteViews(context.packageName, R.layout.widget_countdown)
             views.setTextViewText(R.id.widgetTitle, title)
@@ -127,55 +109,69 @@ class CountdownWidget : AppWidgetProvider() {
             if (deadline > now) {
                 var remaining = (deadline - now) / 1000
 
+                val showDays = WidgetPreferencesManager.getToggle(context, appWidgetId, "show_days")
+                val showHours =
+                    WidgetPreferencesManager.getToggle(context, appWidgetId, "show_hours")
+                val showMinutes =
+                    WidgetPreferencesManager.getToggle(context, appWidgetId, "show_minutes")
+                val showSeconds =
+                    WidgetPreferencesManager.getToggle(context, appWidgetId, "show_seconds")
+
                 var days = 0L
                 var hours = 0L
                 var minutes = 0L
                 var seconds = 0L
 
-                if (cbDays) {
-                    days = remaining / 86400
-                    remaining %= 86400
+                val rawDays = remaining / (24 * 3600)
+                val rawHours = (remaining % (24 * 3600)) / 3600
+                val rawMinutes = (remaining % 3600) / 60
+                val rawSeconds = remaining % 60
+
+                if (showDays) {
+                    days = rawDays
+                    remaining -= days * 86400
                 }
-                if (cbHours) {
-                    hours = remaining / 3600
-                    remaining %= 3600
+                if (showHours) {
+                    hours = (remaining / 3600)
+                    remaining -= hours * 3600
                 } else {
                     remaining += hours * 3600
                 }
-                if (cbMinutes) {
-                    minutes = remaining / 60
-                    remaining %= 60
+                if (showMinutes) {
+                    minutes = (remaining / 60)
+                    remaining -= minutes * 60
                 } else {
                     remaining += minutes * 60
                 }
-                if (cbSeconds) {
+                if (showSeconds) {
                     seconds = remaining
                 }
 
-                if (!cbMinutes && cbSeconds) {
+                // Folding adjustments
+                if (!showMinutes && showSeconds) {
                     seconds += minutes * 60
                 }
-                if (!cbHours && (cbMinutes || cbSeconds)) {
+                if (!showHours && (showMinutes || showSeconds)) {
                     val bonus = hours * 3600
-                    if (cbMinutes) {
+                    if (showMinutes) {
                         minutes += bonus / 60
                         seconds += bonus % 60
                     } else {
                         seconds += bonus
                     }
                 }
-                if (!cbDays && (cbHours || cbMinutes || cbSeconds)) {
+                if (!showDays && (showHours || showMinutes || showSeconds)) {
                     val bonus = days * 86400
-                    if (cbHours) {
+                    if (showHours) {
                         hours += bonus / 3600
                         val leftover = bonus % 3600
-                        if (cbMinutes) {
+                        if (showMinutes) {
                             minutes += leftover / 60
-                            seconds += leftover
+                            seconds += leftover % 60
                         } else {
                             seconds += leftover
                         }
-                    } else if (cbMinutes) {
+                    } else if (showMinutes) {
                         minutes += bonus / 60
                         seconds += bonus % 60
                     } else {
@@ -184,23 +180,34 @@ class CountdownWidget : AppWidgetProvider() {
                 }
 
                 val parts = mutableListOf<String>()
-                if (cbDays) parts.add(String.format("%02d", days))
-                if (cbHours) parts.add(String.format("%02d", hours))
-                if (cbMinutes) parts.add(String.format("%02d", minutes))
-                if (cbSeconds) parts.add(String.format("%02d", seconds))
+
+                if (showDays) {
+                    parts.add(days.toString())
+                    parts.add(hours.toString().padStart(2, '0'))
+                    parts.add(minutes.toString().padStart(2, '0'))
+                    parts.add(seconds.toString().padStart(2, '0'))
+                } else if (showHours) {
+                    parts.add(hours.toString())
+                    parts.add(minutes.toString().padStart(2, '0'))
+                    parts.add(seconds.toString().padStart(2, '0'))
+                } else if (showMinutes) {
+                    parts.add(minutes.toString())
+                    parts.add(seconds.toString().padStart(2, '0'))
+                } else if (showSeconds) {
+                    parts.add(seconds.toString())
+                }
 
                 views.setTextViewText(R.id.widgetTimer, parts.joinToString(":"))
-
-                // 🔥 simple fake fade effect (re-draw)
-                views.setViewVisibility(R.id.widgetTimer, View.INVISIBLE)
                 views.setViewVisibility(R.id.widgetTimer, View.VISIBLE)
+
+                // ✅ Always reset color to normal when countdown is active
+                views.setTextColor(R.id.widgetTimer, context.getColor(R.color.onSurface))
 
             } else {
                 views.setTextViewText(R.id.widgetTimer, "00:00:00:00")
                 views.setTextColor(R.id.widgetTimer, context.getColor(R.color.colorDanger))
             }
 
-            // 🔁 Refresh button logic
             val refreshIntent = Intent(context, CountdownWidget::class.java).apply {
                 action = "com.aboayman.finaltick.REFRESH_WIDGET"
             }
@@ -210,14 +217,14 @@ class CountdownWidget : AppWidgetProvider() {
             )
             views.setOnClickPendingIntent(R.id.widgetRefreshBtn, refreshPending)
 
-
-            // 📅 Tap = SelectDeadlineActivity
-            val pickIntent = Intent(context, SelectDeadlineActivity::class.java)
-            val pendingPick = PendingIntent.getActivity(
-                context, 0, pickIntent,
+            val editIntent = Intent(context, WidgetEditSettingsActivity::class.java).apply {
+                putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+            }
+            val editPendingIntent = PendingIntent.getActivity(
+                context, appWidgetId, editIntent,
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
-            views.setOnClickPendingIntent(R.id.widgetRoot, pendingPick)
+            views.setOnClickPendingIntent(R.id.widgetRoot, editPendingIntent)
 
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }
@@ -240,7 +247,6 @@ class CountdownWidget : AppWidgetProvider() {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             val delay = if (isScreenOn(context)) 1000L else 2000L
 
-            // 🔥 FIX: Check if exact alarms allowed
             if (alarmManager.canScheduleExactAlarms()) {
                 alarmManager.setExactAndAllowWhileIdle(
                     AlarmManager.RTC_WAKEUP,
@@ -248,7 +254,6 @@ class CountdownWidget : AppWidgetProvider() {
                     pendingIntent
                 )
             } else {
-                // 👇 Optional: You can fallback to non-exact alarm here if you want (less accurate)
                 alarmManager.set(
                     AlarmManager.RTC_WAKEUP,
                     System.currentTimeMillis() + delay,

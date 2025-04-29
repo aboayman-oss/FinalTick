@@ -18,12 +18,26 @@
         tools:targetApi="31">
 
         <activity android:name=".SettingsActivity" />
+
+        <activity
+            android:name=".widget.CustomizeWidgetActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".widget.WidgetEditSettingsActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".widget.WidgetSettingsActivity"
+            android:exported="true"></activity>
         <activity
             android:name=".CalculateActivity"
             android:exported="false" />
+
         <activity
             android:name=".CountdownActivity"
             android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -32,6 +46,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".SelectDeadlineActivity"
             android:exported="true"
@@ -47,7 +62,7 @@
 
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/countdown_widget" />
+                android:resource="@xml/widget_info" />
         </receiver>
 
         <!-- ✅ BroadcastReceiver for widget update engine -->
