@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvCustomizeTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Customize Widget Options"
+            android:textAppearance="?attr/textAppearanceHeadlineMedium"
+            android:layout_marginBottom="16dp" />
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/cbDays"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Show Days"
+            android:checked="true"
+            android:layout_marginTop="8dp" />
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/cbHours"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Show Hours"
+            android:checked="true"
+            android:layout_marginTop="8dp" />
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/cbMinutes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Show Minutes"
+            android:checked="true"
+            android:layout_marginTop="8dp" />
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/cbSeconds"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Show Seconds"
+            android:checked="true"
+            android:layout_marginTop="8dp" />
+
+        <Button
+            android:id="@+id/btnSaveCustomize"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save Customization"
+            android:layout_marginTop="24dp" />
+
+    </LinearLayout>
+
+</ScrollView>
