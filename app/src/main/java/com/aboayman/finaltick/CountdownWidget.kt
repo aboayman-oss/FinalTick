@@ -109,6 +109,20 @@ class CountdownWidget : AppWidgetProvider() {
             if (deadline > now) {
                 var remaining = (deadline - now) / 1000
 
+                // 1. Total duration
+                val originalCreatedAt = WidgetPreferencesManager.getCreatedAt(context, appWidgetId)
+                val totalDuration = (deadline - originalCreatedAt).coerceAtLeast(1L)
+                val elapsed = System.currentTimeMillis() - originalCreatedAt
+
+                val progress = if (totalDuration > 0) {
+                    ((elapsed.coerceAtLeast(0L) * 100) / totalDuration).coerceIn(0, 100)
+                } else {
+                    100
+                }
+
+                views.setProgressBar(R.id.widgetProgressBar, 100, progress.toInt(), false)
+                views.setTextViewText(R.id.widgetProgressPercent, "$progress%")
+
                 val showDays = WidgetPreferencesManager.getToggle(context, appWidgetId, "show_days")
                 val showHours =
                     WidgetPreferencesManager.getToggle(context, appWidgetId, "show_hours")
@@ -225,6 +239,9 @@ class CountdownWidget : AppWidgetProvider() {
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
             views.setOnClickPendingIntent(R.id.widgetRoot, editPendingIntent)
+
+            val dateText = android.text.format.DateFormat.format("EEE, MMM d · h:mm a", deadline)
+            views.setTextViewText(R.id.widgetDate, dateText)
 
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }

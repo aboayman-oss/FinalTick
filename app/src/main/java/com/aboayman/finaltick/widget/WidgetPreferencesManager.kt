@@ -76,5 +76,16 @@ object WidgetPreferencesManager {
     ): Boolean {
         return getPrefs(context).getBoolean("widget_${appWidgetId}_${key}", default)
     }
+    fun saveCreatedAt(context: Context, appWidgetId: Int, createdAt: Long) {
+        getPrefs(context).edit()
+            .putLong("widget_${appWidgetId}_createdAt", createdAt)
+            .apply()
+    }
 
+    fun getCreatedAt(context: Context, appWidgetId: Int): Long {
+        return getPrefs(context).getLong(
+            "widget_${appWidgetId}_createdAt",
+            System.currentTimeMillis()
+        )
+    }
 }

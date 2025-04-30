@@ -56,6 +56,7 @@ class WidgetEditSettingsActivity : AppCompatActivity() {
 
             WidgetPreferencesManager.saveDeadline(this, appWidgetId, deadlineMillis)
             WidgetPreferencesManager.saveTitle(this, appWidgetId, selected.title)
+            WidgetPreferencesManager.saveCreatedAt(this, appWidgetId, selected.createdAt)
 
             CountdownWidget.forceUpdateAll(this)
 

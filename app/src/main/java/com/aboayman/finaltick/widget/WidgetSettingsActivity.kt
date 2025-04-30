@@ -56,6 +56,7 @@ class WidgetSettingsActivity : AppCompatActivity() {
 
             WidgetPreferencesManager.saveDeadline(this, appWidgetId, deadlineMillis)
             WidgetPreferencesManager.saveTitle(this, appWidgetId, selected.title)
+            WidgetPreferencesManager.saveCreatedAt(this, appWidgetId, selected.createdAt)
 
             val resultIntent = Intent().apply {
                 putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
