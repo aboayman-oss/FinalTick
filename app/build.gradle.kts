@@ -50,6 +50,6 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation("com.google.android.material:material:1.11.0")
-
-
+    implementation("com.github.martin-stone:hsv-alpha-color-picker-android:3.1.0")
+    implementation("com.github.yukuku:ambilwarna:2.0.1")
 }

@@ -7,17 +7,16 @@
     android:background="@drawable/widget_background"
     android:padding="12dp">
 
-    <!-- Countdown block -->
+    <!-- Timer Block (Centered) -->
     <LinearLayout
         android:id="@+id/timerBlock"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_centerVertical="true"
-        android:layout_alignParentStart="true"
-        android:layout_toStartOf="@id/widgetRefreshBtn"
-        android:layout_marginEnd="8dp"
-        android:gravity="center_horizontal">
+        android:layout_centerInParent="true"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:gravity="center">
 
         <!-- Title -->
         <TextView
@@ -30,9 +29,10 @@
             android:fontFamily="sans-serif-medium"
             android:maxLines="1"
             android:ellipsize="end"
-            android:gravity="center" />
+            android:gravity="center"
+            android:visibility="gone" />
 
-        <!-- New: Deadline Date -->
+        <!-- Deadline Date -->
         <TextView
             android:id="@+id/widgetDate"
             android:layout_width="wrap_content"
@@ -42,7 +42,8 @@
             android:textSize="14sp"
             android:fontFamily="sans-serif"
             android:layout_marginTop="2dp"
-            android:gravity="center" />
+            android:gravity="center"
+            android:visibility="gone" />
 
         <!-- Timer -->
         <TextView
@@ -53,20 +54,22 @@
             android:textColor="@color/onSurface"
             android:textSize="28sp"
             android:fontFamily="sans-serif-medium"
-            android:layout_marginTop="4dp" />
+            android:layout_marginTop="4dp"
+            android:visibility="gone" />
 
         <!-- Progress Bar -->
         <ProgressBar
             android:id="@+id/widgetProgressBar"
-            android:layout_width="120dp"
+            android:layout_width="160dp"
             android:layout_height="6dp"
             android:layout_marginTop="8dp"
             style="?android:attr/progressBarStyleHorizontal"
-            android:progress="40"
+            android:progress="0"
             android:max="100"
-            android:progressDrawable="@drawable/widget_progress_bar" />
+            android:progressDrawable="@drawable/widget_progress_bar"
+            android:visibility="gone" />
 
-        <!-- Percentage Text -->
+        <!-- Percentage -->
         <TextView
             android:id="@+id/widgetProgressPercent"
             android:layout_width="wrap_content"
@@ -76,19 +79,20 @@
             android:textSize="12sp"
             android:textColor="@color/onSurface"
             android:fontFamily="sans-serif"
-            android:gravity="center" />
-
+            android:gravity="center"
+            android:visibility="gone" />
     </LinearLayout>
 
-    <!-- Refresh Icon -->
+    <!-- Refresh Icon (Right-Aligned) -->
     <ImageView
         android:id="@+id/widgetRefreshBtn"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="43dp"
+        android:layout_height="43dp"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:layout_marginEnd="4dp"
         android:src="@drawable/refresh_cycle_normal"
-        android:contentDescription="Refresh"
-        app:tint="@color/onSurface" />
+        android:contentDescription="refresh"
+        app:tint="@color/onSurface"
+        android:visibility="gone" />
 </RelativeLayout>

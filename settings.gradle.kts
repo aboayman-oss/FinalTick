@@ -17,6 +17,11 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
     }
+    repositories {
+        google()
+        mavenCentral()
+        maven(url = "https://jitpack.io") // 👈 Required for Martin Stone's picker
+    }
 }
 
 rootProject.name = "FinalTick"

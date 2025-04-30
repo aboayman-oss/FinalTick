@@ -9,13 +9,19 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.Bundle
 import android.os.PowerManager
+import android.util.TypedValue
 import android.view.View
 import android.widget.RemoteViews
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import com.aboayman.finaltick.widget.WidgetEditSettingsActivity
+import com.aboayman.finaltick.widget.WidgetLayoutManager.applyVisibilityOverrides
+import com.aboayman.finaltick.widget.WidgetLayoutManager.getGridSizeKey
+import com.aboayman.finaltick.widget.WidgetLayoutManager.getLayoutConfig
 import com.aboayman.finaltick.widget.WidgetPreferencesManager
+
 
 class CountdownWidget : AppWidgetProvider() {
 
@@ -96,14 +102,111 @@ class CountdownWidget : AppWidgetProvider() {
             }
         }
     }
-
     companion object {
         fun updateWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
             val deadline = WidgetPreferencesManager.getDeadline(context, appWidgetId)
+
+            if (deadline == -1L) return
+
             val title = WidgetPreferencesManager.getTitle(context, appWidgetId)
 
             val views = RemoteViews(context.packageName, R.layout.widget_countdown)
+            val options = AppWidgetManager.getInstance(context).getAppWidgetOptions(appWidgetId)
+            val sizeKey = getGridSizeKey(context, appWidgetId)
+
+
             views.setTextViewText(R.id.widgetTitle, title)
+
+// --- Load per-element colors ---
+            val titleColor = WidgetPreferencesManager.getColor(
+                context,
+                appWidgetId,
+                "color_title",
+                context.getColor(R.color.onSurface)
+            )
+            val dateColor = WidgetPreferencesManager.getColor(
+                context,
+                appWidgetId,
+                "color_date",
+                context.getColor(R.color.onSurface)
+            )
+            val iconColor = WidgetPreferencesManager.getColor(
+                context,
+                appWidgetId,
+                "color_icon",
+                context.getColor(R.color.onSurface)
+            )
+            val timerColor = WidgetPreferencesManager.getColor(
+                context,
+                appWidgetId,
+                "color_timer",
+                context.getColor(R.color.onSurface)
+            )
+            val percentColor = WidgetPreferencesManager.getColor(
+                context,
+                appWidgetId,
+                "color_percentage",
+                context.getColor(R.color.onSurface)
+            )
+
+// --- Apply text colors ---
+            views.setTextColor(R.id.widgetTitle, titleColor)
+            views.setTextColor(R.id.widgetDate, dateColor)
+            views.setTextColor(R.id.widgetProgressPercent, percentColor)
+            views.setTextColor(R.id.widgetTimer, timerColor)
+            views.setInt(R.id.widgetRefreshBtn, "setColorFilter", iconColor)
+
+// --- Apply visibility ---
+            val defaultConfig = getLayoutConfig(sizeKey)
+            val layoutConfig = applyVisibilityOverrides(context, appWidgetId, defaultConfig)
+            views.setViewVisibility(
+                R.id.widgetTitle,
+                if (layoutConfig.showTitle) View.VISIBLE else View.GONE
+            )
+            views.setViewVisibility(
+                R.id.widgetDate,
+                if (layoutConfig.showDate) View.VISIBLE else View.GONE
+            )
+            views.setViewVisibility(
+                R.id.widgetTimer,
+                if (layoutConfig.showTimer) View.VISIBLE else View.GONE
+            )
+            views.setViewVisibility(
+                R.id.widgetProgressBar,
+                if (layoutConfig.showProgress) View.VISIBLE else View.GONE
+            )
+            views.setViewVisibility(
+                R.id.widgetProgressPercent,
+                if (layoutConfig.showPercent) View.VISIBLE else View.GONE
+            )
+            views.setViewVisibility(
+                R.id.widgetRefreshBtn,
+                if (layoutConfig.showIcon) View.VISIBLE else View.GONE
+            )
+
+// --- Apply text sizes ---
+            views.setTextViewTextSize(
+                R.id.widgetTitle,
+                TypedValue.COMPLEX_UNIT_SP,
+                layoutConfig.titleSize
+            )
+            views.setTextViewTextSize(
+                R.id.widgetDate,
+                TypedValue.COMPLEX_UNIT_SP,
+                layoutConfig.dateSize
+            )
+            views.setTextViewTextSize(
+                R.id.widgetTimer,
+                TypedValue.COMPLEX_UNIT_SP,
+                layoutConfig.timerSize
+            )
+            views.setTextViewTextSize(
+                R.id.widgetProgressPercent,
+                TypedValue.COMPLEX_UNIT_SP,
+                layoutConfig.percentSize
+            )
+
+
 
             val now = System.currentTimeMillis()
             if (deadline > now) {
@@ -212,10 +315,9 @@ class CountdownWidget : AppWidgetProvider() {
                 }
 
                 views.setTextViewText(R.id.widgetTimer, parts.joinToString(":"))
-                views.setViewVisibility(R.id.widgetTimer, View.VISIBLE)
 
                 // ✅ Always reset color to normal when countdown is active
-                views.setTextColor(R.id.widgetTimer, context.getColor(R.color.onSurface))
+                views.setTextColor(R.id.widgetTimer, timerColor)
 
             } else {
                 views.setTextViewText(R.id.widgetTimer, "00:00:00:00")
@@ -291,5 +393,20 @@ class CountdownWidget : AppWidgetProvider() {
                 updateWidget(context, manager, id)
             }
         }
+        fun forceUpdateWidget(context: Context, appWidgetId: Int) {
+            val appWidgetManager = AppWidgetManager.getInstance(context)
+            updateWidget(context, appWidgetManager, appWidgetId)
+        }
     }
+
+    override fun onAppWidgetOptionsChanged(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetId: Int,
+        newOptions: Bundle
+    ) {
+        super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions)
+        updateWidget(context, appWidgetManager, appWidgetId) // 👈 trigger smart layout logic
+    }
+
 }

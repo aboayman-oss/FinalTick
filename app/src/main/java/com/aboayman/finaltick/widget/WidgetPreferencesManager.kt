@@ -88,4 +88,19 @@ object WidgetPreferencesManager {
             System.currentTimeMillis()
         )
     }
+    fun saveColor(context: Context, appWidgetId: Int, key: String, color: Int) {
+        getPrefs(context).edit()
+            .putInt("widget_${appWidgetId}_$key", color)
+            .apply()
+    }
+
+    fun getColor(context: Context, appWidgetId: Int, key: String, defaultColor: Int): Int {
+        return getPrefs(context).getInt("widget_${appWidgetId}_$key", defaultColor)
+    }
+
+    fun removeKey(context: Context, appWidgetId: Int, key: String) {
+        getPrefs(context).edit()
+            .remove("widget_${appWidgetId}_$key")
+            .apply()
+    }
 }

@@ -29,7 +29,8 @@
 
         <activity
             android:name=".widget.WidgetSettingsActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
+
         <activity
             android:name=".CalculateActivity"
             android:exported="false" />
