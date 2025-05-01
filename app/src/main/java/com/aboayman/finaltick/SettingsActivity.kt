@@ -1,5 +1,7 @@
 package com.aboayman.finaltick
 
+import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import android.content.Context
 import android.os.Bundle
 import android.view.View
@@ -8,6 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import com.aboayman.finaltick.databinding.ActivitySettingsBinding
+import java.io.File
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -68,6 +71,21 @@ class SettingsActivity : AppCompatActivity() {
                 .setPositiveButton("Yes") { _, _ ->
                     // User confirmed Reset
                     prefs.edit().clear().apply()
+                    // Clear all widget-related SharedPreferences
+                    val widgetPrefsDir = File(filesDir.parent, "shared_prefs")
+                    widgetPrefsDir.listFiles()?.forEach { file ->
+                        if (file.name.startsWith("widget_") && file.name.endsWith(".xml")) {
+                            file.delete()
+                        }
+                    }
+
+                    val widgetManager = AppWidgetManager.getInstance(this)
+                    val component = ComponentName(this, CountdownWidget::class.java)
+                    val widgetIds = widgetManager.getAppWidgetIds(component)
+
+                    for (appWidgetId in widgetIds) {
+                        CountdownWidget.resetWidget(this, appWidgetId)
+                    }
 
                     // Now show success dialog
                     androidx.appcompat.app.AlertDialog.Builder(this)

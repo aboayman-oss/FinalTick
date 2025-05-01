@@ -140,6 +140,47 @@ class CalculateActivity : AppCompatActivity() {
             valueCourse.text = "%.1f hours".format(adjustedCourseTime)
 
             val sleepDiff = 8f - sleepHours
+
+            val cardSleep = findViewById<MaterialCardView>(R.id.cardSleep)
+            val cardCourse = findViewById<MaterialCardView>(R.id.cardCourse)
+
+            // Update color of main sleep card
+            val sleepColor = ContextCompat.getColor(
+                this,
+                if (sleepDiff > 0f) R.color.colorSuccess
+                else if (sleepDiff < 0f) R.color.colorDanger
+                else R.color.colorSurfaceVariant
+            )
+            cardSleep.setCardBackgroundColor(sleepColor)
+
+            // Update color of main course card
+            val courseColor = ContextCompat.getColor(
+                this,
+                if (adjustedCourseTime < courseHours) R.color.colorSuccess
+                else if (adjustedCourseTime > courseHours) R.color.colorDanger
+                else R.color.colorSurfaceVariant
+            )
+            cardCourse.setCardBackgroundColor(courseColor)
+
+            // Optional: adjust text color for clarity
+            val sleepTextColor = ContextCompat.getColor(
+                this,
+                if (sleepDiff > 0f) R.color.onSuccess
+                else if (sleepDiff < 0f) R.color.onDanger
+                else R.color.onSurfaceVariant
+            )
+            valueSleep.setTextColor(sleepTextColor)
+
+            val courseTextColor = ContextCompat.getColor(
+                this,
+                if (adjustedCourseTime < courseHours) R.color.onSuccess
+                else if (adjustedCourseTime > courseHours) R.color.onDanger
+                else R.color.onSurfaceVariant
+            )
+            valueCourse.setTextColor(courseTextColor)
+
+            // Existing logic for gain/loss cards
+            val gainHours = kotlin.math.abs(sleepDiff * daysLeft)
             if (sleepDiff == 0f) {
                 cardSleepGain.visibility = View.GONE
                 iconSleepGain.visibility = View.GONE
@@ -148,7 +189,6 @@ class CalculateActivity : AppCompatActivity() {
                 iconSleepGain.visibility = View.VISIBLE
 
                 val gain = sleepDiff > 0f
-                val gainHours = kotlin.math.abs(sleepDiff * daysLeft)
                 valueSleepGain.text = (if (gain) "+" else "-") + "%.1f hours".format(gainHours)
                 labelSleepGain.text = if (gain) "Time Gained by Sleeping Less" else "Time Lost by Oversleeping"
 
@@ -158,10 +198,8 @@ class CalculateActivity : AppCompatActivity() {
                 )
                 cardSleepGain.setCardBackgroundColor(bgColor)
 
-                val fgColor = ContextCompat.getColor(
-                    this,
-                    if (gain) R.color.onSuccess else R.color.onDanger
-                )
+                val fgColor =
+                    ContextCompat.getColor(this, if (gain) R.color.onSuccess else R.color.onDanger)
                 labelSleepGain.setTextColor(fgColor)
                 valueSleepGain.setTextColor(fgColor)
             }

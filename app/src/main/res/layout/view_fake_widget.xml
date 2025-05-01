@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/widgetRoot"
+    android:id="@+id/fakeWidgetRoot"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@drawable/widget_background"
     android:padding="8dp">
 
     <!-- Timer Block (Centered) -->
     <LinearLayout
-        android:id="@+id/timerBlock"
+        android:id="@+id/fakeTimerBlock"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -18,9 +18,8 @@
         android:paddingBottom="2dp"
         android:gravity="center">
 
-        <!-- Title -->
         <TextView
-            android:id="@+id/widgetTitle"
+            android:id="@+id/fakeWidgetTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="(Deadline Title)"
@@ -30,11 +29,10 @@
             android:maxLines="1"
             android:ellipsize="end"
             android:gravity="center"
-            android:visibility="gone" />
+            android:visibility="visible" />
 
-        <!-- Deadline Date -->
         <TextView
-            android:id="@+id/widgetDate"
+            android:id="@+id/fakeWidgetDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Mon, Apr 29 · 10:00 PM"
@@ -43,11 +41,10 @@
             android:fontFamily="sans-serif"
             android:layout_marginTop="2dp"
             android:gravity="center"
-            android:visibility="gone" />
+            android:visibility="visible" />
 
-        <!-- Timer -->
         <TextView
-            android:id="@+id/widgetTimer"
+            android:id="@+id/fakeWidgetTimer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="00:00:00:00"
@@ -55,23 +52,21 @@
             android:textSize="28sp"
             android:fontFamily="sans-serif-medium"
             android:layout_marginTop="4dp"
-            android:visibility="gone" />
+            android:visibility="visible" />
 
-        <!-- Progress Bar -->
         <ProgressBar
-            android:id="@+id/widgetProgressBar"
+            android:id="@+id/fakeWidgetProgressBar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             style="?android:attr/progressBarStyleHorizontal"
-            android:progress="0"
+            android:progress="34"
             android:max="100"
             android:progressDrawable="@drawable/widget_progress_bar"
-            android:visibility="gone" />
+            android:visibility="visible" />
 
-        <!-- Percentage -->
         <TextView
-            android:id="@+id/widgetProgressPercent"
+            android:id="@+id/fakeWidgetProgressPercent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
@@ -80,19 +75,19 @@
             android:textColor="@color/onSurface"
             android:fontFamily="sans-serif"
             android:gravity="center"
-            android:visibility="gone" />
+            android:visibility="visible" />
     </LinearLayout>
 
     <!-- Refresh Icon (Right-Aligned) -->
     <ImageView
-        android:id="@+id/widgetRefreshBtn"
+        android:id="@+id/fakeWidgetRefreshBtn"
         android:layout_width="43dp"
         android:layout_height="43dp"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:layout_marginEnd="4dp"
         android:src="@drawable/refresh_cycle_normal"
-        android:contentDescription="refresh"
+        android:contentDescription="Refresh"
         app:tint="@color/onSurface"
         android:visibility="visible" />
 </RelativeLayout>

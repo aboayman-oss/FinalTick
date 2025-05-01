@@ -2,18 +2,32 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:padding="16dp"
     android:gravity="center_horizontal">
 
-    <TextView
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="3dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="?attr/colorSurface"
+        android:baselineAligned="false">
+
+        <TextView
         android:id="@+id/tvWidgetTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Select Deadline for Widget"
         android:textAppearance="?attr/textAppearanceHeadlineMedium"
-        android:layout_marginTop="25dp"
+            android:layout_marginTop="30dp"
         android:layout_marginBottom="16dp" />
+
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvDeadlineList"
@@ -21,12 +35,31 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <Button
-        android:id="@+id/btnCancelWidget"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Cancel"
-        android:textSize="25sp"
-        android:layout_marginTop="8dp" />
+        android:padding="16dp"
+        android:orientation="horizontal"
+        android:background="?attr/colorSurface"
+        android:baselineAligned="false">
 
+        <!-- Spacer to simulate alignment structure -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCancelWidget"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:contentDescription="Cancel and return to home screen"
+            app:icon="@drawable/close"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp"
+            app:iconTint="?attr/colorPrimary"
+            android:textColor="?attr/colorPrimary" />
+    </LinearLayout>
 </LinearLayout>

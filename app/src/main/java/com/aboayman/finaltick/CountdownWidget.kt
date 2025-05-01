@@ -21,6 +21,7 @@ import com.aboayman.finaltick.widget.WidgetLayoutManager.applyVisibilityOverride
 import com.aboayman.finaltick.widget.WidgetLayoutManager.getGridSizeKey
 import com.aboayman.finaltick.widget.WidgetLayoutManager.getLayoutConfig
 import com.aboayman.finaltick.widget.WidgetPreferencesManager
+import com.aboayman.finaltick.widget.WidgetSettingsActivity
 
 
 class CountdownWidget : AppWidgetProvider() {
@@ -397,6 +398,28 @@ class CountdownWidget : AppWidgetProvider() {
             val appWidgetManager = AppWidgetManager.getInstance(context)
             updateWidget(context, appWidgetManager, appWidgetId)
         }
+        fun resetWidget(context: Context, appWidgetId: Int) {
+            val views = RemoteViews(context.packageName, R.layout.widget_countdown)
+
+            // Show fallback content
+            views.setTextViewText(R.id.widgetTitle, "No deadline")
+            views.setTextViewText(R.id.widgetTimer, "00:00:00:00")
+
+            val configIntent = Intent(context, WidgetSettingsActivity::class.java).apply {
+                putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+            }
+
+            val configPendingIntent = PendingIntent.getActivity(
+                context,
+                appWidgetId,
+                configIntent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
+
+            views.setOnClickPendingIntent(R.id.widgetRoot, configPendingIntent)
+
+            AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, views)
+        }
     }
 
     override fun onAppWidgetOptionsChanged(
@@ -408,5 +431,4 @@ class CountdownWidget : AppWidgetProvider() {
         super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions)
         updateWidget(context, appWidgetManager, appWidgetId) // 👈 trigger smart layout logic
     }
-
 }

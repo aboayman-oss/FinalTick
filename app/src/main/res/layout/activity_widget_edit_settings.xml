@@ -2,9 +2,21 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:padding="16dp"
     android:gravity="center_horizontal">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="3dp"
+        android:background="?attr/colorSurface"
+        android:gravity="center"
+        android:baselineAligned="false">
 
     <TextView
         android:id="@+id/tvEditWidgetTitle"
@@ -15,24 +27,51 @@
         android:layout_marginTop="25dp"
         android:layout_marginBottom="16dp" />
 
+    </LinearLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvEditDeadlineList"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <Button
-        android:id="@+id/btnCustomizeWidget"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Customize Widget"
-        android:layout_marginTop="8dp" />
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:background="?attr/colorSurface"
+        android:baselineAligned="false">
 
-    <Button
-        android:id="@+id/btnCancelEditWidget"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Cancel"
-        android:layout_marginTop="8dp" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCustomizeWidget"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="start"
+            android:layout_marginEnd="30dp"
+            android:text="Customize"
+            app:icon="@drawable/edit"
+            app:iconPadding="8dp"
+            app:iconGravity="textStart"
+            app:iconTint="?attr/colorPrimary"
+            android:textColor="?attr/colorPrimary" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCancelEditWidget"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="end"
+            android:backgroundTint="?attr/colorPrimary"
+            android:text="Cancel"
+            android:textColor="?android:attr/textColorPrimaryInverse"
+            app:icon="@drawable/close"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp"
+            app:iconTint="?android:attr/textColorPrimaryInverse" />
+    </LinearLayout>
+
 
 </LinearLayout>

@@ -17,6 +17,19 @@
         android:theme="@style/Theme.FinalTick"
         tools:targetApi="31">
 
+        <activity
+            android:name=".LauncherActivity"
+            android:exported="true"
+            android:theme="@style/Theme.FinalTick"
+            android:taskAffinity=""
+            android:excludeFromRecents="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <activity android:name=".SettingsActivity" />
 
         <activity
@@ -42,10 +55,6 @@
         <activity
             android:name=".MainActivity"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <activity

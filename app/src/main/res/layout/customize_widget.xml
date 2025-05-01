@@ -1,140 +1,580 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- 🔝 Title and Preview (Fixed) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?attr/colorSurface"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:paddingTop="16dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="1dp">
 
         <TextView
             android:id="@+id/tvCustomizeTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Customize Widget Options"
-            android:textAppearance="?attr/textAppearanceHeadlineMedium"
-            android:layout_marginBottom="16dp" />
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="12dp"
+            android:text="Customize Widget"
+            android:textAppearance="?attr/textAppearanceHeadlineMedium" />
 
-        <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/cbDays"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Show Days"
-            android:checked="true"
-            android:layout_marginTop="8dp" />
-
-        <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/cbHours"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Show Hours"
-            android:checked="true"
-            android:layout_marginTop="8dp" />
-
-        <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/cbMinutes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Show Minutes"
-            android:checked="true"
-            android:layout_marginTop="8dp" />
-
-        <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/cbSeconds"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Show Seconds"
-            android:checked="true"
-            android:layout_marginTop="8dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Show/Hide Elements"
-            android:textAppearance="?attr/textAppearanceBodyLarge"
-            android:layout_marginTop="24dp" />
-
-        <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/cbTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Show Title"
-            android:checked="true"
-            android:layout_marginTop="8dp" />
-
-        <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/cbDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/show_date_time"
-            android:checked="true"
-            android:layout_marginTop="8dp" />
-
-        <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/cbIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Show Refresh Icon"
-            android:checked="true"
-            android:layout_marginTop="8dp" />
-
-        <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/cbTimer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Show Timer"
-            android:checked="true"
-            android:layout_marginTop="8dp" />
-
-        <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/cbProgress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Show Progress Bar"
-            android:checked="true"
-            android:layout_marginTop="8dp" />
-
-        <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/cbPercentage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Show Percentage"
-            android:checked="true"
-            android:layout_marginTop="8dp" />
-
-        <Button
-            android:id="@+id/btnChangeColor"
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Change Color"
-            android:layout_marginTop="16dp" />
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            android:layout_marginBottom="16dp">
 
-        <Button
-            android:id="@+id/btnResetAllColors"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Reset All Colors to Defaults"
-            android:layout_marginTop="8dp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="5dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="8dp">
 
-        <Button
-            android:id="@+id/btnResetDefaults"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Reset to Defaults"
-            android:layout_marginTop="16dp"
-            android:backgroundTint="?attr/colorPrimary"
-            android:textColor="?android:attr/textColorPrimaryInverse"
-            android:fontFamily="sans-serif-medium" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="8dp"
+                    android:text="Widget Preview"
+                    android:textAppearance="?attr/textAppearanceLabelLarge"
+                    android:textColor="?attr/colorOnSurfaceVariant" />
 
-        <Button
-            android:id="@+id/btnSaveCustomize"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Save Customization"
-            android:layout_marginTop="24dp" />
+                <include
+                    layout="@layout/view_fake_widget"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 
-</ScrollView>
+    <!-- 🧩 Scrollable Cards Section -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="16dp">
+
+            <!-- Row of 2 equal cards -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                android:layout_marginBottom="16dp">
+
+                <!-- Time Format Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    android:layout_marginEnd="8dp"
+                    android:padding="12dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Time Format"
+                            android:textAppearance="?attr/textAppearanceTitleSmall"
+                            android:layout_marginBottom="8dp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="4dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Show Days"
+                                android:textSize="14sp"
+                                android:textColor="?attr/colorOnSurface" />
+
+                            <com.google.android.material.materialswitch.MaterialSwitch
+                                android:id="@+id/cbDays"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="4dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Show Hours"
+                                android:textSize="14sp"
+                                android:textColor="?attr/colorOnSurface" />
+
+                            <com.google.android.material.materialswitch.MaterialSwitch
+                                android:id="@+id/cbHours"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="4dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Show Minutes"
+                                android:textSize="14sp"
+                                android:textColor="?attr/colorOnSurface" />
+
+                            <com.google.android.material.materialswitch.MaterialSwitch
+                                android:id="@+id/cbMinutes"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="4dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Show Seconds"
+                                android:textSize="14sp"
+                                android:textColor="?attr/colorOnSurface" />
+
+                            <com.google.android.material.materialswitch.MaterialSwitch
+                                android:id="@+id/cbSeconds"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Show/Hide Elements Card with scroll -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    android:padding="12dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Show/Hide Elements"
+                            android:textAppearance="?attr/textAppearanceTitleSmall"
+                            android:layout_marginBottom="8dp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="4dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Show Title"
+                                android:textSize="14sp"
+                                android:textColor="?attr/colorOnSurface" />
+
+                            <com.google.android.material.materialswitch.MaterialSwitch
+                                android:id="@+id/cbTitle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="4dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Show Date/Time"
+                                android:textSize="14sp"
+                                android:textColor="?attr/colorOnSurface" />
+
+                            <com.google.android.material.materialswitch.MaterialSwitch
+                                android:id="@+id/cbDate"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="4dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Show Refresh Icon"
+                                android:textSize="14sp"
+                                android:textColor="?attr/colorOnSurface" />
+
+                            <com.google.android.material.materialswitch.MaterialSwitch
+                                android:id="@+id/cbIcon"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="4dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Show Timer"
+                                android:textSize="14sp"
+                                android:textColor="?attr/colorOnSurface" />
+
+                            <com.google.android.material.materialswitch.MaterialSwitch
+                                android:id="@+id/cbTimer"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="4dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Show Progress Bar"
+                                android:textSize="14sp"
+                                android:textColor="?attr/colorOnSurface" />
+
+                            <com.google.android.material.materialswitch.MaterialSwitch
+                                android:id="@+id/cbProgress"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="4dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Show Percentage"
+                                android:textSize="14sp"
+                                android:textColor="?attr/colorOnSurface" />
+
+                            <com.google.android.material.materialswitch.MaterialSwitch
+                                android:id="@+id/cbPercentage"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <!-- color change -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardColorCustomization"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:layout_marginBottom="16dp"
+                android:layout_marginHorizontal="1dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Change Color"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textColor="?attr/colorOnSurface"
+                        android:layout_marginBottom="16dp" />
+
+                    <!-- Color customization options -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <!-- Left-aligned label -->
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Title"
+                            android:textSize="14sp"
+                            android:textColor="?attr/colorOnSurface" />
+
+                        <!-- Color preview box -->
+                        <View
+                            android:id="@+id/colorPreviewTitle"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:layout_marginEnd="8dp"
+                            android:background="@drawable/color_preview_background"
+                            android:contentDescription="Select Title Color" />
+
+                        <!-- Reset to default button -->
+                        <Button
+                            android:id="@+id/btnResetTitleColor"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Default" />
+                    </LinearLayout>
+                    <!-- Date & Time Color -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/date_time"
+                            android:textSize="14sp"
+                            android:textColor="?attr/colorOnSurface" />
+
+                        <View
+                            android:id="@+id/colorPreviewDate"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:layout_marginEnd="8dp"
+                            android:background="@drawable/color_preview_background"
+                            android:contentDescription="Select Date Color" />
+
+                        <Button
+                            android:id="@+id/btnResetDateColor"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Default" />
+                    </LinearLayout>
+
+                    <!-- Refresh Icon Color -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Refresh Icon"
+                            android:textSize="14sp"
+                            android:textColor="?attr/colorOnSurface" />
+
+                        <View
+                            android:id="@+id/colorPreviewIcon"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:layout_marginEnd="8dp"
+                            android:background="@drawable/color_preview_background"
+                            android:contentDescription="Select Icon Color" />
+
+                        <Button
+                            android:id="@+id/btnResetIconColor"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Default" />
+                    </LinearLayout>
+
+                    <!-- Timer Color -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Timer"
+                            android:textSize="14sp"
+                            android:textColor="?attr/colorOnSurface" />
+
+                        <View
+                            android:id="@+id/colorPreviewTimer"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:layout_marginEnd="8dp"
+                            android:background="@drawable/color_preview_background"
+                            android:contentDescription="Select Timer Color" />
+
+                        <Button
+                            android:id="@+id/btnResetTimerColor"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Default" />
+                    </LinearLayout>
+
+                    <!-- Progress % Color -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Progress %"
+                            android:textSize="14sp"
+                            android:textColor="?attr/colorOnSurface" />
+
+                        <View
+                            android:id="@+id/colorPreviewPercentage"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:layout_marginEnd="8dp"
+                            android:background="@drawable/color_preview_background"
+                            android:contentDescription="Select Percentage Color" />
+
+                        <Button
+                            android:id="@+id/btnResetPercentageColor"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Default" />
+                    </LinearLayout>
+
+                    <Button
+                        android:id="@+id/btnResetAllColors"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Reset All Colors to Defaults"
+                        android:layout_marginTop="8dp" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- ✅ Fixed Bottom Action Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:background="?attr/colorSurface"
+        android:baselineAligned="false">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnResetDefaults"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginEnd="10dp"
+            android:layout_weight="1"
+            android:text="Reset to Defaults"
+            android:textColor="?attr/colorPrimary"
+            app:icon="@drawable/history"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp"
+            app:iconSize="22dp"
+            app:iconTint="?attr/colorPrimary" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSaveCustomize"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_weight="1"
+            android:backgroundTint="?attr/colorPrimary"
+            android:text="Save Customization"
+            android:textColor="?android:attr/textColorPrimaryInverse"
+            app:icon="@drawable/save"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp"
+            app:iconSize="22dp"
+            app:iconTint="?android:attr/textColorPrimaryInverse" />
+    </LinearLayout>
+</LinearLayout>
