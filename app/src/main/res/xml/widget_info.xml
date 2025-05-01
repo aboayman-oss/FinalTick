@@ -7,4 +7,5 @@
     android:configure="com.aboayman.finaltick.widget.WidgetSettingsActivity"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen"
-    android:initialKeyguardLayout="@layout/widget_countdown" />
+    android:initialKeyguardLayout="@layout/widget_countdown"
+    android:previewImage="@drawable/widget_preview" />
