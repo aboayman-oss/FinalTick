@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/widget_background"
-    android:padding="12dp">
+    android:padding="8dp">
 
     <!-- Timer Block (Centered) -->
     <LinearLayout
@@ -14,8 +14,8 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_centerInParent="true"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
         android:gravity="center">
 
         <!-- Title -->
@@ -60,9 +60,9 @@
         <!-- Progress Bar -->
         <ProgressBar
             android:id="@+id/widgetProgressBar"
-            android:layout_width="160dp"
-            android:layout_height="6dp"
-            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="4dp"
             style="?android:attr/progressBarStyleHorizontal"
             android:progress="0"
             android:max="100"

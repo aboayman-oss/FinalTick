@@ -42,9 +42,9 @@ object WidgetLayoutManager {
                 showProgress = true,
                 showPercent = false,
                 showIcon = true,
-                titleSize = 16f,
+                titleSize = 22f,
                 dateSize = 10f,
-                timerSize = 26f,
+                timerSize = 34f,
                 percentSize = 12f
             )
 
@@ -57,7 +57,7 @@ object WidgetLayoutManager {
                 showIcon = true,
                 titleSize = 18f,
                 dateSize = 10f,
-                timerSize = 30f,
+                timerSize = 40f,
                 percentSize = 13f
             )
 
@@ -68,7 +68,7 @@ object WidgetLayoutManager {
                 showProgress = true,
                 showPercent = true,
                 showIcon = false,
-                titleSize = 22f,
+                titleSize = 24f,
                 dateSize = 16f,
                 timerSize = 30f,
                 percentSize = 16f
