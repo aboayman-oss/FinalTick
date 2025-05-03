@@ -23,38 +23,32 @@ class WidgetEditSettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_widget_edit_settings)
 
+        if (!loadAppWidgetId()) return
+
+        setupRecycler()
+        setupButtons()
+    }
+
+    private fun loadAppWidgetId(): Boolean {
         appWidgetId = intent?.getIntExtra(
             AppWidgetManager.EXTRA_APPWIDGET_ID,
             AppWidgetManager.INVALID_APPWIDGET_ID
-        )
-            ?: AppWidgetManager.INVALID_APPWIDGET_ID
+        ) ?: AppWidgetManager.INVALID_APPWIDGET_ID
+
         if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
             finish()
-            return
+            return false
         }
+        return true
+    }
 
+    private fun setupRecycler() {
         val recycler = findViewById<RecyclerView>(R.id.rvEditDeadlineList)
-        val cancelButton = findViewById<Button>(R.id.btnCancelEditWidget)
-        val customizeButton = findViewById<Button>(R.id.btnCustomizeWidget)
-
         recycler.layoutManager = LinearLayoutManager(this)
 
-        val prefs = getSharedPreferences("finaltick_prefs", Context.MODE_PRIVATE)
-        val saved = prefs.getStringSet("deadlines", null)?.toList()?.sorted() ?: emptyList()
-
-        val items = saved.mapNotNull {
-            val parts = it.split("|", limit = 3)
-            val createdAt = parts.getOrNull(0)?.toLongOrNull() ?: System.currentTimeMillis()
-            val timestamp = parts.getOrNull(1)?.toLongOrNull() ?: return@mapNotNull null
-            val title = parts.getOrElse(2) { "(No title)" }
-            DeadlineItem(title, timestamp, createdAt)
-        }
-
+        val items = loadDeadlineItems()
         recycler.adapter = DeadlineAdapter(items) { selected ->
-            // Instantly save and finish when a deadline is selected
-            val deadlineMillis = selected.timestamp
-
-            WidgetPreferencesManager.saveDeadline(this, appWidgetId, deadlineMillis)
+            WidgetPreferencesManager.saveDeadline(this, appWidgetId, selected.timestamp)
             WidgetPreferencesManager.saveTitle(this, appWidgetId, selected.title)
             WidgetPreferencesManager.saveCreatedAt(this, appWidgetId, selected.createdAt)
 
@@ -64,13 +58,28 @@ class WidgetEditSettingsActivity : AppCompatActivity() {
                 .show()
             finish()
         }
+    }
 
-        cancelButton.setOnClickListener {
+    private fun loadDeadlineItems(): List<DeadlineItem> {
+        val prefs = getSharedPreferences("finaltick_prefs", Context.MODE_PRIVATE)
+        val saved = prefs.getStringSet("deadlines", null)?.toList()?.sorted() ?: emptyList()
+
+        return saved.mapNotNull {
+            val parts = it.split("|", limit = 3)
+            val createdAt = parts.getOrNull(0)?.toLongOrNull() ?: System.currentTimeMillis()
+            val timestamp = parts.getOrNull(1)?.toLongOrNull() ?: return@mapNotNull null
+            val title = parts.getOrElse(2) { "(No title)" }
+            DeadlineItem(title, timestamp, createdAt)
+        }
+    }
+
+    private fun setupButtons() {
+        findViewById<Button>(R.id.btnCancelEditWidget).setOnClickListener {
             Toast.makeText(this, "Edit cancelled", Toast.LENGTH_SHORT).show()
             finish()
         }
 
-        customizeButton.setOnClickListener {
+        findViewById<Button>(R.id.btnCustomizeWidget).setOnClickListener {
             val intent = Intent(this, CustomizeWidgetActivity::class.java)
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
             startActivity(intent)

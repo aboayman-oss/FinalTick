@@ -210,13 +210,14 @@ class CountdownWidget : AppWidgetProvider() {
 
 
             val now = System.currentTimeMillis()
+            val originalCreatedAt = WidgetPreferencesManager.getCreatedAt(context, appWidgetId)
+            val elapsed = now - originalCreatedAt
+
             if (deadline > now) {
                 var remaining = (deadline - now) / 1000
 
                 // 1. Total duration
-                val originalCreatedAt = WidgetPreferencesManager.getCreatedAt(context, appWidgetId)
                 val totalDuration = (deadline - originalCreatedAt).coerceAtLeast(1L)
-                val elapsed = System.currentTimeMillis() - originalCreatedAt
 
                 val progress = if (totalDuration > 0) {
                     ((elapsed.coerceAtLeast(0L) * 100) / totalDuration).coerceIn(0, 100)
