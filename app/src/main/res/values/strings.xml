@@ -6,4 +6,10 @@
     <string name="select_date">Select the date</string>
     <string name="show_date_time"><![CDATA[Show Date & Time]]></string>
     <string name="date_time"><![CDATA[Date & Time]]></string>
+    <string-array name="verbose_units">
+        <item>Days</item>
+        <item>Hours</item>
+        <item>Minutes</item>
+        <item>Seconds</item>
+    </string-array>
 </resources>

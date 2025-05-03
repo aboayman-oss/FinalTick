@@ -207,6 +207,7 @@ class MainActivity : AppCompatActivity() {
             ) {
                 prefs.edit().putStringSet("deadlines", current).apply()
                 refreshList(adapter, current)
+                CountdownWidget.forceUpdateAll(this)
             }
         }
 

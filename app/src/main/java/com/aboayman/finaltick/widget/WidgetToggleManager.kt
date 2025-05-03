@@ -1,13 +1,14 @@
 package com.aboayman.finaltick.widget
 
+import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.aboayman.finaltick.CountdownWidget
 import com.aboayman.finaltick.R
+import com.aboayman.finaltick.widget.WidgetPreferencesManager.TimeDisplayStyle
 import com.google.android.material.materialswitch.MaterialSwitch
 
 class WidgetToggleManager(
@@ -44,14 +45,15 @@ class WidgetToggleManager(
             switch.setOnCheckedChangeListener { _, isCheckedNow ->
                 WidgetPreferencesManager.saveToggle(context, appWidgetId, key, isCheckedNow)
                 CountdownWidget.forceUpdateAll(context)
-                Toast.makeText(context, "$key updated", Toast.LENGTH_SHORT).show()
                 refreshPreview()
                 if (isTimerToggle(key)) {
+                    val style = WidgetPreferencesManager.getTimeDisplayStyle(context, appWidgetId)
                     previewController.updateTimerText(
                         getSwitch("show_days").isChecked,
                         getSwitch("show_hours").isChecked,
                         getSwitch("show_minutes").isChecked,
-                        getSwitch("show_seconds").isChecked
+                        getSwitch("show_seconds").isChecked,
+                        style
                     )
                 }
             }
@@ -67,8 +69,17 @@ class WidgetToggleManager(
     }
 
     fun resetToDefaultConfig() {
-        val sizeKey = WidgetLayoutManager.getGridSizeKey(context, appWidgetId)
-        val config = WidgetLayoutManager.getLayoutConfig(sizeKey)
+        val options = AppWidgetManager.getInstance(context).getAppWidgetOptions(appWidgetId)
+        val minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 0)
+        val maxWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, minWidth)
+        val minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 0)
+        val maxHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, minHeight)
+
+        val widthDp = ((minWidth + maxWidth) / 2f)
+        val heightDp = ((minHeight + maxHeight) / 2f)
+
+
+        val config = WidgetLayoutManager.getAdaptiveLayoutConfig(widthDp, heightDp)
 
         val defaultStates = mapOf(
             "show_title" to config.showTitle,
@@ -88,11 +99,13 @@ class WidgetToggleManager(
             getSwitch(key).isChecked = defaultValue
         }
 
+        val style = WidgetPreferencesManager.getTimeDisplayStyle(context, appWidgetId)
         previewController.updateTimerText(
             getSwitch("show_days").isChecked,
             getSwitch("show_hours").isChecked,
             getSwitch("show_minutes").isChecked,
-            getSwitch("show_seconds").isChecked
+            getSwitch("show_seconds").isChecked,
+            style
         )
         refreshPreview()
         CountdownWidget.forceUpdateAll(context)
@@ -131,8 +144,17 @@ class WidgetToggleManager(
     }
 
     private fun getDefaultState(key: String): Boolean {
-        val sizeKey = WidgetLayoutManager.getGridSizeKey(context, appWidgetId)
-        val config = WidgetLayoutManager.getLayoutConfig(sizeKey)
+        val options = AppWidgetManager.getInstance(context).getAppWidgetOptions(appWidgetId)
+        val minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 0)
+        val maxWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, minWidth)
+        val minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 0)
+        val maxHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, minHeight)
+
+        val widthDp = ((minWidth + maxWidth) / 2f)
+        val heightDp = ((minHeight + maxHeight) / 2f)
+
+        val config = WidgetLayoutManager.getAdaptiveLayoutConfig(widthDp, heightDp)
+
         return when (key) {
             "show_title" -> config.showTitle
             "show_date" -> config.showDate
@@ -146,5 +168,59 @@ class WidgetToggleManager(
 
     private fun isTimerToggle(key: String): Boolean {
         return key in listOf("show_days", "show_hours", "show_minutes", "show_seconds")
+    }
+    fun applyTimeStyleConstraints(style: TimeDisplayStyle) {
+        val keys = listOf("show_days", "show_hours", "show_minutes", "show_seconds")
+        val switches = keys.map { getSwitch(it) }
+
+        when (style) {
+            TimeDisplayStyle.MINIMAL_PROGRESS -> {
+                switches.forEach {
+                    it.setOnCheckedChangeListener(null)
+                    it.isChecked = false
+                    it.isEnabled = false
+                }
+            }
+
+            TimeDisplayStyle.VERBOSE_SINGLE, TimeDisplayStyle.COUNTDOWN_WORDS -> {
+                switches.forEach { current ->
+                    current.isEnabled = true
+                    current.setOnCheckedChangeListener { _, isChecked ->
+                        if (isChecked) {
+                            switches.filter { it != current }.forEach {
+                                it.setOnCheckedChangeListener(null)
+                                it.isChecked = false
+                                applyTimeStyleConstraints(style) // re-attach listeners
+                            }
+                        }
+                    }
+                }
+            }
+
+            else -> {
+                switches.forEach {
+                    it.setOnCheckedChangeListener(null)
+                    it.isEnabled = true
+                    // Restore listeners to update prefs/preview if needed
+                    val key = keys[switches.indexOf(it)]
+                    it.setOnCheckedChangeListener { _, isCheckedNow ->
+                        WidgetPreferencesManager.saveToggle(context, appWidgetId, key, isCheckedNow)
+                        CountdownWidget.forceUpdateAll(context)
+                        refreshPreview()
+                        if (isTimerToggle(key)) {
+                            val style =
+                                WidgetPreferencesManager.getTimeDisplayStyle(context, appWidgetId)
+                            previewController.updateTimerText(
+                                getSwitch("show_days").isChecked,
+                                getSwitch("show_hours").isChecked,
+                                getSwitch("show_minutes").isChecked,
+                                getSwitch("show_seconds").isChecked,
+                                style
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 }

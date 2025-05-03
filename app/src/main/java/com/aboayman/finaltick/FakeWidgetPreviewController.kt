@@ -6,6 +6,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.aboayman.finaltick.R
+import com.aboayman.finaltick.widget.WidgetPreferencesManager.TimeDisplayStyle
 
 class FakeWidgetPreviewController(private val activity: Activity) {
 
@@ -50,14 +51,66 @@ class FakeWidgetPreviewController(private val activity: Activity) {
         showDays: Boolean,
         showHours: Boolean,
         showMinutes: Boolean,
-        showSeconds: Boolean
+        showSeconds: Boolean,
+        style: TimeDisplayStyle,
+        progressPercent: Int = 85
     ) {
-        val parts = mutableListOf<String>()
-        if (showDays) parts.add("12")
-        if (showHours) parts.add("08")
-        if (showMinutes) parts.add("30")
-        if (showSeconds) parts.add("25")
+        val mockDays = 12L
+        val mockHours = 8L
+        val mockMinutes = 30L
+        val mockSeconds = 25L
 
-        timer.text = parts.joinToString(":")
+        val previewText = when (style) {
+            TimeDisplayStyle.COLON -> {
+                val parts = mutableListOf<String>()
+                if (showDays) parts.add(mockDays.toString())
+                if (showHours) parts.add(mockHours.toString().padStart(2, '0'))
+                if (showMinutes) parts.add(mockMinutes.toString().padStart(2, '0'))
+                if (showSeconds) parts.add(mockSeconds.toString().padStart(2, '0'))
+                parts.joinToString(":")
+            }
+
+            TimeDisplayStyle.LETTER -> {
+                buildString {
+                    if (showDays) append("${mockDays}d ")
+                    if (showHours) append("${mockHours}h ")
+                    if (showMinutes) append("${mockMinutes}m ")
+                    if (showSeconds) append("${mockSeconds}s")
+                }.trim()
+            }
+
+            TimeDisplayStyle.NATURAL_LANGUAGE -> {
+                val parts = mutableListOf<String>()
+                if (showDays) parts.add("12 days")
+                if (showHours) parts.add("8 hours")
+                if (showMinutes) parts.add("30 minutes")
+                if (showSeconds) parts.add("25 seconds")
+                parts.take(2).joinToString(", ") + " remaining"
+            }
+
+            TimeDisplayStyle.VERBOSE_SINGLE -> {
+                when {
+                    showDays -> "12 days remaining"
+                    showHours -> "8 hours remaining"
+                    showMinutes -> "30 minutes remaining"
+                    else -> "25 seconds remaining"
+                }
+            }
+
+            TimeDisplayStyle.COUNTDOWN_WORDS -> {
+                when {
+                    showDays -> "Only 12 days left!"
+                    showHours -> "Only 8 hours left!"
+                    showMinutes -> "Only 30 minutes left!"
+                    else -> "Only 25 seconds left!"
+                }
+            }
+
+            TimeDisplayStyle.MINIMAL_PROGRESS -> {
+                "Progress: ${progressPercent}%"
+            }
+        }
+
+        timer.text = previewText
     }
 }

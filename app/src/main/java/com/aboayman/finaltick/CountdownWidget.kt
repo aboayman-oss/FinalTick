@@ -17,10 +17,10 @@ import android.widget.RemoteViews
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import com.aboayman.finaltick.widget.WidgetEditSettingsActivity
+import com.aboayman.finaltick.widget.WidgetLayoutManager
 import com.aboayman.finaltick.widget.WidgetLayoutManager.applyVisibilityOverrides
-import com.aboayman.finaltick.widget.WidgetLayoutManager.getGridSizeKey
-import com.aboayman.finaltick.widget.WidgetLayoutManager.getLayoutConfig
 import com.aboayman.finaltick.widget.WidgetPreferencesManager
+import com.aboayman.finaltick.widget.WidgetPreferencesManager.TimeDisplayStyle
 import com.aboayman.finaltick.widget.WidgetSettingsActivity
 
 
@@ -106,19 +106,142 @@ class CountdownWidget : AppWidgetProvider() {
     companion object {
         fun updateWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
             val deadline = WidgetPreferencesManager.getDeadline(context, appWidgetId)
-
             if (deadline == -1L) return
 
             val title = WidgetPreferencesManager.getTitle(context, appWidgetId)
-
             val views = RemoteViews(context.packageName, R.layout.widget_countdown)
-            val options = AppWidgetManager.getInstance(context).getAppWidgetOptions(appWidgetId)
-            val sizeKey = getGridSizeKey(context, appWidgetId)
+            val options = appWidgetManager.getAppWidgetOptions(appWidgetId)
 
+            val minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 0)
+            val maxWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, minWidth)
+            val minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 0)
+            val maxHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, minHeight)
 
+            val widthDp = ((minWidth + maxWidth) / 2f)
+            val heightDp = ((minHeight + maxHeight) / 2f)
+
+            // --- Date and progress ---
+            val now = System.currentTimeMillis()
+            val originalCreatedAt = WidgetPreferencesManager.getCreatedAt(context, appWidgetId)
+            val elapsed = now - originalCreatedAt
+
+            var timerText = "00:00:00:00"
+            var percentText = "0%"
+            val dateText =
+                android.text.format.DateFormat.format("EEE, MMM d · h:mm a", deadline).toString()
+
+            if (deadline > now) {
+                var remaining = (deadline - now) / 1000
+                val totalDuration = (deadline - originalCreatedAt).coerceAtLeast(1L)
+                val progress = ((elapsed.coerceAtLeast(0L) * 100) / totalDuration).coerceIn(0, 100)
+                percentText = "$progress%"
+
+                views.setProgressBar(R.id.widgetProgressBar, 100, progress.toInt(), false)
+
+                val showDays = WidgetPreferencesManager.getToggle(context, appWidgetId, "show_days")
+                val showHours =
+                    WidgetPreferencesManager.getToggle(context, appWidgetId, "show_hours")
+                val showMinutes =
+                    WidgetPreferencesManager.getToggle(context, appWidgetId, "show_minutes")
+                val showSeconds =
+                    WidgetPreferencesManager.getToggle(context, appWidgetId, "show_seconds")
+
+                var days = 0L
+                var hours = 0L
+                var minutes = 0L
+                var seconds = 0L
+
+                val rawDays = remaining / (24 * 3600)
+                val rawHours = (remaining % (24 * 3600)) / 3600
+                val rawMinutes = (remaining % 3600) / 60
+                val rawSeconds = remaining % 60
+
+                if (showDays) {
+                    days = rawDays; remaining -= days * 86400
+                }
+                if (showHours) {
+                    hours = remaining / 3600; remaining -= hours * 3600
+                } else remaining += hours * 3600
+                if (showMinutes) {
+                    minutes = remaining / 60; remaining -= minutes * 60
+                } else remaining += minutes * 60
+                if (showSeconds) {
+                    seconds = remaining
+                }
+
+                if (!showMinutes && showSeconds) seconds += minutes * 60
+                if (!showHours && (showMinutes || showSeconds)) {
+                    val bonus = hours * 3600
+                    if (showMinutes) {
+                        minutes += bonus / 60
+                        seconds += bonus % 60
+                    } else seconds += bonus
+                }
+                if (!showDays && (showHours || showMinutes || showSeconds)) {
+                    val bonus = days * 86400
+                    if (showHours) {
+                        hours += bonus / 3600
+                        val leftover = bonus % 3600
+                        if (showMinutes) {
+                            minutes += leftover / 60
+                            seconds += leftover % 60
+                        } else {
+                            seconds += leftover
+                        }
+                    } else if (showMinutes) {
+                        minutes += bonus / 60
+                        seconds += bonus % 60
+                    } else seconds += bonus
+                }
+
+                val parts = mutableListOf<String>()
+                if (showDays) {
+                    parts.add(days.toString())
+                    parts.add(hours.toString().padStart(2, '0'))
+                    parts.add(minutes.toString().padStart(2, '0'))
+                    parts.add(seconds.toString().padStart(2, '0'))
+                } else if (showHours) {
+                    parts.add(hours.toString())
+                    parts.add(minutes.toString().padStart(2, '0'))
+                    parts.add(seconds.toString().padStart(2, '0'))
+                } else if (showMinutes) {
+                    parts.add(minutes.toString())
+                    parts.add(seconds.toString().padStart(2, '0'))
+                } else if (showSeconds) {
+                    parts.add(seconds.toString())
+                }
+
+                val style = WidgetPreferencesManager.getTimeDisplayStyle(context, appWidgetId)
+                timerText = formatTimerText(
+                    context,
+                    appWidgetId,
+                    style,
+                    days,
+                    hours,
+                    minutes,
+                    seconds,
+                    progress.toInt()
+                )
+            }
+
+            // === Smart adaptive layout with real content ===
+            val defaultConfig = WidgetLayoutManager.getAdaptiveLayoutConfig(
+                widthDp = widthDp,
+                heightDp = heightDp,
+                titleText = title,
+                timerText = timerText,
+                percentText = percentText,
+                dateText = dateText
+            )
+            val layoutConfig = applyVisibilityOverrides(context, appWidgetId, defaultConfig)
+
+            // === Set static UI ===
             views.setTextViewText(R.id.widgetTitle, title)
+            views.setTextViewText(R.id.widgetDate, dateText)
+            views.setTextViewText(R.id.widgetTimer, timerText)
+            views.setTextViewText(R.id.widgetProgressPercent, percentText)
 
-// --- Load per-element colors ---
+            // --- Colors ---
             val titleColor = WidgetPreferencesManager.getColor(
                 context,
                 appWidgetId,
@@ -150,16 +273,13 @@ class CountdownWidget : AppWidgetProvider() {
                 context.getColor(R.color.onSurface)
             )
 
-// --- Apply text colors ---
             views.setTextColor(R.id.widgetTitle, titleColor)
             views.setTextColor(R.id.widgetDate, dateColor)
             views.setTextColor(R.id.widgetProgressPercent, percentColor)
             views.setTextColor(R.id.widgetTimer, timerColor)
             views.setInt(R.id.widgetRefreshBtn, "setColorFilter", iconColor)
 
-// --- Apply visibility ---
-            val defaultConfig = getLayoutConfig(sizeKey)
-            val layoutConfig = applyVisibilityOverrides(context, appWidgetId, defaultConfig)
+            // --- Visibility ---
             views.setViewVisibility(
                 R.id.widgetTitle,
                 if (layoutConfig.showTitle) View.VISIBLE else View.GONE
@@ -185,7 +305,7 @@ class CountdownWidget : AppWidgetProvider() {
                 if (layoutConfig.showIcon) View.VISIBLE else View.GONE
             )
 
-// --- Apply text sizes ---
+            // --- Text Sizes ---
             views.setTextViewTextSize(
                 R.id.widgetTitle,
                 TypedValue.COMPLEX_UNIT_SP,
@@ -207,125 +327,12 @@ class CountdownWidget : AppWidgetProvider() {
                 layoutConfig.percentSize
             )
 
-
-
-            val now = System.currentTimeMillis()
-            val originalCreatedAt = WidgetPreferencesManager.getCreatedAt(context, appWidgetId)
-            val elapsed = now - originalCreatedAt
-
-            if (deadline > now) {
-                var remaining = (deadline - now) / 1000
-
-                // 1. Total duration
-                val totalDuration = (deadline - originalCreatedAt).coerceAtLeast(1L)
-
-                val progress = if (totalDuration > 0) {
-                    ((elapsed.coerceAtLeast(0L) * 100) / totalDuration).coerceIn(0, 100)
-                } else {
-                    100
-                }
-
-                views.setProgressBar(R.id.widgetProgressBar, 100, progress.toInt(), false)
-                views.setTextViewText(R.id.widgetProgressPercent, "$progress%")
-
-                val showDays = WidgetPreferencesManager.getToggle(context, appWidgetId, "show_days")
-                val showHours =
-                    WidgetPreferencesManager.getToggle(context, appWidgetId, "show_hours")
-                val showMinutes =
-                    WidgetPreferencesManager.getToggle(context, appWidgetId, "show_minutes")
-                val showSeconds =
-                    WidgetPreferencesManager.getToggle(context, appWidgetId, "show_seconds")
-
-                var days = 0L
-                var hours = 0L
-                var minutes = 0L
-                var seconds = 0L
-
-                val rawDays = remaining / (24 * 3600)
-                val rawHours = (remaining % (24 * 3600)) / 3600
-                val rawMinutes = (remaining % 3600) / 60
-                val rawSeconds = remaining % 60
-
-                if (showDays) {
-                    days = rawDays
-                    remaining -= days * 86400
-                }
-                if (showHours) {
-                    hours = (remaining / 3600)
-                    remaining -= hours * 3600
-                } else {
-                    remaining += hours * 3600
-                }
-                if (showMinutes) {
-                    minutes = (remaining / 60)
-                    remaining -= minutes * 60
-                } else {
-                    remaining += minutes * 60
-                }
-                if (showSeconds) {
-                    seconds = remaining
-                }
-
-                // Folding adjustments
-                if (!showMinutes && showSeconds) {
-                    seconds += minutes * 60
-                }
-                if (!showHours && (showMinutes || showSeconds)) {
-                    val bonus = hours * 3600
-                    if (showMinutes) {
-                        minutes += bonus / 60
-                        seconds += bonus % 60
-                    } else {
-                        seconds += bonus
-                    }
-                }
-                if (!showDays && (showHours || showMinutes || showSeconds)) {
-                    val bonus = days * 86400
-                    if (showHours) {
-                        hours += bonus / 3600
-                        val leftover = bonus % 3600
-                        if (showMinutes) {
-                            minutes += leftover / 60
-                            seconds += leftover % 60
-                        } else {
-                            seconds += leftover
-                        }
-                    } else if (showMinutes) {
-                        minutes += bonus / 60
-                        seconds += bonus % 60
-                    } else {
-                        seconds += bonus
-                    }
-                }
-
-                val parts = mutableListOf<String>()
-
-                if (showDays) {
-                    parts.add(days.toString())
-                    parts.add(hours.toString().padStart(2, '0'))
-                    parts.add(minutes.toString().padStart(2, '0'))
-                    parts.add(seconds.toString().padStart(2, '0'))
-                } else if (showHours) {
-                    parts.add(hours.toString())
-                    parts.add(minutes.toString().padStart(2, '0'))
-                    parts.add(seconds.toString().padStart(2, '0'))
-                } else if (showMinutes) {
-                    parts.add(minutes.toString())
-                    parts.add(seconds.toString().padStart(2, '0'))
-                } else if (showSeconds) {
-                    parts.add(seconds.toString())
-                }
-
-                views.setTextViewText(R.id.widgetTimer, parts.joinToString(":"))
-
-                // ✅ Always reset color to normal when countdown is active
-                views.setTextColor(R.id.widgetTimer, timerColor)
-
-            } else {
-                views.setTextViewText(R.id.widgetTimer, "00:00:00:00")
+            // --- Error styling ---
+            if (deadline <= now) {
                 views.setTextColor(R.id.widgetTimer, context.getColor(R.color.colorDanger))
             }
 
+            // --- Interactions ---
             val refreshIntent = Intent(context, CountdownWidget::class.java).apply {
                 action = "com.aboayman.finaltick.REFRESH_WIDGET"
             }
@@ -344,9 +351,7 @@ class CountdownWidget : AppWidgetProvider() {
             )
             views.setOnClickPendingIntent(R.id.widgetRoot, editPendingIntent)
 
-            val dateText = android.text.format.DateFormat.format("EEE, MMM d · h:mm a", deadline)
-            views.setTextViewText(R.id.widgetDate, dateText)
-
+            // --- Apply to system ---
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }
 
@@ -420,6 +425,75 @@ class CountdownWidget : AppWidgetProvider() {
             views.setOnClickPendingIntent(R.id.widgetRoot, configPendingIntent)
 
             AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, views)
+        }
+
+        private fun formatTimerText(
+            context: Context,
+            appWidgetId: Int,
+            style: TimeDisplayStyle,
+            days: Long,
+            hours: Long,
+            minutes: Long,
+            seconds: Long,
+            progress: Int
+        ): String {
+            val showDays = WidgetPreferencesManager.getToggle(context, appWidgetId, "show_days")
+            val showHours = WidgetPreferencesManager.getToggle(context, appWidgetId, "show_hours")
+            val showMinutes =
+                WidgetPreferencesManager.getToggle(context, appWidgetId, "show_minutes")
+            val showSeconds =
+                WidgetPreferencesManager.getToggle(context, appWidgetId, "show_seconds")
+
+            return when (style) {
+                TimeDisplayStyle.COLON -> {
+                    val parts = mutableListOf<String>()
+                    if (showDays) parts.add(days.toString())
+                    if (showHours) parts.add(hours.toString().padStart(2, '0'))
+                    if (showMinutes) parts.add(minutes.toString().padStart(2, '0'))
+                    if (showSeconds) parts.add(seconds.toString().padStart(2, '0'))
+                    parts.joinToString(":")
+                }
+
+                TimeDisplayStyle.LETTER -> {
+                    buildString {
+                        if (showDays) append("${days}d ")
+                        if (showHours) append("${hours}h ")
+                        if (showMinutes) append("${minutes}m ")
+                        if (showSeconds) append("${seconds}s")
+                    }.trim()
+                }
+
+                TimeDisplayStyle.NATURAL_LANGUAGE -> {
+                    val parts = mutableListOf<String>()
+                    if (showDays && days > 0) parts.add("$days ${if (days == 1L) "day" else "days"}")
+                    if (showHours && hours > 0) parts.add("$hours ${if (hours == 1L) "hour" else "hours"}")
+                    if (showMinutes && minutes > 0) parts.add("$minutes ${if (minutes == 1L) "minute" else "minutes"}")
+                    if (showSeconds && seconds > 0) parts.add("$seconds ${if (seconds == 1L) "second" else "seconds"}")
+                    parts.take(2).joinToString(", ") + " remaining"
+                }
+
+                TimeDisplayStyle.VERBOSE_SINGLE -> {
+                    when {
+                        showDays -> "$days ${if (days == 1L) "day" else "days"} remaining"
+                        showHours -> "$hours ${if (hours == 1L) "hour" else "hours"} remaining"
+                        showMinutes -> "$minutes ${if (minutes == 1L) "minute" else "minutes"} remaining"
+                        else -> "$seconds ${if (seconds == 1L) "second" else "seconds"} remaining"
+                    }
+                }
+
+                TimeDisplayStyle.COUNTDOWN_WORDS -> {
+                    when {
+                        showDays -> "Only $days ${if (days == 1L) "day" else "days"} left!"
+                        showHours -> "Only $hours ${if (hours == 1L) "hour" else "hours"} left!"
+                        showMinutes -> "Only $minutes ${if (minutes == 1L) "minute" else "minutes"} left!"
+                        else -> "Only $seconds ${if (seconds == 1L) "second" else "seconds"} left!"
+                    }
+                }
+
+                TimeDisplayStyle.MINIMAL_PROGRESS -> {
+                    "Progress: $progress%"
+                }
+            }
         }
     }
 

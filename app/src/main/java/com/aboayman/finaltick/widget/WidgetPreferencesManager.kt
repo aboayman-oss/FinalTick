@@ -9,6 +9,15 @@ object WidgetPreferencesManager {
     private const val PREF_VERSION_KEY = "widget_prefs_version"
     private const val CURRENT_PREFS_VERSION = 1
 
+    enum class TimeDisplayStyle {
+        COLON,
+        LETTER,
+        NATURAL_LANGUAGE,
+        VERBOSE_SINGLE,
+        COUNTDOWN_WORDS,
+        MINIMAL_PROGRESS
+    }
+
     private fun getPrefs(context: Context): SharedPreferences {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     }
@@ -102,5 +111,23 @@ object WidgetPreferencesManager {
         getPrefs(context).edit()
             .remove("widget_${appWidgetId}_$key")
             .apply()
+    }
+
+    private fun timeStyleKey(appWidgetId: Int) = "widget_${appWidgetId}_time_style"
+
+    fun saveTimeDisplayStyle(context: Context, appWidgetId: Int, style: TimeDisplayStyle) {
+        getPrefs(context).edit()
+            .putString(timeStyleKey(appWidgetId), style.name)
+            .apply()
+    }
+
+    fun getTimeDisplayStyle(context: Context, appWidgetId: Int): TimeDisplayStyle {
+        val name =
+            getPrefs(context).getString(timeStyleKey(appWidgetId), TimeDisplayStyle.COLON.name)
+        return try {
+            TimeDisplayStyle.valueOf(name ?: TimeDisplayStyle.COLON.name)
+        } catch (e: IllegalArgumentException) {
+            TimeDisplayStyle.COLON
+        }
     }
 }
