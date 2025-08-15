@@ -2,18 +2,20 @@ package com.aboayman.finaltick
 
 import android.os.Handler
 import android.os.Looper
+import android.text.format.DateFormat // <-- CORRECTED IMPORT
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.aboayman.finaltick.databinding.ItemDeadlineModernBinding
 
 class DeadlineAdapterModern(
-    private val deadlines: MutableList<DeadlineItem>,
     private val onClick: (DeadlineItem) -> Unit,
     private val onDelete: (DeadlineItem) -> Unit,
     private val onLongPress: (DeadlineItem, View) -> Unit
-) : RecyclerView.Adapter<DeadlineAdapterModern.ViewHolder>() {
+) : ListAdapter<DeadlineItem, DeadlineAdapterModern.ViewHolder>(DeadlineDiffCallback()) {
 
     inner class ViewHolder(val binding: ItemDeadlineModernBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -23,8 +25,16 @@ class DeadlineAdapterModern(
 
         fun bind(item: DeadlineItem) {
             binding.deadlineTitle.text = item.title
-            binding.deadlineSubtitle.text =
-                android.text.format.DateFormat.format("EEE, MMM d • h:mm a", item.timestamp)
+            // This line now works correctly because of the fixed import
+            binding.deadlineSubtitle.text = DateFormat.format("EEE, MMM d • h:mm a", item.timestamp)
+
+            // Setup listeners
+            binding.root.setOnClickListener { onClick(item) }
+            binding.root.setOnLongClickListener {
+                onLongPress(item, binding.root)
+                true
+            }
+            binding.btnDelete.setOnClickListener { onDelete(item) }
 
             fun updateProgress() {
                 val now = System.currentTimeMillis()
@@ -41,7 +51,6 @@ class DeadlineAdapterModern(
                 binding.deadlineProgress.progress = progress
                 binding.deadlineProgressText.text = "$progress%"
 
-                // 🛠 Dynamic color based on progress %
                 val context = binding.root.context
                 val colorRes = when (progress) {
                     in 0..24 -> R.color.progressSoftGreen
@@ -51,14 +60,13 @@ class DeadlineAdapterModern(
                 }
                 val color = context.getColor(colorRes)
                 binding.deadlineProgress.setIndicatorColor(color)
-                binding.deadlineProgressText.setTextColor(color) // Optional if you want text dynamic too
+                binding.deadlineProgressText.setTextColor(color)
             }
 
-            // Run immediately then every 5 seconds
             updateRunnable = object : Runnable {
                 override fun run() {
                     updateProgress()
-                    handler.postDelayed(this, 1000) // Update every 5 seconds
+                    handler.postDelayed(this, 1000) // Update every second
                 }
             }
             handler.post(updateRunnable!!)
@@ -75,20 +83,9 @@ class DeadlineAdapterModern(
         return ViewHolder(binding)
     }
 
-    override fun getItemCount(): Int = deadlines.size
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = deadlines[position]
+        val item = getItem(position)
         holder.bind(item)
-
-        holder.binding.root.setOnClickListener { onClick(item) }
-        holder.binding.root.setOnLongClickListener {
-            onLongPress(item, holder.binding.root)
-            true
-        }
-        holder.binding.btnDelete.setOnClickListener {
-            onDelete(item)
-        }
     }
 
     override fun onViewRecycled(holder: ViewHolder) {
@@ -96,9 +93,13 @@ class DeadlineAdapterModern(
         holder.unbind()
     }
 
-    fun updateData(newList: List<DeadlineItem>) {
-        deadlines.clear()
-        deadlines.addAll(newList)
-        notifyDataSetChanged()
+    class DeadlineDiffCallback : DiffUtil.ItemCallback<DeadlineItem>() {
+        override fun areItemsTheSame(oldItem: DeadlineItem, newItem: DeadlineItem): Boolean {
+            return oldItem.createdAt == newItem.createdAt
+        }
+
+        override fun areContentsTheSame(oldItem: DeadlineItem, newItem: DeadlineItem): Boolean {
+            return oldItem == newItem
+        }
     }
 }
