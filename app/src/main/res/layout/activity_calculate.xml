@@ -1,526 +1,215 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorBackground">
+    android:background="?attr/colorSurface">
 
-    <!-- ✅ 1. Header -->
     <include
+        android:id="@+id/header"
         layout="@layout/header_countdown"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Scrollable content -->
     <ScrollView
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:paddingTop="0dp"
-        android:paddingBottom="0dp"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        android:fillViewport="true">
+        android:clipToPadding="false"
+        android:paddingBottom="16dp"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        app:layout_constraintBottom_toTopOf="@id/bottomNav"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="15dp"
-            android:orientation="vertical">
-
-            <!-- Sleep Hours Slider -->
-            <TextView
-                android:id="@+id/tvSleepLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Daily Sleep Hours"
-                style="@style/TextAppearance.Material3.TitleMedium"
-                android:textColor="?attr/colorOnBackground"
-                android:layout_marginBottom="8dp" />
-
-            <com.google.android.material.slider.Slider
-                android:id="@+id/sleepSlider"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:haloColor="?attr/colorPrimary"
-                app:thumbTint="?attr/colorPrimary"
-                android:valueFrom="0"
-                android:valueTo="16"
-                android:stepSize="1"
-                android:value="8" />
-
-            <TextView
-                android:id="@+id/sleepLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Selected: 8 hours"
-                android:textSize="16sp"
-                android:textColor="?attr/colorOnBackground"
-                android:layout_marginBottom="16dp"/>
-
-            <!-- Total Course Hours -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/courseInputLayout"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Total Course Hours"
-                app:boxBackgroundMode="outline"
-                app:boxStrokeColor="@color/colorPrimary"
-                app:boxStrokeWidth="2dp"
-                app:boxCornerRadiusTopStart="6dp"
-                app:boxCornerRadiusTopEnd="6dp"
-                app:boxCornerRadiusBottomStart="6dp"
-                app:boxCornerRadiusBottomEnd="6dp"
-                android:layout_marginBottom="6dp">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etCourseHours"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="18sp"
-                    android:fontFamily="sans-serif-medium"
-                    android:paddingTop="15dp"
-                    android:paddingBottom="15dp"
-                    android:gravity="center_vertical"
-                    android:textColor="?attr/colorOnSurface"
-                    android:textColorHint="@color/onBackgroundMedium"
-                    android:inputType="numberDecimal" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Playback Speed Slider -->
-            <TextView
-                android:id="@+id/tvSpeedLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Playback Speed"
-                style="@style/TextAppearance.Material3.TitleMedium"
-                android:textColor="?attr/colorOnBackground"
-                android:layout_marginBottom="8dp" />
-
-            <com.google.android.material.slider.Slider
-                android:id="@+id/speedSlider"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:haloColor="?attr/colorPrimary"
-                app:thumbTint="?attr/colorPrimary"
-                android:valueFrom="1"
-                android:valueTo="4"
-                android:stepSize="0.5"
-                android:value="1" />
-
-            <TextView
-                android:id="@+id/speedLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Selected: 1x"
-                android:textSize="16sp"
-                android:textColor="?attr/colorOnBackground"
-                android:layout_marginBottom="16dp"/>
-
-            <com.google.android.material.divider.MaterialDivider
-                android:layout_width="match_parent"
-                android:layout_height="3dp"
-                android:layout_marginVertical="2dp"
-                app:dividerColor="@color/onSurfaceVariant" />
-
-
-            <!-- ✨ Summary Cards Start Here -->
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp">
-
-                <!-- Time Card shifted to the right to give space for icon -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardTimeUntilDeadline"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="80dp"
-                    android:layout_marginTop="16dp"
-                    app:cardCornerRadius="24dp"
-                    app:cardElevation="4dp"
-                    app:strokeWidth="1dp"
-                    app:strokeColor="?attr/colorOutline"
-                    android:backgroundTint="?attr/colorSurfaceContainer">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="20dp">
-
-                        <TextView
-                            android:id="@+id/labelTimeUntil"
-                            android:text="Time Until Deadline"
-                            android:textStyle="bold"
-                            android:textAppearance="?attr/textAppearanceBodyLarge"
-                            android:textColor="?attr/colorOnSurface"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-
-                        <TextView
-                            android:id="@+id/valueTimeUntil"
-                            android:text="--:--:--"
-                            android:textAppearance="?attr/textAppearanceHeadlineSmall"
-                            android:textStyle="bold"
-                            android:textColor="?attr/colorOnSurfaceVariant"
-                            android:layout_marginTop="4dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- Floating Clock Icon (Left, Centered) -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    app:cardCornerRadius="32dp"
-                    app:cardElevation="8dp"
-                    android:layout_gravity="center_vertical|start"
-                    android:layout_marginStart="0dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="16dp"
-                    android:backgroundTint="?attr/colorSurface">
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:padding="12dp"
-                        android:src="@drawable/timer"
-                        android:contentDescription="Clock Icon"
-                        app:tint="?attr/colorOnSurface" />
-                </com.google.android.material.card.MaterialCardView>
-            </FrameLayout>
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp">
-
-                <!-- Sleep Time Card -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardSleep"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="80dp"
-                    android:layout_marginTop="16dp"
-                    app:cardCornerRadius="24dp"
-                    app:cardElevation="4dp"
-                    app:strokeWidth="1dp"
-                    app:strokeColor="?attr/colorOutline"
-                    android:backgroundTint="?attr/colorSurfaceContainer">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="20dp">
-
-                        <TextView
-                            android:id="@+id/labelSleep"
-                            android:text="Total Sleep Time"
-                            android:textStyle="bold"
-                            android:textAppearance="?attr/textAppearanceBodyLarge"
-                            android:textColor="?attr/colorOnSurface"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-
-                        <TextView
-                            android:id="@+id/valueSleep"
-                            android:text="-- hours"
-                            android:textAppearance="?attr/textAppearanceHeadlineSmall"
-                            android:textStyle="bold"
-                            android:textColor="?attr/colorOnSurfaceVariant"
-                            android:layout_marginTop="4dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- Moon/Sleep Icon -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    app:cardCornerRadius="32dp"
-                    app:cardElevation="8dp"
-                    android:layout_gravity="center_vertical|start"
-                    android:layout_marginStart="0dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="16dp"
-                    android:backgroundTint="?attr/colorSurface">
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:padding="12dp"
-                        android:src="@drawable/sleep"
-                        android:contentDescription="Sleep Icon"
-                        app:tint="?attr/colorOnSurface" />
-                </com.google.android.material.card.MaterialCardView>
-            </FrameLayout>
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp">
-
-                <!-- Course Time Card -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardCourse"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="80dp"
-                    android:layout_marginTop="16dp"
-                    app:cardCornerRadius="24dp"
-                    app:cardElevation="4dp"
-                    app:strokeWidth="1dp"
-                    app:strokeColor="?attr/colorOutline"
-                    android:backgroundTint="?attr/colorSurfaceContainer">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="20dp">
-
-                        <TextView
-                            android:id="@+id/labelCourse"
-                            android:text="Total Course Time"
-                            android:textStyle="bold"
-                            android:textAppearance="?attr/textAppearanceBodyLarge"
-                            android:textColor="?attr/colorOnSurface"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-
-                        <TextView
-                            android:id="@+id/valueCourse"
-                            android:text="-- hours"
-                            android:textAppearance="?attr/textAppearanceHeadlineSmall"
-                            android:textStyle="bold"
-                            android:textColor="?attr/colorOnSurfaceVariant"
-                            android:layout_marginTop="4dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- Course Icon -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    app:cardCornerRadius="32dp"
-                    app:cardElevation="8dp"
-                    android:layout_gravity="center_vertical|start"
-                    android:layout_marginStart="0dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="16dp"
-                    android:backgroundTint="?attr/colorSurface">
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:padding="12dp"
-                        android:src="@drawable/course"
-                        android:contentDescription="Course Icon"
-                        app:tint="?attr/colorOnSurface" />
-                </com.google.android.material.card.MaterialCardView>
-            </FrameLayout>
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp">
-
-                <!-- Sleep Gain/Loss Card -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardSleepGain"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="80dp"
-                    android:layout_marginTop="16dp"
-                    app:cardCornerRadius="24dp"
-                    app:cardElevation="4dp"
-                    app:strokeWidth="1dp"
-                    app:strokeColor="?attr/colorOutline"
-                    android:backgroundTint="?attr/colorSurfaceContainer">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="20dp">
-
-                        <TextView
-                            android:id="@+id/labelSleepGain"
-                            android:text="Sleep Insights"
-                            android:textStyle="bold"
-                            android:textAppearance="?attr/textAppearanceBodyLarge"
-                            android:textColor="?attr/colorOnSurface"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-
-                        <TextView
-                            android:id="@+id/valueSleepGain"
-                            android:text="+0.0 hours"
-                            android:textAppearance="?attr/textAppearanceHeadlineSmall"
-                            android:textStyle="bold"
-                            android:textColor="?attr/colorOnSurfaceVariant"
-                            android:layout_marginTop="4dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- Sleep Icon -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/iconSleepGain"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    app:cardCornerRadius="32dp"
-                    app:cardElevation="8dp"
-                    android:layout_gravity="center_vertical|start"
-                    android:layout_marginStart="0dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="16dp"
-                    android:backgroundTint="?attr/colorSurface">
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:padding="12dp"
-                        android:src="@drawable/snoze"
-                        android:contentDescription="Sleep Adjustment Icon"
-                        app:tint="?attr/colorOnSurface" />
-                </com.google.android.material.card.MaterialCardView>
-            </FrameLayout>
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp">
-
-                <!-- Playback Gain Card -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardSpeedGain"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="80dp"
-                    android:layout_marginTop="16dp"
-                    app:cardCornerRadius="24dp"
-                    app:cardElevation="4dp"
-                    app:strokeWidth="1dp"
-                    app:strokeColor="?attr/colorOutline"
-                    android:backgroundTint="?attr/colorSurfaceContainer">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="20dp">
-
-                        <TextView
-                            android:id="@+id/labelSpeedGain"
-                            android:text="Playback Time Saved"
-                            android:textStyle="bold"
-                            android:textAppearance="?attr/textAppearanceBodyLarge"
-                            android:textColor="?attr/colorOnSurface"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-
-                        <TextView
-                            android:id="@+id/valueSpeedGain"
-                            android:text="+0.0 hours"
-                            android:textAppearance="?attr/textAppearanceHeadlineSmall"
-                            android:textStyle="bold"
-                            android:textColor="?attr/colorOnSurfaceVariant"
-                            android:layout_marginTop="4dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- Playback Icon -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/iconSpeedGain"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    app:cardCornerRadius="32dp"
-                    app:cardElevation="8dp"
-                    android:layout_gravity="center_vertical|start"
-                    android:layout_marginStart="0dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="16dp"
-                    android:backgroundTint="?attr/colorSurface">
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:padding="12dp"
-                        android:src="@drawable/fast"
-                        android:contentDescription="Playback Speed Icon"
-                        app:tint="?attr/colorOnSurface" />
-                </com.google.android.material.card.MaterialCardView>
-            </FrameLayout>
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
 
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardRemaining"
+                android:id="@+id/controls_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:layout_marginBottom="32dp"
-                app:cardCornerRadius="32dp"
-                app:cardElevation="8dp"
-                android:backgroundTint="@color/colorSuccess"
-                android:layout_gravity="center"
-                android:padding="24dp">
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/colorOutline"
+                android:backgroundTint="?attr/colorSurfaceContainer">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:gravity="center_horizontal"
-                    android:padding="8dp">
+                    android:padding="20dp">
+
+                    <TextView
+                        style="@style/TextAppearance.Material3.TitleMedium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Daily Sleep Hours"
+                        android:textColor="?attr/colorOnSurface" />
+
+                    <TextView
+                        android:id="@+id/sleepLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="Selected: 8 hours"
+                        android:textColor="?attr/colorOnSurfaceVariant" />
+
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/sleepSlider"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:stepSize="1"
+                        android:value="8"
+                        android:valueFrom="0"
+                        android:valueTo="16" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:hint="Total Course Hours">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etCourseHours"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="numberDecimal" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <TextView
+                        style="@style/TextAppearance.Material3.TitleMedium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:text="Playback Speed"
+                        android:textColor="?attr/colorOnSurface" />
+
+                    <TextView
+                        android:id="@+id/speedLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="Selected: 1.5x"
+                        android:textColor="?attr/colorOnSurfaceVariant" />
+
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/speedSlider"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:stepSize="0.5"
+                        android:value="1"
+                        android:valueFrom="1"
+                        android:valueTo="4" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                style="@style/TextAppearance.Material3.TitleLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:layout_marginBottom="8dp"
+                android:text="Summary"
+                android:textColor="?attr/colorOnSurface" />
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="2">
+
+                <include
+                    android:id="@+id/cardTimeUntilDeadline"
+                    layout="@layout/item_summary_card"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1" />
+
+                <include
+                    android:id="@+id/cardSleep"
+                    layout="@layout/item_summary_card"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1" />
+
+                <include
+                    android:id="@+id/cardCourse"
+                    layout="@layout/item_summary_card"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1" />
+
+                <include
+                    android:id="@+id/cardSpeedGain"
+                    layout="@layout/item_summary_card"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1" />
+
+            </GridLayout>
+
+            <include
+                android:id="@+id/cardSleepGain"
+                layout="@layout/item_summary_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardRemaining"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="4dp"
+                android:backgroundTint="?attr/colorPrimaryContainer">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="24dp">
 
                     <TextView
                         android:id="@+id/labelRemaining"
-                        android:text="Remaining Time"
-                        android:textAppearance="?attr/textAppearanceBodyLarge"
-                        android:textStyle="bold"
-                        android:textColor="@color/onSuccess"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="4dp" />
+                        android:text="Remaining Free Time"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textColor="?attr/colorOnPrimaryContainer" />
 
                     <TextView
                         android:id="@+id/valueRemaining"
-                        android:text="00:00:00"
-                        android:textAppearance="?attr/textAppearanceDisplayMedium"
-                        android:textStyle="bold"
-                        android:textColor="@color/onSuccess"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="monospace" />
+                        android:fontFamily="sans-serif-light"
+                        android:textAppearance="?attr/textAppearanceDisplayMedium"
+                        android:textColor="?attr/colorOnPrimaryContainer"
+                        android:textStyle="bold"
+                        tools:text="120:34:09" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
+
         </LinearLayout>
     </ScrollView>
 
-    <!-- Bottom Navigation (fixed at bottom) -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="?attr/colorSurface"
-        android:elevation="8dp"
         app:menu="@menu/bottom_nav_menu"
-        app:itemIconTint="?attr/colorOnSurfaceVariant"
-        app:itemTextColor="?attr/colorOnSurfaceVariant"
-        app:labelVisibilityMode="labeled"
-        app:itemRippleColor="?attr/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
-</LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

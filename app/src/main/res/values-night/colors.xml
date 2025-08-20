@@ -72,5 +72,7 @@
 
     <color name="colorWidgetBackground">#AA212121
     </color> <!-- Semi-transparent dark grey for dark theme -->
-
+    <color name="colorSurfaceContainer">#F3EDF7</color>
+    <color name="colorPrimaryContainer">#EADDFF</color>
+    <color name="colorOnPrimaryContainer">#21005D</color>
 </resources>
