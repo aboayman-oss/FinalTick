@@ -2,14 +2,16 @@ package com.aboayman.finaltick
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.aboayman.finaltick.databinding.ActivityMainBinding
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
@@ -25,6 +27,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var adapter: DeadlineAdapterModern
     private val viewModel: DeadlineViewModel by viewModels()
+    private val progressHandler = Handler(Looper.getMainLooper())
+    private val progressRunnable = object : Runnable {
+        override fun run() {
+            updateVisibleProgress()
+            progressHandler.postDelayed(this, 1000)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val prefs = getSharedPreferences("finaltick_prefs", MODE_PRIVATE)
@@ -42,48 +51,25 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         setupFab()
         setupRecyclerView()
-        setupBottomNav()
         observeViewModel()
-        viewModel.loadDeadlines()
     }
 
     private fun setupFab() {
         binding.fabAdd.setOnClickListener { openCreateBottomSheet() }
     }
 
-    private fun setupBottomNav() {
-        binding.bottomNav.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_home -> {
-                    Toast.makeText(this, "Home", Toast.LENGTH_SHORT).show()
-                    true
-                }
-
-                R.id.nav_countdown -> {
-                    Toast.makeText(this, "Countdown", Toast.LENGTH_SHORT).show()
-                    true
-                }
-
-                R.id.nav_calculate -> {
-                    Toast.makeText(this, "Insights", Toast.LENGTH_SHORT).show()
-                    true
-                }
-
-                else -> false
-            }
-        }
-    }
+    // Bottom navigation removed per UI simplification
 
     private fun setupRecyclerView() {
         adapter = DeadlineAdapterModern(
             onClick = { item ->
                 openDeadlineActions(item)
             },
-            onMenuClick = { item, view ->
-                showDeadlineOptionsMenu(item, view)
+            onMenuClick = { item, _ ->
+                showDeadlineOptionsBottomSheet(item)
             },
-            onLongPress = { item, view ->
-                showDeadlineOptionsMenu(item, view)
+            onLongPress = { item, _ ->
+                showDeadlineOptionsBottomSheet(item)
             }
         )
 
@@ -137,7 +123,7 @@ class MainActivity : AppCompatActivity() {
 
         btnPickDate.setOnClickListener {
             val datePicker = MaterialDatePicker.Builder.datePicker()
-                .setTitleText("Select deadline date")
+                .setTitleText(getString(R.string.picker_select_deadline_date))
                 .build()
             datePicker.show(supportFragmentManager, "datePicker")
             datePicker.addOnPositiveButtonClickListener { millis ->
@@ -149,7 +135,7 @@ class MainActivity : AppCompatActivity() {
         btnPickTime.setOnClickListener {
             val timePicker = MaterialTimePicker.Builder()
                 .setTimeFormat(TimeFormat.CLOCK_12H)
-                .setTitleText("Select time")
+                .setTitleText(getString(R.string.picker_select_time))
                 .setHour(selectedHour)
                 .setMinute(selectedMinute)
                 .build()
@@ -168,13 +154,16 @@ class MainActivity : AppCompatActivity() {
             if (title.isEmpty()) {
                 showWarningSnackbar(
                     binding.root,
-                    "Enter a title first."
+                    getString(R.string.warning_enter_title)
                 ) { dismissCurrentSnackbar() }
                 return@setOnClickListener
             }
             val dateMillis = selectedDateMillis
             if (dateMillis == null) {
-                showWarningSnackbar(binding.root, "Pick a date.") { dismissCurrentSnackbar() }
+                showWarningSnackbar(
+                    binding.root,
+                    getString(R.string.warning_pick_date)
+                ) { dismissCurrentSnackbar() }
                 return@setOnClickListener
             }
             val calendar = Calendar.getInstance().apply {
@@ -187,7 +176,7 @@ class MainActivity : AppCompatActivity() {
             if (calendar.timeInMillis <= System.currentTimeMillis()) {
                 showWarningSnackbar(
                     binding.root,
-                    "Select a future time."
+                    getString(R.string.warning_future_time)
                 ) { dismissCurrentSnackbar() }
                 return@setOnClickListener
             }
@@ -199,6 +188,28 @@ class MainActivity : AppCompatActivity() {
         btnCancel.setOnClickListener { dialog.dismiss() }
 
         dialog.setContentView(view)
+        dialog.show()
+    }
+
+    private fun showDeadlineOptionsBottomSheet(item: DeadlineItem) {
+        val dialog = BottomSheetDialog(this)
+        val content = layoutInflater.inflate(R.layout.bottom_sheet_deadline_options, null)
+        val btnEdit = content.findViewById<MaterialButton>(R.id.btnEdit)
+        val btnDelete = content.findViewById<MaterialButton>(R.id.btnDelete)
+
+        btnEdit.setOnClickListener {
+            dialog.dismiss()
+            showEditDialog(item)
+        }
+        btnDelete.setOnClickListener {
+            dialog.dismiss()
+            viewModel.deleteDeadline(item)
+            showErrorSnackbar(binding.root, getString(R.string.msg_deleted, item.title)) {
+                viewModel.undoDelete()
+            }
+        }
+
+        dialog.setContentView(content)
         dialog.show()
     }
 
@@ -259,12 +270,15 @@ class MainActivity : AppCompatActivity() {
             val newTitle = editTitle.text.toString().trim()
             if (newTitle.isNotEmpty() && newTimestamp > System.currentTimeMillis()) {
                 viewModel.updateDeadline(item, newTimestamp, newTitle)
-                showSuccessSnackbar(binding.root, "Deadline updated!") { dismissCurrentSnackbar() }
+                showSuccessSnackbar(
+                    binding.root,
+                    getString(R.string.msg_updated)
+                ) { dismissCurrentSnackbar() }
                 dialog.dismiss()
             } else {
                 showWarningSnackbar(
                     binding.root,
-                    "Invalid title or time selected."
+                    getString(R.string.warning_invalid_title_or_time)
                 ) { dismissCurrentSnackbar() }
             }
         }
@@ -287,14 +301,18 @@ class MainActivity : AppCompatActivity() {
 
             R.id.action_clear_all -> {
                 androidx.appcompat.app.AlertDialog.Builder(this)
-                    .setTitle("Clear all deadlines?")
-                    .setMessage("This action cannot be undone.")
-                    .setPositiveButton("Clear") { dialog, _ ->
+                    .setTitle(getString(R.string.dialog_clear_all_title))
+                    .setMessage(getString(R.string.dialog_clear_all_message))
+                    .setPositiveButton(getString(R.string.action_clear)) { dialog, _ ->
                         viewModel.clearAllDeadlines()
-                        showErrorSnackbar(binding.root, "Cleared all deadlines", onUndo = null)
+                        showErrorSnackbar(
+                            binding.root,
+                            getString(R.string.msg_cleared_all),
+                            onUndo = null
+                        )
                         dialog.dismiss()
                     }
-                    .setNegativeButton("Cancel", null)
+                    .setNegativeButton(getString(R.string.action_cancel), null)
                     .show()
                 true
             }
@@ -303,8 +321,27 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        progressHandler.post(progressRunnable)
+    }
+
     override fun onPause() {
         super.onPause()
-        dismissCurrentSnackbar()
+        // Let Snackbars time out naturally; only stop progress updates.
+        progressHandler.removeCallbacks(progressRunnable)
+    }
+
+    private fun updateVisibleProgress() {
+        val lm = binding.deadlineRecyclerView.layoutManager as? LinearLayoutManager ?: return
+        val first = lm.findFirstVisibleItemPosition()
+        val last = lm.findLastVisibleItemPosition()
+        if (first == RecyclerView.NO_POSITION || last == RecyclerView.NO_POSITION) return
+        for (pos in first..last) {
+            val holder = binding.deadlineRecyclerView.findViewHolderForAdapterPosition(pos)
+            if (holder is DeadlineAdapterModern.ViewHolder) {
+                holder.updateProgress()
+            }
+        }
     }
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="16dp"
@@ -42,7 +43,7 @@
                 android:layout_height="48dp"
                 android:fontFamily="sans-serif-medium"
                 android:gravity="center"
-                android:text="100%"
+                tools:text="100%"
                 android:textAlignment="center"
                 android:textColor="?attr/colorOnSurface"
                 android:textSize="10sp" />
@@ -59,7 +60,7 @@
                 android:id="@+id/deadlineTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Title"
+                tools:text="Title"
                 android:textSize="16sp"
                 android:fontFamily="sans-serif-medium"
                 android:textColor="?attr/colorOnSurface" />
@@ -82,20 +83,9 @@
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"
             android:src="@android:drawable/ic_menu_more"
-            android:contentDescription="More options"
+            android:contentDescription="@string/cd_more_options"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:tint="?attr/colorOnSurface"
             android:scaleType="centerInside" />
     </LinearLayout>
-
-    <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:id="@+id/deadlineLinearProgress"
-        style="@style/Widget.Material3.LinearProgressIndicator"
-        android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="8dp"
-        app:indicatorColor="?attr/colorPrimary"
-        app:trackColor="?attr/colorSurfaceVariant" />
 </com.google.android.material.card.MaterialCardView>

@@ -4,8 +4,35 @@
     <string name="what_do_you_have">What do you have?</string>
     <string name="title_hint">Title</string>
     <string name="select_date">Select the date</string>
-    <string name="show_date_time"><![CDATA[Show Date & Time]]></string>
-    <string name="date_time"><![CDATA[Date & Time]]></string>
+    <string name="show_date_time"><![CDATA[Show Date &amp; Time]]></string>
+    <string name="date_time"><![CDATA[Date &amp; Time]]></string>
+
+    <string name="title_deadlines">Deadlines</string>
+    <string name="empty_state_message">No deadlines yet. Tap Add to create one.</string>
+    <string name="cd_add_deadline">Add deadline</string>
+    <string name="cd_more_options">More options</string>
+
+    <string name="picker_select_deadline_date">Select deadline date</string>
+    <string name="picker_select_time">Select time</string>
+
+    <string name="warning_enter_title">Enter a title first.</string>
+    <string name="warning_pick_date">Pick a date.</string>
+    <string name="warning_future_time">Select a future time.</string>
+
+    <string name="msg_saved">%1$s — Saved!</string>
+    <string name="msg_updated">Deadline updated!</string>
+    <string name="warning_invalid_title_or_time">Invalid title or time selected.</string>
+
+    <string name="dialog_clear_all_title">Clear all deadlines?</string>
+    <string name="dialog_clear_all_message">This action cannot be undone.</string>
+    <string name="action_clear">Clear</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="msg_cleared_all">Cleared all deadlines</string>
+    <string name="msg_deleted">%1$s — Deleted</string>
+
+    <string name="action_edit">Edit</string>
+    <string name="action_delete">Delete</string>
+
     <string-array name="verbose_units">
         <item>Days</item>
         <item>Hours</item>
