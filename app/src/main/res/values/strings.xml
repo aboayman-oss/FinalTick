@@ -39,4 +39,29 @@
         <item>Minutes</item>
         <item>Seconds</item>
     </string-array>
+
+    <!-- CalculateActivity strings -->
+    <string name="calc_title">Time Calculator</string>
+    <string name="calc_sleep_hours">Daily Sleep Hours</string>
+    <string name="calc_sleep_selected">Selected: %1$d hours</string>
+    <string name="calc_total_course_hours">Total Course Hours</string>
+    <string name="calc_playback_speed">Playback Speed</string>
+    <string name="calc_speed_selected">Selected: %1$.1fx</string>
+    <string name="calc_summary">Summary</string>
+    <string name="calc_time_until_deadline">Time Until Deadline</string>
+    <string name="calc_total_sleep_time">Total Sleep Time</string>
+    <string name="calc_total_course_time">Total Course Time</string>
+    <string name="calc_time_saved_by_speed">Time Saved by Speed</string>
+    <string name="calc_time_gained_sleep_less">Time Gained by Sleeping Less</string>
+    <string name="calc_time_lost_oversleeping">Time Lost by Oversleeping</string>
+    <string name="calc_remaining_free_time">Remaining Free Time</string>
+    <string name="calc_no_deadline">No deadline set. Please set one first.</string>
+    <string name="calc_no_date_selected">No date selected</string>
+
+    <!-- Accessibility -->
+    <string name="cd_sleep_slider">Daily sleep hours slider</string>
+    <string name="cd_speed_slider">Playback speed slider</string>
+    <string name="cd_chip_speed_1">Set speed to 1.0x</string>
+    <string name="cd_chip_speed_1_5">Set speed to 1.5x</string>
+    <string name="cd_chip_speed_2">Set speed to 2.0x</string>
 </resources>

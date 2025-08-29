@@ -1,37 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="2dp"
-    app:strokeWidth="1dp"
-    app:strokeColor="@color/colorOutline"
-    android:backgroundTint="?attr/colorSurfaceContainer">
+    android:layout_margin="6dp"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/bg_stat_container">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/card_icon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:tint="?attr/colorOnSurfaceVariant"
             tools:src="@drawable/timer"
-            android:contentDescription="Summary Icon" />
+            android:contentDescription="@string/calc_summary" />
 
         <TextView
             android:id="@+id/card_label"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
-            android:textAppearance="?attr/textAppearanceTitleSmall"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
             android:textColor="?attr/colorOnSurface"
             app:layout_constraintStart_toEndOf="@id/card_icon"
             app:layout_constraintTop_toTopOf="@id/card_icon"
@@ -43,8 +40,8 @@
             android:id="@+id/card_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textAppearance="?attr/textAppearanceHeadlineSmall"
+            android:layout_marginTop="10dp"
+            android:textAppearance="?attr/textAppearanceHeadlineMedium"
             android:textColor="?attr/colorOnSurface"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
@@ -52,4 +49,4 @@
             tools:text="--:--:--" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</com.google.android.material.card.MaterialCardView>
+</LinearLayout>

@@ -100,6 +100,14 @@ class DeadlineRepository(context: Context) {
         }
     }
 
+    fun getActiveDeadlineTimestamp(): Long {
+        return prefs.getLong(ACTIVE_TIMESTAMP_KEY, -1L)
+    }
+
+    fun getActiveDeadlineTitle(): String? {
+        return prefs.getString(ACTIVE_TITLE_KEY, null)
+    }
+
     fun restoreDeadline(deadlineEntry: String) {
         val current = getDeadlines().toMutableSet()
         current.add(deadlineEntry)

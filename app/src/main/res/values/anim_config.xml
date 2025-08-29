@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="anim_short">100</integer>
+    <integer name="anim_medium">220</integer>
+    <integer name="anim_pop_back">110</integer>
+</resources>
+

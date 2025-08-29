@@ -78,6 +78,10 @@ class CountdownActivity : AppCompatActivity() {
 
         listOf(chipDays, chipHours, chipMinutes, chipSeconds).forEach { chip ->
             chip.setOnCheckedChangeListener { _, _ ->
+                // Ensure at least one unit is always visible
+                if (!chipDays.isChecked && !chipHours.isChecked && !chipMinutes.isChecked && !chipSeconds.isChecked) {
+                    chipSeconds.isChecked = true
+                }
                 saveFormatPrefs()
                 doHaptic()
                 viewModel.state.value?.let {

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="scale_pop_up" type="fraction">102%</item>
+    <item name="scale_pop_down" type="fraction">96%</item>
+</resources>
+

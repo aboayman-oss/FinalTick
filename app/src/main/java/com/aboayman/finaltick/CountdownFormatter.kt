@@ -41,62 +41,43 @@ object CountdownFormatter {
         showMinutes: Boolean,
         showSeconds: Boolean
     ): CountdownParts {
-        var remaining = remainingSecondsInput
-
-        val rawDays = remaining / 86400
-        val rawHours = (remaining % 86400) / 3600
-        val rawMinutes = (remaining % 3600) / 60
-        val rawSeconds = remaining % 60
+        val rawDays = remainingSecondsInput / 86400
+        val rawHours = (remainingSecondsInput % 86400) / 3600
+        val rawMinutes = (remainingSecondsInput % 3600) / 60
+        val rawSeconds = remainingSecondsInput % 60
 
         var days = 0L
         var hours = 0L
         var minutes = 0L
         var seconds = 0L
 
+        // Allocate from most significant to least, converting down
         if (showDays) {
-            days = rawDays
-            remaining -= days * 86400
-        }
-        if (showHours) {
-            hours = remaining / 3600
-            remaining -= hours * 3600
-        }
-        if (showMinutes) {
-            minutes = remaining / 60
-            remaining -= minutes * 60
-        }
-        if (showSeconds) {
-            seconds = remaining
+            days += rawDays
+        } else if (showHours) {
+            hours += rawDays * 24
+        } else if (showMinutes) {
+            minutes += rawDays * 24 * 60
+        } else if (showSeconds) {
+            seconds += rawDays * 24 * 60 * 60
         }
 
-        // Reallocate hidden units into the next shown unit down
-        if (!showMinutes && showSeconds) seconds += rawMinutes * 60
-        if (!showHours && (showMinutes || showSeconds)) {
-            val bonus = rawHours * 3600
-            if (showMinutes) {
-                minutes += bonus / 60
-                seconds += bonus % 60
-            } else {
-                seconds += bonus
-            }
+        if (showHours) {
+            hours += rawHours
+        } else if (showMinutes) {
+            minutes += rawHours * 60
+        } else if (showSeconds) {
+            seconds += rawHours * 60 * 60
         }
-        if (!showDays && (showHours || showMinutes || showSeconds)) {
-            val bonus = rawDays * 86400
-            if (showHours) {
-                hours += bonus / 3600
-                val leftover = bonus % 3600
-                if (showMinutes) {
-                    minutes += leftover / 60
-                    seconds += leftover % 60
-                } else {
-                    seconds += leftover
-                }
-            } else if (showMinutes) {
-                minutes += bonus / 60
-                seconds += bonus % 60
-            } else {
-                seconds += bonus
-            }
+
+        if (showMinutes) {
+            minutes += rawMinutes
+        } else if (showSeconds) {
+            seconds += rawMinutes * 60
+        }
+
+        if (showSeconds) {
+            seconds += rawSeconds
         }
 
         return CountdownParts(days, hours, minutes, seconds)

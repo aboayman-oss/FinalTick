@@ -53,4 +53,8 @@ dependencies {
     implementation("com.github.martin-stone:hsv-alpha-color-picker-android:3.1.0")
     implementation("com.github.yukuku:ambilwarna:2.0.1")
     implementation("com.github.Dhaval2404:ColorPicker:2.3")
+    // Lifecycle + ViewModel + Coroutines
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
 }
