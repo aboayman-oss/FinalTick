@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="?attr/colorSurface"
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="24dp">
+
+    <TextView
+        android:id="@+id/tvDeadlineTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Deadline Title"
+        android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+        android:textColor="?attr/colorOnSurface" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnStartCountdown"
+        style="@style/Widget.Material3.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Start Countdown"
+        app:icon="@drawable/countdown"
+        app:iconGravity="textStart"
+        app:iconPadding="12dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnOpenCalculator"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Open Time Calculator"
+        app:icon="@drawable/calc"
+        app:iconGravity="textStart"
+        app:iconPadding="12dp" />
+
+</LinearLayout>

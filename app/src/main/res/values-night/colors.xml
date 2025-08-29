@@ -75,4 +75,7 @@
     <color name="colorSurfaceContainer">#F3EDF7</color>
     <color name="colorPrimaryContainer">#EADDFF</color>
     <color name="colorOnPrimaryContainer">#21005D</color>
+
+    <!-- Snackbar neutral background (dark theme) -->
+    <color name="snackbarNeutral">#2A2A2A</color>
 </resources>

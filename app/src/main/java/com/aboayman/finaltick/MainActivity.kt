@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -41,6 +42,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         setupFab()
         setupRecyclerView()
+        setupBottomNav()
         observeViewModel()
         viewModel.loadDeadlines()
     }
@@ -49,14 +51,33 @@ class MainActivity : AppCompatActivity() {
         binding.fabAdd.setOnClickListener { openCreateBottomSheet() }
     }
 
+    private fun setupBottomNav() {
+        binding.bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> {
+                    Toast.makeText(this, "Home", Toast.LENGTH_SHORT).show()
+                    true
+                }
+
+                R.id.nav_countdown -> {
+                    Toast.makeText(this, "Countdown", Toast.LENGTH_SHORT).show()
+                    true
+                }
+
+                R.id.nav_calculate -> {
+                    Toast.makeText(this, "Insights", Toast.LENGTH_SHORT).show()
+                    true
+                }
+
+                else -> false
+            }
+        }
+    }
+
     private fun setupRecyclerView() {
         adapter = DeadlineAdapterModern(
             onClick = { item ->
-                viewModel.setActiveDeadline(item)
-                showSuccessSnackbar(
-                    binding.root,
-                    "${item.title} • Activated"
-                ) { dismissCurrentSnackbar() }
+                openDeadlineActions(item)
             },
             onMenuClick = { item, view ->
                 showDeadlineOptionsMenu(item, view)
@@ -73,7 +94,32 @@ class MainActivity : AppCompatActivity() {
     private fun observeViewModel() {
         viewModel.deadlines.observe(this) { deadlines ->
             adapter.submitList(deadlines)
+            binding.emptyState.visibility = if (deadlines.isEmpty()) View.VISIBLE else View.GONE
         }
+    }
+
+    private fun openDeadlineActions(item: DeadlineItem) {
+        val dialog = BottomSheetDialog(this)
+        val view = layoutInflater.inflate(R.layout.bottom_sheet_deadline_actions, null)
+        val tvTitle = view.findViewById<android.widget.TextView>(R.id.tvDeadlineTitle)
+        val btnCountdown = view.findViewById<MaterialButton>(R.id.btnStartCountdown)
+        val btnCalc = view.findViewById<MaterialButton>(R.id.btnOpenCalculator)
+
+        tvTitle.text = item.title
+
+        btnCountdown.setOnClickListener {
+            viewModel.setActiveDeadline(item)
+            startActivity(Intent(this, CountdownActivity::class.java))
+            dialog.dismiss()
+        }
+        btnCalc.setOnClickListener {
+            viewModel.setActiveDeadline(item)
+            startActivity(Intent(this, CalculateActivity::class.java))
+            dialog.dismiss()
+        }
+
+        dialog.setContentView(view)
+        dialog.show()
     }
 
     private fun openCreateBottomSheet() {
@@ -262,4 +308,3 @@ class MainActivity : AppCompatActivity() {
         dismissCurrentSnackbar()
     }
 }
-

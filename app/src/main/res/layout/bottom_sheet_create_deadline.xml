@@ -35,29 +35,7 @@
             android:inputType="text" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.button.MaterialButtonToggleGroup
-        android:id="@+id/toggleType"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        app:singleSelection="true">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnTypeCountdown"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Countdown" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnTypeCalculate"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Calculate" />
-    </com.google.android.material.button.MaterialButtonToggleGroup>
+    <!-- Simplified: no type selection here -->
 
     <LinearLayout
         android:layout_width="match_parent"
