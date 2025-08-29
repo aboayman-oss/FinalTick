@@ -444,23 +444,28 @@ class CountdownWidget : AppWidgetProvider() {
             val showSeconds =
                 WidgetPreferencesManager.getToggle(context, appWidgetId, "show_seconds")
 
+
             return when (style) {
                 TimeDisplayStyle.COLON -> {
-                    val parts = mutableListOf<String>()
-                    if (showDays) parts.add(days.toString())
-                    if (showHours) parts.add(hours.toString().padStart(2, '0'))
-                    if (showMinutes) parts.add(minutes.toString().padStart(2, '0'))
-                    if (showSeconds) parts.add(seconds.toString().padStart(2, '0'))
-                    parts.joinToString(":")
+                    val partsObj = CountdownParts(days, hours, minutes, seconds)
+                    CountdownFormatter.formatColon(
+                        partsObj,
+                        showDays,
+                        showHours,
+                        showMinutes,
+                        showSeconds
+                    )
                 }
 
                 TimeDisplayStyle.LETTER -> {
-                    buildString {
-                        if (showDays) append("${days}d ")
-                        if (showHours) append("${hours}h ")
-                        if (showMinutes) append("${minutes}m ")
-                        if (showSeconds) append("${seconds}s")
-                    }.trim()
+                    val partsObj = CountdownParts(days, hours, minutes, seconds)
+                    CountdownFormatter.formatLetters(
+                        partsObj,
+                        showDays,
+                        showHours,
+                        showMinutes,
+                        showSeconds
+                    )
                 }
 
                 TimeDisplayStyle.NATURAL_LANGUAGE -> {

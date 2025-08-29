@@ -65,7 +65,7 @@ class CalculateActivity : AppCompatActivity() {
         binding.sleepSlider.addOnChangeListener { slider, value, fromUser ->
             val newValue = value.toInt()
             if (fromUser && newValue != lastSleep) {
-                triggerHapticFeedback(slider, android.view.HapticFeedbackConstants.CLOCK_TICK)
+                Haptics.perform(this, slider, android.view.HapticFeedbackConstants.CLOCK_TICK)
                 lastSleep = newValue
             }
             binding.sleepLabel.text = "Selected: $newValue hours"
@@ -77,7 +77,7 @@ class CalculateActivity : AppCompatActivity() {
             val newValue = (value * 2).toInt() / 2f
             if (fromUser && newValue != lastSpeedStep) {
                 lastSpeedStep = newValue
-                triggerHapticFeedback(slider, android.view.HapticFeedbackConstants.LONG_PRESS)
+                Haptics.perform(this, slider, android.view.HapticFeedbackConstants.LONG_PRESS)
             }
             binding.speedLabel.text = "Selected: ${value}x"
             calculateStatic()
@@ -278,11 +278,9 @@ class CalculateActivity : AppCompatActivity() {
     }
 
     private fun triggerHapticFeedback(view: View, feedbackType: Int) {
-        val prefs = getSharedPreferences("finaltick_prefs", MODE_PRIVATE)
-        if (prefs.getBoolean("haptic_feedback", true)) {
-            view.performHapticFeedback(feedbackType)
-        }
+        Haptics.perform(this, view, feedbackType)
     }
+
 
     override fun onDestroy() {
         super.onDestroy()

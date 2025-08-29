@@ -9,6 +9,7 @@ import android.widget.AdapterView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import com.aboayman.finaltick.databinding.ActivitySettingsBinding
 import java.io.File
 
@@ -59,11 +60,53 @@ class SettingsActivity : AppCompatActivity() {
         val hapticEnabled = prefs.getBoolean("haptic_feedback", true)
         binding.switchHaptic.isChecked = hapticEnabled
 
-        binding.switchHaptic.setOnCheckedChangeListener { _, isChecked ->
-            prefs.edit().putBoolean("haptic_feedback", isChecked).apply()
+        // Countdown defaults
+        val weights = arrayOf("Light", "Regular", "Medium", "SemiBold", "Bold")
+        val weightValues = intArrayOf(300, 400, 500, 600, 700)
+        val weightAdapter =
+            android.widget.ArrayAdapter(this, R.layout.spinner_item, weights).apply {
+                setDropDownViewResource(R.layout.spinner_dropdown_item)
+            }
+        binding.spinnerTimerWeight.adapter = weightAdapter
+        val currentWeight = prefs.getInt("countdown_timer_weight", 600)
+        binding.spinnerTimerWeight.setSelection(
+            weightValues.indexOf(currentWeight).coerceAtLeast(0)
+        )
+        binding.spinnerTimerWeight.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    prefs.edit().putInt("countdown_timer_weight", weightValues[position]).apply()
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
-        // 🔥 Handle Reset App
+        binding.switchDynamicTimer.isChecked = prefs.getBoolean("countdown_dynamic_color", false)
+        binding.switchDynamicTimer.setOnCheckedChangeListener { _, checked ->
+            prefs.edit().putBoolean("countdown_dynamic_color", checked).apply()
+        }
+
+        binding.btnPickTimerColor.setOnClickListener {
+            val initial = prefs.getInt(
+                "countdown_timer_color",
+                ContextCompat.getColor(this, R.color.colorPrimary)
+            )
+            val dialog = yuku.ambilwarna.AmbilWarnaDialog(
+                this, initial, true,
+                object : yuku.ambilwarna.AmbilWarnaDialog.OnAmbilWarnaListener {
+                    override fun onOk(dialog: yuku.ambilwarna.AmbilWarnaDialog?, color: Int) {
+                        prefs.edit().putInt("countdown_timer_color", color).apply()
+                    }
+
+                    override fun onCancel(dialog: yuku.ambilwarna.AmbilWarnaDialog?) {}
+                })
+            dialog.show()
+        }        // 🔥 Handle Reset App
         binding.btnReset.setOnClickListener {
             androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("Confirm Reset")
