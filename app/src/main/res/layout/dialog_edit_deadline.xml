@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="24dp"
     app:cardCornerRadius="24dp"
-    app:cardElevation="8dp"
+    app:cardElevation="2dp"
     app:cardBackgroundColor="?attr/colorSurface">
 
     <LinearLayout
@@ -20,16 +20,16 @@
             android:id="@+id/tvDialogTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Edit Deadline"
+            android:text="@string/action_edit"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="20sp"
-            android:fontFamily="sans-serif-medium"
+            style="@style/TextAppearance.Material3.TitleLarge"
             android:layout_marginBottom="24dp" />
 
         <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Deadline Title"
+            android:hint="@string/title_hint"
             android:layout_marginBottom="24dp">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -52,16 +52,11 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Edit Date"
-                android:backgroundTint="@color/colorPrimary"
-                android:textColor="@color/onPrimary"
-                shapeAppearanceOverlay="@style/Widget.Material3.Button"
-                app:shapeAppearanceOverlay="@style/LessRoundedButtonShape"
+                android:text="@string/picker_select_deadline_date"
+                style="@style/Widget.Material3.Button.TonalButton"
                 app:icon="@drawable/calendar_today"
-                app:iconSize="40dp"
-                app:iconGravity="top"
-                app:iconPadding="4dp"
-                app:iconTint="@color/onPrimary"
+                app:iconSize="18dp"
+                app:iconTint="?attr/colorOnSecondaryContainer"
                 android:layout_marginEnd="10dp" />
 
             <com.google.android.material.button.MaterialButton
@@ -69,18 +64,20 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Edit Time"
-                android:backgroundTint="@color/colorPrimary"
-                android:textColor="@color/onPrimary"
-                shapeAppearanceOverlay="@style/Widget.Material3.Button"
-                app:shapeAppearanceOverlay="@style/LessRoundedButtonShape"
+                android:text="@string/picker_select_time"
+                style="@style/Widget.Material3.Button.TonalButton"
                 app:icon="@drawable/clock"
-                app:iconSize="40dp"
-                app:iconGravity="top"
-                app:iconPadding="4dp"
-                app:iconTint="@color/onPrimary"
+                app:iconSize="18dp"
                 android:layout_marginStart="10dp" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvSelectedDateTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            style="@style/TextAppearance.Material3.BodyMedium"
+            android:layout_marginBottom="16dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -94,11 +91,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Cancel"
-                android:backgroundTint="@color/gray"
-                android:strokeColor="?attr/colorPrimary"
-                android:strokeWidth="3"
-                app:cornerRadius="16dp"
+                android:text="@string/action_cancel"
+                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_marginEnd="8dp" />
 
             <com.google.android.material.button.MaterialButton
@@ -106,10 +100,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Save"
-                android:backgroundTint="@color/colorSuccess"
-                android:textColor="@color/onPrimary"
-                app:cornerRadius="16dp"
+                android:text="@string/action_save"
+                style="@style/Widget.Material3.Button"
                 android:layout_marginStart="8dp" />
 
         </LinearLayout>

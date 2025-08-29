@@ -27,6 +27,7 @@
     <string name="dialog_clear_all_message">This action cannot be undone.</string>
     <string name="action_clear">Clear</string>
     <string name="action_cancel">Cancel</string>
+    <string name="action_save">Save</string>
     <string name="msg_cleared_all">Cleared all deadlines</string>
     <string name="msg_deleted">%1$s — Deleted</string>
 

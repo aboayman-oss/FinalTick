@@ -253,13 +253,77 @@ class MainActivity : AppCompatActivity() {
     private fun showEditDialog(item: DeadlineItem) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_edit_deadline, null)
         val editTitle = dialogView.findViewById<TextInputEditText>(R.id.etEditTitle)
-        dialogView.findViewById<MaterialButton>(R.id.btnPickDate)
-        dialogView.findViewById<MaterialButton>(R.id.btnPickTime)
+        val btnPickDate = dialogView.findViewById<MaterialButton>(R.id.btnPickDate)
+        val btnPickTime = dialogView.findViewById<MaterialButton>(R.id.btnPickTime)
+        val tvSelected = dialogView.findViewById<android.widget.TextView>(R.id.tvSelectedDateTime)
         val btnSave = dialogView.findViewById<MaterialButton>(R.id.btnSave)
         val btnCancel = dialogView.findViewById<MaterialButton>(R.id.btnCancel)
 
         editTitle.setText(item.title)
-        var newTimestamp = item.timestamp
+        val cal = Calendar.getInstance().apply { timeInMillis = item.timestamp }
+        var selectedDateMillis: Long = item.timestamp
+        var selectedHour = cal.get(Calendar.HOUR_OF_DAY)
+        var selectedMinute = cal.get(Calendar.MINUTE)
+
+        fun updateSelectedPreview() {
+            val c = Calendar.getInstance().apply {
+                timeInMillis = selectedDateMillis
+                set(Calendar.HOUR_OF_DAY, selectedHour)
+                set(Calendar.MINUTE, selectedMinute)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+            val sdf = java.text.SimpleDateFormat(
+                "MMM dd, yyyy '•' hh:mm a",
+                java.util.Locale.getDefault()
+            )
+            tvSelected.text = sdf.format(java.util.Date(c.timeInMillis))
+            // Also reflect on buttons for quick visual feedback
+            btnPickDate.text =
+                java.text.SimpleDateFormat("MMM dd, yyyy", java.util.Locale.getDefault())
+                    .format(c.time)
+            btnPickTime.text =
+                java.text.SimpleDateFormat("hh:mm a", java.util.Locale.getDefault()).format(c.time)
+        }
+        updateSelectedPreview()
+
+        btnPickDate.setOnClickListener {
+            val datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText(getString(R.string.picker_select_deadline_date))
+                .setSelection(selectedDateMillis)
+                .build()
+            datePicker.show(supportFragmentManager, "editDatePicker")
+            datePicker.addOnPositiveButtonClickListener { millis ->
+                // Combine chosen date with current time-of-day
+                val dateCal = Calendar.getInstance().apply { timeInMillis = millis }
+                val combined = Calendar.getInstance().apply {
+                    set(Calendar.YEAR, dateCal.get(Calendar.YEAR))
+                    set(Calendar.MONTH, dateCal.get(Calendar.MONTH))
+                    set(Calendar.DAY_OF_MONTH, dateCal.get(Calendar.DAY_OF_MONTH))
+                    set(Calendar.HOUR_OF_DAY, selectedHour)
+                    set(Calendar.MINUTE, selectedMinute)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
+                }
+                selectedDateMillis = combined.timeInMillis
+                updateSelectedPreview()
+            }
+        }
+
+        btnPickTime.setOnClickListener {
+            val timePicker = MaterialTimePicker.Builder()
+                .setTimeFormat(TimeFormat.CLOCK_12H)
+                .setTitleText(getString(R.string.picker_select_time))
+                .setHour(selectedHour)
+                .setMinute(selectedMinute)
+                .build()
+            timePicker.show(supportFragmentManager, "editTimePicker")
+            timePicker.addOnPositiveButtonClickListener {
+                selectedHour = timePicker.hour
+                selectedMinute = timePicker.minute
+                updateSelectedPreview()
+            }
+        }
 
         val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
             .setView(dialogView)
@@ -268,6 +332,15 @@ class MainActivity : AppCompatActivity() {
 
         btnSave.setOnClickListener {
             val newTitle = editTitle.text.toString().trim()
+            val finalCal = Calendar.getInstance().apply {
+                timeInMillis = selectedDateMillis
+                set(Calendar.HOUR_OF_DAY, selectedHour)
+                set(Calendar.MINUTE, selectedMinute)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+            val newTimestamp = finalCal.timeInMillis
+
             if (newTitle.isNotEmpty() && newTimestamp > System.currentTimeMillis()) {
                 viewModel.updateDeadline(item, newTimestamp, newTitle)
                 showSuccessSnackbar(
