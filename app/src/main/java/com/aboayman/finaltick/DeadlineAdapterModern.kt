@@ -13,7 +13,7 @@ import com.aboayman.finaltick.databinding.ItemDeadlineModernBinding
 
 class DeadlineAdapterModern(
     private val onClick: (DeadlineItem) -> Unit,
-    private val onDelete: (DeadlineItem) -> Unit,
+    private val onMenuClick: (DeadlineItem, View) -> Unit,
     private val onLongPress: (DeadlineItem, View) -> Unit
 ) : ListAdapter<DeadlineItem, DeadlineAdapterModern.ViewHolder>(DeadlineDiffCallback()) {
 
@@ -34,7 +34,7 @@ class DeadlineAdapterModern(
                 onLongPress(item, binding.root)
                 true
             }
-            binding.btnDelete.setOnClickListener { onDelete(item) }
+            binding.btnMenu.setOnClickListener { view -> onMenuClick(item, view) }
 
             fun updateProgress() {
                 val now = System.currentTimeMillis()
@@ -49,6 +49,7 @@ class DeadlineAdapterModern(
                 }
 
                 binding.deadlineProgress.progress = progress
+                binding.deadlineLinearProgress.progress = progress
                 binding.deadlineProgressText.text = "$progress%"
 
                 val context = binding.root.context

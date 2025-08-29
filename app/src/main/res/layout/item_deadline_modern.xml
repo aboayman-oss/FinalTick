@@ -3,9 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
-    android:layout_marginTop="4dp"
+    android:layout_marginBottom="16dp"
+    android:layout_marginTop="8dp"
     app:cardCornerRadius="16dp"
+    app:cardUseCompatPadding="true"
     app:cardElevation="2dp"
     app:cardBackgroundColor="?attr/colorSurface">
 
@@ -28,8 +29,8 @@
             <com.google.android.material.progressindicator.CircularProgressIndicator
                 android:id="@+id/deadlineProgress"
                 style="@style/Widget.Material3.CircularProgressIndicator"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 app:indicatorColor="?attr/colorPrimary"
                 app:indicatorInset="0dp"
                 app:trackColor="?attr/colorSurfaceVariant"
@@ -37,8 +38,8 @@
 
             <TextView
                 android:id="@+id/deadlineProgressText"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:fontFamily="sans-serif-medium"
                 android:gravity="center"
                 android:text="100%"
@@ -73,19 +74,28 @@
                 android:textColor="?attr/colorOnSurfaceVariant" />
         </LinearLayout>
 
-        <!-- Delete Button -->
+        <!-- Kebab Menu Button -->
         <ImageButton
-            android:id="@+id/btnDelete"
+            android:id="@+id/btnMenu"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"
-            android:src="@drawable/close"
-            android:contentDescription="Delete"
+            android:src="@android:drawable/ic_menu_more"
+            android:contentDescription="More options"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:scaleType="centerInside"
-            android:scaleX="1.4"
-            android:scaleY="1.4"
-            app:tint="@color/colorDanger" />
+            android:tint="?attr/colorOnSurface"
+            android:scaleType="centerInside" />
     </LinearLayout>
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/deadlineLinearProgress"
+        style="@style/Widget.Material3.LinearProgressIndicator"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        app:indicatorColor="?attr/colorPrimary"
+        app:trackColor="?attr/colorSurfaceVariant" />
 </com.google.android.material.card.MaterialCardView>

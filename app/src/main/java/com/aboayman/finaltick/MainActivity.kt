@@ -2,16 +2,17 @@ package com.aboayman.finaltick
 
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aboayman.finaltick.databinding.ActivityMainBinding
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.color.DynamicColors
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.timepicker.MaterialTimePicker
@@ -30,56 +31,22 @@ class MainActivity : AppCompatActivity() {
         AppCompatDelegate.setDefaultNightMode(savedTheme)
         setTheme(R.style.Theme_FinalTick)
         super.onCreate(savedInstanceState)
+
+        // Apply Material You dynamic color if available
+        DynamicColors.applyToActivityIfAvailable(this)
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setupUI()
+        setSupportActionBar(binding.toolbar)
+        setupFab()
         setupRecyclerView()
         observeViewModel()
         viewModel.loadDeadlines()
     }
 
-    private fun setupUI() {
-        binding.btnSettings.setOnClickListener {
-            startActivity(Intent(this, SettingsActivity::class.java))
-        }
-
-        binding.btnSelectDate.visibility = View.GONE
-        binding.btnCountdown.visibility = View.GONE
-        binding.btnCalculate.visibility = View.GONE
-
-        binding.etTitle.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                binding.btnSelectDate.visibility =
-                    if (!s.isNullOrBlank()) View.VISIBLE else View.GONE
-            }
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
-
-        binding.etTitle.setOnEditorActionListener { v, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                binding.etTitle.clearFocus()
-                val imm =
-                    getSystemService(INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
-                imm.hideSoftInputFromWindow(v.windowToken, 0)
-                true
-            } else false
-        }
-
-        binding.btnSelectDate.setOnClickListener {
-            handleDateSelection()
-        }
-
-        binding.btnClearAllDeadlines.setOnClickListener {
-            viewModel.clearAllDeadlines()
-            // CORRECTED: Call showErrorSnackbar with `onUndo = null` since there's no undo here.
-            showErrorSnackbar(
-                root = binding.root,
-                message = "Cleared all deadlines",
-                onUndo = null
-            )
-        }
+    private fun setupFab() {
+        binding.fabAdd.setOnClickListener { openCreateBottomSheet() }
     }
 
     private fun setupRecyclerView() {
@@ -88,25 +55,11 @@ class MainActivity : AppCompatActivity() {
                 viewModel.setActiveDeadline(item)
                 showSuccessSnackbar(
                     binding.root,
-                    "${item.title} → Activated"
+                    "${item.title} • Activated"
                 ) { dismissCurrentSnackbar() }
-
-                binding.btnCountdown.visibility = View.VISIBLE
-                binding.btnCalculate.visibility = View.VISIBLE
-
-                binding.btnCountdown.setOnClickListener {
-                    startActivity(Intent(this, CountdownActivity::class.java))
-                }
-                binding.btnCalculate.setOnClickListener {
-                    startActivity(Intent(this, CalculateActivity::class.java))
-                }
             },
-            onDelete = { item ->
-                viewModel.deleteDeadline(item)
-                // CORRECTED: The trailing lambda now correctly calls viewModel.undoDelete()
-                showErrorSnackbar(binding.root, "${item.title} → Deleted") {
-                    viewModel.undoDelete()
-                }
+            onMenuClick = { item, view ->
+                showDeadlineOptionsMenu(item, view)
             },
             onLongPress = { item, view ->
                 showDeadlineOptionsMenu(item, view)
@@ -120,49 +73,87 @@ class MainActivity : AppCompatActivity() {
     private fun observeViewModel() {
         viewModel.deadlines.observe(this) { deadlines ->
             adapter.submitList(deadlines)
-            binding.btnClearAllDeadlines.visibility =
-                if (deadlines.isEmpty()) View.GONE else View.VISIBLE
         }
     }
 
-    private fun handleDateSelection() {
-        val title = binding.etTitle.text.toString().trim()
-        if (title.isBlank()) {
-            showWarningSnackbar(binding.root, "Enter a title first.") { dismissCurrentSnackbar() }
-            return
-        }
+    private fun openCreateBottomSheet() {
+        val dialog = BottomSheetDialog(this)
+        val view = layoutInflater.inflate(R.layout.bottom_sheet_create_deadline, null)
+        val etTitle = view.findViewById<TextInputEditText>(R.id.etTitle)
+        val btnPickDate = view.findViewById<MaterialButton>(R.id.btnPickDate)
+        val btnPickTime = view.findViewById<MaterialButton>(R.id.btnPickTime)
+        val btnSave = view.findViewById<MaterialButton>(R.id.btnSave)
+        val btnCancel = view.findViewById<MaterialButton>(R.id.btnCancel)
 
-        val datePicker =
-            MaterialDatePicker.Builder.datePicker().setTitleText("Select deadline date").build()
-        datePicker.show(supportFragmentManager, "datePicker")
+        var selectedDateMillis: Long? = null
+        var selectedHour = 12
+        var selectedMinute = 0
 
-        datePicker.addOnPositiveButtonClickListener { selectedDateMillis ->
-            val timePicker = MaterialTimePicker.Builder().setTimeFormat(TimeFormat.CLOCK_12H)
-                .setTitleText("Select time").build()
-            timePicker.show(supportFragmentManager, "timePicker")
-
-            timePicker.addOnPositiveButtonClickListener {
-                val calendar = Calendar.getInstance().apply {
-                    timeInMillis = selectedDateMillis
-                    set(Calendar.HOUR_OF_DAY, timePicker.hour)
-                    set(Calendar.MINUTE, timePicker.minute)
-                    set(Calendar.SECOND, 0)
-                    set(Calendar.MILLISECOND, 0)
-                }
-
-                if (calendar.timeInMillis <= System.currentTimeMillis()) {
-                    showWarningSnackbar(
-                        binding.root,
-                        "Select a future time."
-                    ) { dismissCurrentSnackbar() }
-                    return@addOnPositiveButtonClickListener
-                }
-
-                viewModel.addDeadline(title, calendar.timeInMillis)
-                showSuccessSnackbar(binding.root, "$title → Saved!") { dismissCurrentSnackbar() }
-                binding.etTitle.text?.clear()
+        btnPickDate.setOnClickListener {
+            val datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText("Select deadline date")
+                .build()
+            datePicker.show(supportFragmentManager, "datePicker")
+            datePicker.addOnPositiveButtonClickListener { millis ->
+                selectedDateMillis = millis
+                btnPickDate.text = datePicker.headerText
             }
         }
+
+        btnPickTime.setOnClickListener {
+            val timePicker = MaterialTimePicker.Builder()
+                .setTimeFormat(TimeFormat.CLOCK_12H)
+                .setTitleText("Select time")
+                .setHour(selectedHour)
+                .setMinute(selectedMinute)
+                .build()
+            timePicker.show(supportFragmentManager, "timePicker")
+            timePicker.addOnPositiveButtonClickListener {
+                selectedHour = timePicker.hour
+                selectedMinute = timePicker.minute
+                val ampm = if (selectedHour >= 12) "PM" else "AM"
+                val hour12 = ((selectedHour + 11) % 12 + 1)
+                btnPickTime.text = String.format("%d:%02d %s", hour12, selectedMinute, ampm)
+            }
+        }
+
+        btnSave.setOnClickListener {
+            val title = etTitle.text?.toString()?.trim().orEmpty()
+            if (title.isEmpty()) {
+                showWarningSnackbar(
+                    binding.root,
+                    "Enter a title first."
+                ) { dismissCurrentSnackbar() }
+                return@setOnClickListener
+            }
+            val dateMillis = selectedDateMillis
+            if (dateMillis == null) {
+                showWarningSnackbar(binding.root, "Pick a date.") { dismissCurrentSnackbar() }
+                return@setOnClickListener
+            }
+            val calendar = Calendar.getInstance().apply {
+                timeInMillis = dateMillis
+                set(Calendar.HOUR_OF_DAY, selectedHour)
+                set(Calendar.MINUTE, selectedMinute)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+            if (calendar.timeInMillis <= System.currentTimeMillis()) {
+                showWarningSnackbar(
+                    binding.root,
+                    "Select a future time."
+                ) { dismissCurrentSnackbar() }
+                return@setOnClickListener
+            }
+            viewModel.addDeadline(title, calendar.timeInMillis)
+            showSuccessSnackbar(binding.root, "$title • Saved!") { dismissCurrentSnackbar() }
+            dialog.dismiss()
+        }
+
+        btnCancel.setOnClickListener { dialog.dismiss() }
+
+        dialog.setContentView(view)
+        dialog.show()
     }
 
     private fun showDeadlineOptionsMenu(item: DeadlineItem, view: View) {
@@ -190,8 +181,7 @@ class MainActivity : AppCompatActivity() {
 
                 R.id.action_delete -> {
                     viewModel.deleteDeadline(item)
-                    // CORRECTED: This also now correctly calls viewModel.undoDelete()
-                    showErrorSnackbar(binding.root, "${item.title} → Deleted") {
+                    showErrorSnackbar(binding.root, "${item.title} • Deleted") {
                         viewModel.undoDelete()
                     }
                     true
@@ -213,8 +203,6 @@ class MainActivity : AppCompatActivity() {
 
         editTitle.setText(item.title)
         var newTimestamp = item.timestamp
-
-        // Date and time picker logic for the edit dialog would go here, updating `newTimestamp`
 
         val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
             .setView(dialogView)
@@ -239,8 +227,39 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_settings -> {
+                startActivity(Intent(this, SettingsActivity::class.java))
+                true
+            }
+
+            R.id.action_clear_all -> {
+                androidx.appcompat.app.AlertDialog.Builder(this)
+                    .setTitle("Clear all deadlines?")
+                    .setMessage("This action cannot be undone.")
+                    .setPositiveButton("Clear") { dialog, _ ->
+                        viewModel.clearAllDeadlines()
+                        showErrorSnackbar(binding.root, "Cleared all deadlines", onUndo = null)
+                        dialog.dismiss()
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     override fun onPause() {
         super.onPause()
         dismissCurrentSnackbar()
     }
 }
+
