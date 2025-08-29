@@ -7,7 +7,7 @@
     <string name="show_date_time"><![CDATA[Show Date &amp; Time]]></string>
     <string name="date_time"><![CDATA[Date &amp; Time]]></string>
 
-    <string name="title_deadlines">Deadlines</string>
+    <string name="title_deadlines">FinalTick</string>
     <string name="empty_state_message">No deadlines yet. Tap Add to create one.</string>
     <string name="cd_add_deadline">Add deadline</string>
     <string name="cd_more_options">More options</string>

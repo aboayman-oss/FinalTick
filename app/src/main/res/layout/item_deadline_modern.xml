@@ -37,16 +37,7 @@
                 app:trackColor="?attr/colorSurfaceVariant"
                 app:trackThickness="5dp" />
 
-            <TextView
-                android:id="@+id/deadlineProgressText"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:fontFamily="sans-serif-medium"
-                android:gravity="center"
-                tools:text="100%"
-                android:textAlignment="center"
-                android:textColor="?attr/colorOnSurface"
-                android:textSize="10sp" />
+
         </FrameLayout>
 
 

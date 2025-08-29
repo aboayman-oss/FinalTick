@@ -19,7 +19,6 @@ class DeadlineAdapter(
         val title: TextView = view.findViewById(R.id.deadlineTitle)
         val subtitle: TextView = view.findViewById(R.id.deadlineSubtitle)
         val progressBar: CircularProgressIndicator = view.findViewById(R.id.deadlineProgress)
-        val progressText: TextView = view.findViewById(R.id.deadlineProgressText)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -47,7 +46,7 @@ class DeadlineAdapter(
         }
 
         holder.progressBar.setProgressCompat(progress.toInt(), true)
-        holder.progressText.text = "${progress.toInt()}%"
+
 
         // Dynamic Progress Color
         val context = holder.itemView.context
@@ -59,7 +58,7 @@ class DeadlineAdapter(
         }
         val color = context.getColor(colorRes)
         holder.progressBar.setIndicatorColor(color)
-        holder.progressText.setTextColor(color)
+
 
         // 🎯 NEW: Highlight selected item
         if (position == selectedPosition) {

@@ -51,7 +51,6 @@ class DeadlineAdapterModern(
             }
 
             binding.deadlineProgress.progress = progress
-            binding.deadlineProgressText.text = "$progress%"
 
             val context = binding.root.context
             val colorRes = when (progress) {
@@ -62,7 +61,6 @@ class DeadlineAdapterModern(
             }
             val color = context.getColor(colorRes)
             binding.deadlineProgress.setIndicatorColor(color)
-            binding.deadlineProgressText.setTextColor(color)
         }
     }
 
