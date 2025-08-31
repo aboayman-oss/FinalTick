@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.HapticFeedbackConstants
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -56,6 +57,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupFab() {
         binding.fabAdd.setOnClickListener { openCreateBottomSheet() }
+        binding.fabAdd.setOnTouchListener { v, event ->
+            if (event.action == android.view.MotionEvent.ACTION_DOWN) {
+                Haptics.perform(this, v, HapticFeedbackConstants.CLOCK_TICK)
+            }
+            false
+        }
     }
 
     // Bottom navigation removed per UI simplification
@@ -94,11 +101,13 @@ class MainActivity : AppCompatActivity() {
         tvTitle.text = item.title
 
         btnCountdown.setOnClickListener {
+            Haptics.perform(this, it, HapticFeedbackConstants.CLOCK_TICK)
             viewModel.setActiveDeadline(item)
             startActivity(Intent(this, CountdownActivity::class.java))
             dialog.dismiss()
         }
         btnCalc.setOnClickListener {
+            Haptics.perform(this, it, HapticFeedbackConstants.CLOCK_TICK)
             viewModel.setActiveDeadline(item)
             startActivity(Intent(this, CalculateActivity::class.java))
             dialog.dismiss()
@@ -198,10 +207,12 @@ class MainActivity : AppCompatActivity() {
         val btnDelete = content.findViewById<MaterialButton>(R.id.btnDelete)
 
         btnEdit.setOnClickListener {
+            Haptics.perform(this, it, HapticFeedbackConstants.LONG_PRESS)
             dialog.dismiss()
             showEditDialog(item)
         }
         btnDelete.setOnClickListener {
+            Haptics.perform(this, it, HapticFeedbackConstants.LONG_PRESS)
             dialog.dismiss()
             viewModel.deleteDeadline(item)
             showErrorSnackbar(binding.root, getString(R.string.msg_deleted, item.title)) {

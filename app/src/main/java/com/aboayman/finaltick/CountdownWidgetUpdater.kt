@@ -1,12 +1,10 @@
 package com.aboayman.finaltick
 
-import android.app.AlarmManager
 import android.appwidget.AppWidgetManager
 import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.util.Log
 
 class CountdownWidgetUpdater : BroadcastReceiver() {
@@ -16,21 +14,22 @@ class CountdownWidgetUpdater : BroadcastReceiver() {
             ComponentName(context, CountdownWidget::class.java)
         )
         for (id in ids) {
-            CountdownWidget.updateWidget(context, widgetManager, id)
+            val options = widgetManager.getAppWidgetOptions(id)
+            val minW = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 0)
+            val maxW = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, minW)
+            val minH = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 0)
+            val maxH = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, minH)
+            val wDp = ((minW + maxW) / 2f)
+            val hDp = ((minH + maxH) / 2f)
+            CountdownWidget.updateWidget(context, widgetManager, id, wDp, hDp)
         }
 
-        // 🔥 RESCHEDULE only if allowed + on Android 12+
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            if (alarmManager.canScheduleExactAlarms()) {
-                try {
-                    CountdownWidget.scheduleNextUpdate(context)
-                } catch (e: SecurityException) {
-                    Log.e("CountdownWidgetUpdater", "Exact alarm permission not granted", e)
-                }
-            } else {
-                Log.w("CountdownWidgetUpdater", "Exact alarms not permitted for this app")
-            }
+        // Reschedule next update; handles API/permission differences internally
+        try {
+            CountdownWidget.scheduleNextUpdate(context)
+        } catch (e: SecurityException) {
+            Log.e("CountdownWidgetUpdater", "Unable to schedule next update", e)
         }
     }
 }
+

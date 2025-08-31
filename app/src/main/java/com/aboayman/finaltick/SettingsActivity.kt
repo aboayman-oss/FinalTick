@@ -114,6 +114,10 @@ class SettingsActivity : AppCompatActivity() {
                 .setPositiveButton("Yes") { _, _ ->
                     // User confirmed Reset
                     prefs.edit().clear().apply()
+                    // Clear DataStore settings
+                    kotlinx.coroutines.runBlocking {
+                        com.aboayman.finaltick.SettingsManager.clearAll(this@SettingsActivity)
+                    }
                     // Clear all widget-related SharedPreferences
                     val widgetPrefsDir = File(filesDir.parent, "shared_prefs")
                     widgetPrefsDir.listFiles()?.forEach { file ->

@@ -21,7 +21,7 @@ import com.aboayman.finaltick.widget.WidgetLayoutManager
 import com.aboayman.finaltick.widget.WidgetLayoutManager.applyVisibilityOverrides
 import com.aboayman.finaltick.widget.WidgetPreferencesManager
 import com.aboayman.finaltick.widget.WidgetPreferencesManager.TimeDisplayStyle
-import com.aboayman.finaltick.widget.WidgetSettingsActivity
+import com.google.android.material.color.MaterialColors
 
 
 class CountdownWidget : AppWidgetProvider() {
@@ -29,11 +29,19 @@ class CountdownWidget : AppWidgetProvider() {
     @RequiresPermission(Manifest.permission.SCHEDULE_EXACT_ALARM)
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         for (appWidgetId in appWidgetIds) {
-            updateWidget(context, appWidgetManager, appWidgetId)
+            // Retrieve per-widget size options (dp) once here, pass into updateWidget
+            val options = appWidgetManager.getAppWidgetOptions(appWidgetId)
+            val minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 0)
+            val maxWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, minWidth)
+            val minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 0)
+            val maxHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, minHeight)
+            val widthDp = ((minWidth + maxWidth) / 2f)
+            val heightDp = ((minHeight + maxHeight) / 2f)
+
+            updateWidget(context, appWidgetManager, appWidgetId, widthDp, heightDp)
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            startRepeatingUpdate(context)
-        }
+        // Ensure periodic updates across all supported Android versions
+        startRepeatingUpdate(context)
     }
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -86,8 +94,27 @@ class CountdownWidget : AppWidgetProvider() {
                 )
 
                 Thread {
+                    val refreshIntent = Intent(context, CountdownWidget::class.java).apply {
+                        action = "com.aboayman.finaltick.REFRESH_WIDGET"
+                    }
+                    val refreshPending = PendingIntent.getBroadcast(
+                        context, 0, refreshIntent,
+                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                    )
+                    val editIntent = Intent(context, WidgetEditSettingsActivity::class.java).apply {
+                        putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
+                    }
+                    val editPending = PendingIntent.getActivity(
+                        context, widgetId, editIntent,
+                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                    )
+
                     for (drawableRes in frameDrawables) {
                         views.setImageViewResource(R.id.widgetRefreshBtn, drawableRes)
+                        views.setOnClickPendingIntent(R.id.widgetRefreshBtn, refreshPending)
+                        views.setOnClickPendingIntent(R.id.widgetRoot, editPending)
+                        views.setOnClickPendingIntent(R.id.background_view, editPending)
+                        views.setOnClickPendingIntent(R.id.timerBlock, editPending)
                         widgetManager.updateAppWidget(widgetId, views)
                         Thread.sleep(20)
                     }
@@ -96,29 +123,40 @@ class CountdownWidget : AppWidgetProvider() {
                         R.id.widgetRefreshBtn,
                         R.drawable.refresh_cycle_normal
                     )
+                    views.setOnClickPendingIntent(R.id.widgetRefreshBtn, refreshPending)
+                    views.setOnClickPendingIntent(R.id.widgetRoot, editPending)
+                    views.setOnClickPendingIntent(R.id.background_view, editPending)
+                    views.setOnClickPendingIntent(R.id.timerBlock, editPending)
                     widgetManager.updateAppWidget(widgetId, views)
                 }.start()
 
-                updateWidget(context, widgetManager, widgetId)
+                val opts = widgetManager.getAppWidgetOptions(widgetId)
+                val minW = opts.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 0)
+                val maxW = opts.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, minW)
+                val minH = opts.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 0)
+                val maxH = opts.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, minH)
+                val wDp = ((minW + maxW) / 2f)
+                val hDp = ((minH + maxH) / 2f)
+                updateWidget(context, widgetManager, widgetId, wDp, hDp)
             }
         }
     }
     companion object {
-        fun updateWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
+        fun updateWidget(
+            context: Context,
+            appWidgetManager: AppWidgetManager,
+            appWidgetId: Int,
+            widthDp: Float,
+            heightDp: Float
+        ) {
             val deadline = WidgetPreferencesManager.getDeadline(context, appWidgetId)
-            if (deadline == -1L) return
+            if (deadline == -1L) {
+                resetWidget(context, appWidgetId)
+                return
+            }
 
             val title = WidgetPreferencesManager.getTitle(context, appWidgetId)
             val views = RemoteViews(context.packageName, R.layout.widget_countdown)
-            val options = appWidgetManager.getAppWidgetOptions(appWidgetId)
-
-            val minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 0)
-            val maxWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, minWidth)
-            val minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 0)
-            val maxHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, minHeight)
-
-            val widthDp = ((minWidth + maxWidth) / 2f)
-            val heightDp = ((minHeight + maxHeight) / 2f)
 
             // --- Date and progress ---
             val now = System.currentTimeMillis()
@@ -242,42 +280,107 @@ class CountdownWidget : AppWidgetProvider() {
             views.setTextViewText(R.id.widgetProgressPercent, percentText)
 
             // --- Colors ---
+            var titleFallback = MaterialColors.getColor(
+                context,
+                com.google.android.material.R.attr.colorOnSurface,
+                context.getColor(R.color.onSurface)
+            )
+            val dateFallback = MaterialColors.getColor(
+                context,
+                com.google.android.material.R.attr.colorOnSurfaceVariant,
+                context.getColor(R.color.onSurface)
+            )
+            val iconFallback = MaterialColors.getColor(
+                context,
+                com.google.android.material.R.attr.colorOnSurface,
+                context.getColor(R.color.onSurface)
+            )
+            var timerFallback = MaterialColors.getColor(
+                context,
+                com.google.android.material.R.attr.colorOnSurface,
+                context.getColor(R.color.onSurface)
+            )
+            var percentFallback = MaterialColors.getColor(
+                context,
+                com.google.android.material.R.attr.colorOnSurface,
+                context.getColor(R.color.onSurface)
+            )
+            val surfaceFallback = MaterialColors.getColor(
+                context,
+                com.google.android.material.R.attr.colorSurface,
+                context.getColor(R.color.colorWidgetBackground)
+            )
+
+            val styleForColors = WidgetPreferencesManager.getTimeDisplayStyle(context, appWidgetId)
+            if (styleForColors == TimeDisplayStyle.MINIMAL_PROGRESS) {
+                val primary = MaterialColors.getColor(
+                    context,
+                    com.google.android.material.R.attr.colorPrimary,
+                    context.getColor(R.color.colorPrimary)
+                )
+                titleFallback = primary
+                timerFallback = primary
+                percentFallback = primary
+            }
+
             val titleColor = WidgetPreferencesManager.getColor(
                 context,
                 appWidgetId,
                 "color_title",
-                context.getColor(R.color.onSurface)
+                titleFallback
             )
             val dateColor = WidgetPreferencesManager.getColor(
                 context,
                 appWidgetId,
                 "color_date",
-                context.getColor(R.color.onSurface)
+                dateFallback
             )
             val iconColor = WidgetPreferencesManager.getColor(
                 context,
                 appWidgetId,
                 "color_icon",
-                context.getColor(R.color.onSurface)
+                iconFallback
             )
             val timerColor = WidgetPreferencesManager.getColor(
                 context,
                 appWidgetId,
                 "color_timer",
-                context.getColor(R.color.onSurface)
+                timerFallback
             )
             val percentColor = WidgetPreferencesManager.getColor(
                 context,
                 appWidgetId,
                 "color_percentage",
-                context.getColor(R.color.onSurface)
+                percentFallback
             )
+            val backgroundBase = WidgetPreferencesManager.getColor(
+                context,
+                appWidgetId,
+                "color_background",
+                surfaceFallback
+            )
+            val backgroundAlpha = WidgetPreferencesManager.getColor(
+                context,
+                appWidgetId,
+                "background_alpha",
+                0xCC
+            ).coerceIn(0, 255)
+            val backgroundColor = (backgroundAlpha shl 24) or (backgroundBase and 0x00FFFFFF)
 
             views.setTextColor(R.id.widgetTitle, titleColor)
             views.setTextColor(R.id.widgetDate, dateColor)
             views.setTextColor(R.id.widgetProgressPercent, percentColor)
             views.setTextColor(R.id.widgetTimer, timerColor)
             views.setInt(R.id.widgetRefreshBtn, "setColorFilter", iconColor)
+            // Apply background style: select shape + dynamic color + transparency
+            val shape = WidgetPreferencesManager.getShape(context, appWidgetId)
+            val bgRes = when (shape) {
+                "pill" -> R.drawable.widget_background_pill
+                "square" -> R.drawable.widget_background_square
+                else -> R.drawable.widget_background_rounded
+            }
+            views.setImageViewResource(R.id.background_view, bgRes)
+            views.setInt(R.id.background_view, "setColorFilter", backgroundColor)
 
             // --- Visibility ---
             views.setViewVisibility(
@@ -350,6 +453,9 @@ class CountdownWidget : AppWidgetProvider() {
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
             views.setOnClickPendingIntent(R.id.widgetRoot, editPendingIntent)
+            // Make the whole surface interactive for reliability
+            views.setOnClickPendingIntent(R.id.background_view, editPendingIntent)
+            views.setOnClickPendingIntent(R.id.timerBlock, editPendingIntent)
 
             // --- Apply to system ---
             appWidgetManager.updateAppWidget(appWidgetId, views)
@@ -361,8 +467,6 @@ class CountdownWidget : AppWidgetProvider() {
             scheduleNextUpdate(context)
         }
 
-        @RequiresApi(Build.VERSION_CODES.S)
-        @RequiresPermission(Manifest.permission.SCHEDULE_EXACT_ALARM)
         fun scheduleNextUpdate(context: Context) {
             val intent = Intent(context, CountdownWidgetUpdater::class.java)
             val pendingIntent = PendingIntent.getBroadcast(
@@ -373,14 +477,25 @@ class CountdownWidget : AppWidgetProvider() {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             val delay = if (isScreenOn(context)) 1000L else 2000L
 
-            if (alarmManager.canScheduleExactAlarms()) {
-                alarmManager.setExactAndAllowWhileIdle(
-                    AlarmManager.RTC_WAKEUP,
-                    System.currentTimeMillis() + delay,
-                    pendingIntent
-                )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                // On Android 12+, exact alarms may require user approval
+                if (alarmManager.canScheduleExactAlarms()) {
+                    alarmManager.setExactAndAllowWhileIdle(
+                        AlarmManager.RTC_WAKEUP,
+                        System.currentTimeMillis() + delay,
+                        pendingIntent
+                    )
+                } else {
+                    // Fallback to inexact to avoid crashes and still update periodically
+                    alarmManager.set(
+                        AlarmManager.RTC_WAKEUP,
+                        System.currentTimeMillis() + delay,
+                        pendingIntent
+                    )
+                }
             } else {
-                alarmManager.set(
+                // Pre-Android 12: exact alarms allowed without special permission
+                alarmManager.setExactAndAllowWhileIdle(
                     AlarmManager.RTC_WAKEUP,
                     System.currentTimeMillis() + delay,
                     pendingIntent
@@ -397,12 +512,42 @@ class CountdownWidget : AppWidgetProvider() {
             val manager = AppWidgetManager.getInstance(context)
             val ids = manager.getAppWidgetIds(ComponentName(context, CountdownWidget::class.java))
             for (id in ids) {
-                updateWidget(context, manager, id)
+                val options = manager.getAppWidgetOptions(id)
+                val minW = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 0)
+                val maxW = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, minW)
+                val minH = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 0)
+                val maxH = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, minH)
+                val wDp = ((minW + maxW) / 2f)
+                val hDp = ((minH + maxH) / 2f)
+                updateWidget(context, manager, id, wDp, hDp)
             }
         }
         fun forceUpdateWidget(context: Context, appWidgetId: Int) {
             val appWidgetManager = AppWidgetManager.getInstance(context)
-            updateWidget(context, appWidgetManager, appWidgetId)
+            val options = appWidgetManager.getAppWidgetOptions(appWidgetId)
+            val minW = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 0)
+            val maxW = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, minW)
+            val minH = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 0)
+            val maxH = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, minH)
+            val wDp = ((minW + maxW) / 2f)
+            val hDp = ((minH + maxH) / 2f)
+            updateWidget(context, appWidgetManager, appWidgetId, wDp, hDp)
+        }
+
+        // Backward-compatible overload for callers that don't have dp sizes yet
+        fun updateWidget(
+            context: Context,
+            appWidgetManager: AppWidgetManager,
+            appWidgetId: Int
+        ) {
+            val options = appWidgetManager.getAppWidgetOptions(appWidgetId)
+            val minW = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 0)
+            val maxW = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, minW)
+            val minH = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 0)
+            val maxH = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, minH)
+            val wDp = ((minW + maxW) / 2f)
+            val hDp = ((minH + maxH) / 2f)
+            updateWidget(context, appWidgetManager, appWidgetId, wDp, hDp)
         }
         fun resetWidget(context: Context, appWidgetId: Int) {
             val views = RemoteViews(context.packageName, R.layout.widget_countdown)
@@ -410,8 +555,10 @@ class CountdownWidget : AppWidgetProvider() {
             // Show fallback content
             views.setTextViewText(R.id.widgetTitle, "No deadline")
             views.setTextViewText(R.id.widgetTimer, "00:00:00:00")
+            views.setViewVisibility(R.id.widgetTitle, View.VISIBLE)
+            views.setViewVisibility(R.id.widgetTimer, View.VISIBLE)
 
-            val configIntent = Intent(context, WidgetSettingsActivity::class.java).apply {
+            val configIntent = Intent(context, WidgetEditSettingsActivity::class.java).apply {
                 putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
             }
 
@@ -423,6 +570,8 @@ class CountdownWidget : AppWidgetProvider() {
             )
 
             views.setOnClickPendingIntent(R.id.widgetRoot, configPendingIntent)
+            views.setOnClickPendingIntent(R.id.background_view, configPendingIntent)
+            views.setOnClickPendingIntent(R.id.timerBlock, configPendingIntent)
 
             AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, views)
         }

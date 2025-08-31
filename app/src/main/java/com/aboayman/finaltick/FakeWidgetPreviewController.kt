@@ -16,6 +16,7 @@ class FakeWidgetPreviewController(private val activity: Activity) {
     private val progressBar: ProgressBar = activity.findViewById(R.id.fakeWidgetProgressBar)
     private val percent: TextView = activity.findViewById(R.id.fakeWidgetProgressPercent)
     private val refreshIcon: ImageView = activity.findViewById(R.id.fakeWidgetRefreshBtn)
+    private val backgroundView: ImageView = activity.findViewById(R.id.fakeBackgroundView)
 
     fun updateVisibility(
         showTitle: Boolean,
@@ -45,6 +46,22 @@ class FakeWidgetPreviewController(private val activity: Activity) {
         timerColor?.let { timer.setTextColor(it) }
         percentColor?.let { percent.setTextColor(it) }
         iconTint?.let { refreshIcon.setColorFilter(it) }
+    }
+
+    fun applyBackground(color: Int?, alpha: Int?) {
+        val base = color ?: return
+        val a = (alpha ?: 0xCC).coerceIn(0, 255)
+        val argb = (a shl 24) or (base and 0x00FFFFFF)
+        backgroundView.setColorFilter(argb)
+    }
+
+    fun applyShape(shape: String) {
+        val res = when (shape) {
+            "pill" -> R.drawable.widget_background_pill
+            "square" -> R.drawable.widget_background_square
+            else -> R.drawable.widget_background_rounded
+        }
+        backgroundView.setImageResource(res)
     }
 
     fun updateTimerText(

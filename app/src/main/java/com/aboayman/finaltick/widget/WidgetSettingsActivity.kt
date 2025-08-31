@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.RemoteViews
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,6 +24,8 @@ class WidgetSettingsActivity : AppCompatActivity() {
         setTheme(R.style.Theme_FinalTick)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_widget_settings)
+        // Default to canceled in case the user backs out
+        setResult(Activity.RESULT_CANCELED)
 
         if (!loadAppWidgetId()) return
 
@@ -48,10 +51,35 @@ class WidgetSettingsActivity : AppCompatActivity() {
         recycler.layoutManager = LinearLayoutManager(this)
 
         val items = loadDeadlineItems()
+
+        // If there are no saved deadlines, still allow adding the widget
+        if (items.isEmpty()) {
+            // Provide an initial RemoteViews so the launcher finalizes the widget
+            val manager = AppWidgetManager.getInstance(this)
+            manager.updateAppWidget(
+                appWidgetId,
+                RemoteViews(packageName, R.layout.widget_countdown)
+            )
+            val resultIntent = Intent().apply {
+                putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+            }
+            setResult(Activity.RESULT_OK, resultIntent)
+            CountdownWidget.forceUpdateAll(this)
+            Toast.makeText(this, "Widget added (no deadline yet)", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
         recycler.adapter = DeadlineAdapter(items) { selected ->
             WidgetPreferencesManager.saveDeadline(this, appWidgetId, selected.timestamp)
             WidgetPreferencesManager.saveTitle(this, appWidgetId, selected.title)
             WidgetPreferencesManager.saveCreatedAt(this, appWidgetId, selected.createdAt)
+
+            // Ensure launcher receives an initial layout right away
+            val manager = AppWidgetManager.getInstance(this)
+            manager.updateAppWidget(
+                appWidgetId,
+                RemoteViews(packageName, R.layout.widget_countdown)
+            )
 
             val resultIntent = Intent().apply {
                 putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)

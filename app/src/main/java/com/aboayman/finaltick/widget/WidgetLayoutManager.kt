@@ -43,15 +43,15 @@ object WidgetLayoutManager {
     )
 
     private fun estimateSingleLineSp(textLength: Int, widthBudgetDp: Float): Float {
-        val avgCharWidthPerSp = 0.55f // Empirical constant (adjustable)
+        val avgCharWidthPerSp = 0.50f // Tuned for slightly larger text fit
         return (widthBudgetDp / (textLength * avgCharWidthPerSp))
     }
 
     val defaultScaleProfile = TextScaleProfile(
-        timerDivisorW = 4.5f, timerDivisorH = 3.5f, timerMin = 18f, timerMax = 60f,
-        titleDivisorW = 7.0f, titleDivisorH = 4.5f, titleMin = 12f, titleMax = 36f,
-        dateDivisorW = 8.0f, dateDivisorH = 5.0f, dateMin = 10f, dateMax = 28f,
-        percentDivisorW = 9.5f, percentDivisorH = 6.0f, percentMin = 10f, percentMax = 22f
+        timerDivisorW = 4.0f, timerDivisorH = 3.2f, timerMin = 16f, timerMax = 72f,
+        titleDivisorW = 6.5f, titleDivisorH = 4.2f, titleMin = 13f, titleMax = 40f,
+        dateDivisorW = 7.5f, dateDivisorH = 4.8f, dateMin = 11f, dateMax = 30f,
+        percentDivisorW = 8.5f, percentDivisorH = 5.5f, percentMin = 11f, percentMax = 24f
     )
 
     fun getAdaptiveLayoutConfig(
@@ -65,12 +65,13 @@ object WidgetLayoutManager {
     ): LayoutConfig {
         val verticalBudget = heightDp
 
-        val showTitle = verticalBudget > 200f
-        val showDate = verticalBudget > 200f
-        val showPercent = verticalBudget > 200f
+        // Tuned thresholds for smaller widgets
+        val showTitle = verticalBudget >= 100f
+        val showDate = verticalBudget >= 140f
+        val showPercent = verticalBudget >= 120f
 
-        val showIcon = widthDp > 200f
-        val iconDpWidth = 80f // Estimate: icon + margin
+        val showIcon = widthDp >= 120f
+        val iconDpWidth = 64f // Estimate: icon + margin
         val availableWidthDp = if (showIcon) widthDp - iconDpWidth else widthDp
 
         fun scaleSmart(

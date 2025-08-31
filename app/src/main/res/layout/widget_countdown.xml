@@ -4,8 +4,19 @@
     android:id="@+id/widgetRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/widget_background"
     android:padding="8dp">
+
+    <!-- Background layer for customizable rounded color -->
+    <ImageView
+        android:id="@+id/background_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="background"
+        android:src="@drawable/widget_background"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true" />
 
     <!-- Timer Block (Centered) -->
     <LinearLayout
@@ -13,10 +24,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_centerInParent="true"
         android:paddingTop="2dp"
         android:paddingBottom="2dp"
-        android:gravity="center">
+        android:gravity="center"
+        android:layout_centerInParent="true">
 
         <!-- Title -->
         <TextView
@@ -37,7 +48,7 @@
             android:id="@+id/widgetDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Mon, Apr 29 · 10:00 PM"
+            android:text="Mon, Apr 29 10:00 PM"
             android:textColor="@color/onSurface"
             android:textSize="14sp"
             android:fontFamily="sans-serif"
@@ -60,10 +71,10 @@
         <!-- Progress Bar -->
         <ProgressBar
             android:id="@+id/widgetProgressBar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="4dp"
             style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:progress="0"
             android:max="100"
             android:progressDrawable="@drawable/widget_progress_bar"
@@ -88,11 +99,13 @@
         android:id="@+id/widgetRefreshBtn"
         android:layout_width="43dp"
         android:layout_height="43dp"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
         android:layout_marginEnd="4dp"
         android:src="@drawable/refresh_cycle_normal"
         android:contentDescription="refresh"
         app:tint="@color/onSurface"
-        android:visibility="visible" />
+        android:visibility="visible"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true" />
+
 </RelativeLayout>
+

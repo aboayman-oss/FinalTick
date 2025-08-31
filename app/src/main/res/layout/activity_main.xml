@@ -49,6 +49,7 @@
         android:paddingTop="8dp"
         android:paddingBottom="128dp"
         android:scrollbars="vertical"
+        android:layoutAnimation="@anim/layout_animation_fade_in"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <!-- Empty state -->

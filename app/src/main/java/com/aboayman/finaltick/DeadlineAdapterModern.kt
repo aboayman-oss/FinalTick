@@ -1,6 +1,7 @@
 package com.aboayman.finaltick
 
-import android.text.format.DateFormat // <-- CORRECTED IMPORT
+import android.text.format.DateFormat
+import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,8 +27,12 @@ class DeadlineAdapterModern(
             binding.deadlineSubtitle.text = DateFormat.format("EEE, MMM d • h:mm a", item.timestamp)
 
             // Setup listeners
-            binding.root.setOnClickListener { onClick(item) }
+            binding.root.setOnClickListener {
+                Haptics.perform(it.context, binding.root, HapticFeedbackConstants.CLOCK_TICK)
+                onClick(item)
+            }
             binding.root.setOnLongClickListener {
+                Haptics.perform(it.context, binding.root, HapticFeedbackConstants.LONG_PRESS)
                 onLongPress(item, binding.root)
                 true
             }

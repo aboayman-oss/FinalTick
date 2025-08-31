@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/fakeWidgetRoot"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/widget_background"
     android:padding="8dp">
+
+    <!-- Background layer for customizable rounded color -->
+    <ImageView
+        android:id="@+id/fakeBackgroundView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="background"
+        android:src="@drawable/widget_background"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Timer Block (Centered) -->
     <LinearLayout
@@ -13,10 +24,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_centerInParent="true"
         android:paddingTop="2dp"
         android:paddingBottom="2dp"
-        android:gravity="center">
+        android:gravity="center"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <TextView
             android:id="@+id/fakeWidgetTitle"
@@ -83,11 +97,13 @@
         android:id="@+id/fakeWidgetRefreshBtn"
         android:layout_width="43dp"
         android:layout_height="43dp"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
         android:layout_marginEnd="4dp"
         android:src="@drawable/refresh_cycle_normal"
         android:contentDescription="Refresh"
         app:tint="@color/onSurface"
-        android:visibility="visible" />
-</RelativeLayout>
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
