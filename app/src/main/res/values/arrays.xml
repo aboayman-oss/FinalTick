@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="font_options">
+        <item>Roboto (Default)</item>
+        <item>Roboto Regular</item>
+        <item>Roboto Medium</item>
+        <item>Roboto Light</item>
+        <item>Roboto Condensed</item>
+        <item>Roboto Black</item>
+        <item>Roboto Thin</item>
+        <item>Serif</item>
+        <item>Monospace</item>
+    </string-array>
+</resources>

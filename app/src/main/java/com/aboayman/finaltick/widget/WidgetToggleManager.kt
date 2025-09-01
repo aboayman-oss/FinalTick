@@ -3,11 +3,13 @@ package com.aboayman.finaltick.widget
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.aboayman.finaltick.CountdownWidget
 import com.aboayman.finaltick.Haptics
 import com.aboayman.finaltick.R
 import com.aboayman.finaltick.widget.WidgetPreferencesManager.TimeDisplayStyle
 import com.google.android.material.materialswitch.MaterialSwitch
+import kotlinx.coroutines.launch
 
 class WidgetToggleManager(
     private val activity: AppCompatActivity,
@@ -32,37 +34,44 @@ class WidgetToggleManager(
     fun init() {
         toggles.forEach { (key, id) ->
             val switch = activity.findViewById<MaterialSwitch>(id)
-            val isChecked = WidgetPreferencesManager.getToggle(
-                context,
-                appWidgetId,
-                key,
-                getDefaultState(key)
-            )
-            switch.isChecked = isChecked
+            activity.lifecycleScope.launch {
+                val isChecked = WidgetPreferencesManager.getToggle(
+                    context,
+                    appWidgetId,
+                    key,
+                    getDefaultState(key)
+                )
+                switch.isChecked = isChecked
+            }
             switch.setOnCheckedChangeListener { _, isCheckedNow ->
-                WidgetPreferencesManager.saveToggle(context, appWidgetId, key, isCheckedNow)
-                CountdownWidget.forceUpdateAll(context)
-                refreshPreview()
-                if (isTimerToggle(key)) {
-                    val style = WidgetPreferencesManager.getTimeDisplayStyle(context, appWidgetId)
-                    previewController.updateTimerText(
-                        getSwitch("show_days").isChecked,
-                        getSwitch("show_hours").isChecked,
-                        getSwitch("show_minutes").isChecked,
-                        getSwitch("show_seconds").isChecked,
-                        style
-                    )
+                activity.lifecycleScope.launch {
+                    WidgetPreferencesManager.saveToggle(context, appWidgetId, key, isCheckedNow)
+                    CountdownWidget.forceUpdateAll(context)
+                    refreshPreview()
+                    if (isTimerToggle(key)) {
+                        val style =
+                            WidgetPreferencesManager.getTimeDisplayStyle(context, appWidgetId)
+                        previewController.updateTimerText(
+                            getSwitch("show_days").isChecked,
+                            getSwitch("show_hours").isChecked,
+                            getSwitch("show_minutes").isChecked,
+                            getSwitch("show_seconds").isChecked,
+                            style
+                        )
+                    }
+                    Haptics.perform(context, switch)
                 }
-                Haptics.perform(context, switch)
             }
         }
         refreshPreview()
     }
 
     fun saveAll() {
-        toggles.forEach { (key, id) ->
-            val switch = activity.findViewById<MaterialSwitch>(id)
-            WidgetPreferencesManager.saveToggle(context, appWidgetId, key, switch.isChecked)
+        activity.lifecycleScope.launch {
+            toggles.forEach { (key, id) ->
+                val switch = activity.findViewById<MaterialSwitch>(id)
+                WidgetPreferencesManager.saveToggle(context, appWidgetId, key, switch.isChecked)
+            }
         }
     }
 
@@ -88,21 +97,23 @@ class WidgetToggleManager(
             "show_minutes" to true,
             "show_seconds" to true
         )
-        defaultStates.forEach { (key, value) ->
-            WidgetPreferencesManager.saveToggle(context, appWidgetId, key, value)
-            getSwitch(key).isChecked = value
-        }
+        activity.lifecycleScope.launch {
+            defaultStates.forEach { (key, value) ->
+                WidgetPreferencesManager.saveToggle(context, appWidgetId, key, value)
+                getSwitch(key).isChecked = value
+            }
 
-        val style = WidgetPreferencesManager.getTimeDisplayStyle(context, appWidgetId)
-        previewController.updateTimerText(
-            getSwitch("show_days").isChecked,
-            getSwitch("show_hours").isChecked,
-            getSwitch("show_minutes").isChecked,
-            getSwitch("show_seconds").isChecked,
-            style
-        )
-        refreshPreview()
-        CountdownWidget.forceUpdateAll(context)
+            val style = WidgetPreferencesManager.getTimeDisplayStyle(context, appWidgetId)
+            previewController.updateTimerText(
+                getSwitch("show_days").isChecked,
+                getSwitch("show_hours").isChecked,
+                getSwitch("show_minutes").isChecked,
+                getSwitch("show_seconds").isChecked,
+                style
+            )
+            refreshPreview()
+            CountdownWidget.forceUpdateAll(context)
+        }
     }
 
     private fun getSwitch(key: String): MaterialSwitch {

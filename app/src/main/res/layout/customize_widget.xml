@@ -794,6 +794,107 @@
                                 android:text="Default" />
                         </LinearLayout>
 
+                        <!-- Fonts selection -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Fonts"
+                            android:textAppearance="?attr/textAppearanceTitleSmall"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginBottom="8dp" />
+
+                        <!-- Title Font -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Title Font"
+                                android:textSize="14sp"
+                                android:textColor="?attr/colorOnSurface" />
+
+                            <Spinner
+                                android:id="@+id/spinnerFontTitle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:entries="@array/font_options" />
+                        </LinearLayout>
+
+                        <!-- Date Font -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Date Font"
+                                android:textSize="14sp"
+                                android:textColor="?attr/colorOnSurface" />
+
+                            <Spinner
+                                android:id="@+id/spinnerFontDate"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:entries="@array/font_options" />
+                        </LinearLayout>
+
+                        <!-- Timer Font -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Timer Font"
+                                android:textSize="14sp"
+                                android:textColor="?attr/colorOnSurface" />
+
+                            <Spinner
+                                android:id="@+id/spinnerFontTimer"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:entries="@array/font_options" />
+                        </LinearLayout>
+
+                        <!-- Percentage Font -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="8dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Percentage Font"
+                                android:textSize="14sp"
+                                android:textColor="?attr/colorOnSurface" />
+
+                            <Spinner
+                                android:id="@+id/spinnerFontPercentage"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:entries="@array/font_options" />
+                        </LinearLayout>
+
                         <Button
                             android:id="@+id/btnResetAllColors"
                             android:layout_width="match_parent"

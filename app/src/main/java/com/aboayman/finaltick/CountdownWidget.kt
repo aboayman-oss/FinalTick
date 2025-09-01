@@ -11,6 +11,8 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
+import android.text.SpannableString
+import android.text.style.TypefaceSpan
 import android.util.TypedValue
 import android.view.View
 import android.widget.RemoteViews
@@ -20,8 +22,13 @@ import com.aboayman.finaltick.widget.WidgetEditSettingsActivity
 import com.aboayman.finaltick.widget.WidgetLayoutManager
 import com.aboayman.finaltick.widget.WidgetLayoutManager.applyVisibilityOverrides
 import com.aboayman.finaltick.widget.WidgetPreferencesManager
+import com.aboayman.finaltick.widget.WidgetPreferencesManager.FontChoice
 import com.aboayman.finaltick.widget.WidgetPreferencesManager.TimeDisplayStyle
 import com.google.android.material.color.MaterialColors
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 
 
 class CountdownWidget : AppWidgetProvider() {
@@ -142,6 +149,7 @@ class CountdownWidget : AppWidgetProvider() {
         }
     }
     companion object {
+        private val widgetScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
         fun updateWidget(
             context: Context,
             appWidgetManager: AppWidgetManager,
@@ -149,10 +157,11 @@ class CountdownWidget : AppWidgetProvider() {
             widthDp: Float,
             heightDp: Float
         ) {
+            widgetScope.launch {
             val deadline = WidgetPreferencesManager.getDeadline(context, appWidgetId)
             if (deadline == -1L) {
                 resetWidget(context, appWidgetId)
-                return
+                return@launch
             }
 
             val title = WidgetPreferencesManager.getTitle(context, appWidgetId)
@@ -251,14 +260,16 @@ class CountdownWidget : AppWidgetProvider() {
 
                 val style = WidgetPreferencesManager.getTimeDisplayStyle(context, appWidgetId)
                 timerText = formatTimerText(
-                    context,
-                    appWidgetId,
                     style,
                     days,
                     hours,
                     minutes,
                     seconds,
-                    progress.toInt()
+                    progress.toInt(),
+                    showDays,
+                    showHours,
+                    showMinutes,
+                    showSeconds
                 )
             }
 
@@ -273,11 +284,23 @@ class CountdownWidget : AppWidgetProvider() {
             )
             val layoutConfig = applyVisibilityOverrides(context, appWidgetId, defaultConfig)
 
-            // === Set static UI ===
-            views.setTextViewText(R.id.widgetTitle, title)
-            views.setTextViewText(R.id.widgetDate, dateText)
-            views.setTextViewText(R.id.widgetTimer, timerText)
-            views.setTextViewText(R.id.widgetProgressPercent, percentText)
+                // === Fonts ===
+                val titleFont = WidgetPreferencesManager.getTitleFont(context, appWidgetId)
+                val dateFont = WidgetPreferencesManager.getDateFont(context, appWidgetId)
+                val timerFont = WidgetPreferencesManager.getTimerFont(context, appWidgetId)
+                val percentFont = WidgetPreferencesManager.getPercentFont(context, appWidgetId)
+
+                // === Set static UI (with fonts via TypefaceSpan) ===
+                views.setTextViewText(R.id.widgetTitle, applyFontSpan(title, "title", titleFont))
+                views.setTextViewText(R.id.widgetDate, applyFontSpan(dateText, "date", dateFont))
+                views.setTextViewText(
+                    R.id.widgetTimer,
+                    applyFontSpan(timerText, "timer", timerFont)
+                )
+                views.setTextViewText(
+                    R.id.widgetProgressPercent,
+                    applyFontSpan(percentText, "percent", percentFont)
+                )
 
             // --- Colors ---
             var titleFallback = MaterialColors.getColor(
@@ -459,6 +482,7 @@ class CountdownWidget : AppWidgetProvider() {
 
             // --- Apply to system ---
             appWidgetManager.updateAppWidget(appWidgetId, views)
+            }
         }
 
         @RequiresApi(Build.VERSION_CODES.S)
@@ -576,24 +600,35 @@ class CountdownWidget : AppWidgetProvider() {
             AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, views)
         }
 
+        private fun applyFontSpan(text: String, element: String, choice: FontChoice): CharSequence {
+            val family = when (choice) {
+                FontChoice.MONOSPACE -> "monospace"
+                FontChoice.SERIF -> "serif"
+                FontChoice.ROBOTO -> if (element == "title" || element == "timer") "sans-serif-medium" else "sans-serif"
+                FontChoice.ROBOTO_REGULAR -> "sans-serif"
+                FontChoice.ROBOTO_MEDIUM -> "sans-serif-medium"
+                FontChoice.ROBOTO_LIGHT -> "sans-serif-light"
+                FontChoice.ROBOTO_CONDENSED -> "sans-serif-condensed"
+                FontChoice.ROBOTO_BLACK -> "sans-serif-black"
+                FontChoice.ROBOTO_THIN -> "sans-serif-thin"
+            }
+            return SpannableString(text).apply {
+                setSpan(TypefaceSpan(family), 0, text.length, 0)
+            }
+        }
+
         private fun formatTimerText(
-            context: Context,
-            appWidgetId: Int,
             style: TimeDisplayStyle,
             days: Long,
             hours: Long,
             minutes: Long,
             seconds: Long,
-            progress: Int
+            progress: Int,
+            showDays: Boolean,
+            showHours: Boolean,
+            showMinutes: Boolean,
+            showSeconds: Boolean
         ): String {
-            val showDays = WidgetPreferencesManager.getToggle(context, appWidgetId, "show_days")
-            val showHours = WidgetPreferencesManager.getToggle(context, appWidgetId, "show_hours")
-            val showMinutes =
-                WidgetPreferencesManager.getToggle(context, appWidgetId, "show_minutes")
-            val showSeconds =
-                WidgetPreferencesManager.getToggle(context, appWidgetId, "show_seconds")
-
-
             return when (style) {
                 TimeDisplayStyle.COLON -> {
                     val partsObj = CountdownParts(days, hours, minutes, seconds)

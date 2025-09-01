@@ -1,11 +1,13 @@
 package com.aboayman.finaltick.widget
 
 import android.app.Activity
+import android.graphics.Typeface
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.aboayman.finaltick.R
+import com.aboayman.finaltick.widget.WidgetPreferencesManager.FontChoice
 import com.aboayman.finaltick.widget.WidgetPreferencesManager.TimeDisplayStyle
 
 class FakeWidgetPreviewController(private val activity: Activity) {
@@ -129,5 +131,32 @@ class FakeWidgetPreviewController(private val activity: Activity) {
         }
 
         timer.text = previewText
+    }
+
+    fun applyFonts(
+        titleFont: FontChoice,
+        dateFont: FontChoice,
+        timerFont: FontChoice,
+        percentFont: FontChoice
+    ) {
+        title.typeface = toTypeface(titleFont, "title")
+        date.typeface = toTypeface(dateFont, "date")
+        timer.typeface = toTypeface(timerFont, "timer")
+        percent.typeface = toTypeface(percentFont, "percent")
+    }
+
+    private fun toTypeface(choice: FontChoice, element: String): android.graphics.Typeface {
+        val family = when (choice) {
+            FontChoice.MONOSPACE -> "monospace"
+            FontChoice.SERIF -> "serif"
+            FontChoice.ROBOTO -> if (element == "title" || element == "timer") "sans-serif-medium" else "sans-serif"
+            FontChoice.ROBOTO_REGULAR -> "sans-serif"
+            FontChoice.ROBOTO_MEDIUM -> "sans-serif-medium"
+            FontChoice.ROBOTO_LIGHT -> "sans-serif-light"
+            FontChoice.ROBOTO_CONDENSED -> "sans-serif-condensed"
+            FontChoice.ROBOTO_BLACK -> "sans-serif-black"
+            FontChoice.ROBOTO_THIN -> "sans-serif-thin"
+        }
+        return android.graphics.Typeface.create(family, Typeface.NORMAL)
     }
 }

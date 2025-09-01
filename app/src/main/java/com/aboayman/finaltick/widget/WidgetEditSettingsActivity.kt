@@ -7,12 +7,14 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aboayman.finaltick.CountdownWidget
 import com.aboayman.finaltick.DeadlineAdapter
 import com.aboayman.finaltick.DeadlineItem
 import com.aboayman.finaltick.R
+import kotlinx.coroutines.launch
 
 class WidgetEditSettingsActivity : AppCompatActivity() {
 
@@ -48,15 +50,33 @@ class WidgetEditSettingsActivity : AppCompatActivity() {
 
         val items = loadDeadlineItems()
         recycler.adapter = DeadlineAdapter(items) { selected ->
-            WidgetPreferencesManager.saveDeadline(this, appWidgetId, selected.timestamp)
-            WidgetPreferencesManager.saveTitle(this, appWidgetId, selected.title)
-            WidgetPreferencesManager.saveCreatedAt(this, appWidgetId, selected.createdAt)
+            lifecycleScope.launch {
+                WidgetPreferencesManager.saveDeadline(
+                    this@WidgetEditSettingsActivity,
+                    appWidgetId,
+                    selected.timestamp
+                )
+                WidgetPreferencesManager.saveTitle(
+                    this@WidgetEditSettingsActivity,
+                    appWidgetId,
+                    selected.title
+                )
+                WidgetPreferencesManager.saveCreatedAt(
+                    this@WidgetEditSettingsActivity,
+                    appWidgetId,
+                    selected.createdAt
+                )
 
-            CountdownWidget.forceUpdateAll(this)
+                CountdownWidget.forceUpdateAll(this@WidgetEditSettingsActivity)
 
-            Toast.makeText(this, "Widget updated with '${selected.title}'", Toast.LENGTH_SHORT)
-                .show()
-            finish()
+                Toast.makeText(
+                    this@WidgetEditSettingsActivity,
+                    "Widget updated with '${selected.title}'",
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+                finish()
+            }
         }
     }
 

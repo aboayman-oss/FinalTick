@@ -40,6 +40,8 @@ object SettingsManager {
         stringPreferencesKey("widget_${appWidgetId}_time_style")
 
     private fun keyShape(appWidgetId: Int) = stringPreferencesKey("widget_${appWidgetId}_shape")
+    private fun keyString(appWidgetId: Int, key: String) =
+        stringPreferencesKey("widget_${appWidgetId}_${key}")
 
     // Flows
     fun deadlineFlow(context: Context, appWidgetId: Int): Flow<Long> =
@@ -77,6 +79,14 @@ object SettingsManager {
     fun shapeFlow(context: Context, appWidgetId: Int): Flow<String> =
         context.dataStore.data.map { it[keyShape(appWidgetId)] ?: "rounded" }
 
+    fun stringFlow(
+        context: Context,
+        appWidgetId: Int,
+        key: String,
+        default: String
+    ): Flow<String> =
+        context.dataStore.data.map { it[keyString(appWidgetId, key)] ?: default }
+
     // Suspend getters
     suspend fun getDeadline(context: Context, appWidgetId: Int) =
         deadlineFlow(context, appWidgetId).first()
@@ -107,6 +117,13 @@ object SettingsManager {
 
     suspend fun getShape(context: Context, appWidgetId: Int) =
         shapeFlow(context, appWidgetId).first()
+
+    suspend fun getString(
+        context: Context,
+        appWidgetId: Int,
+        key: String,
+        default: String
+    ) = stringFlow(context, appWidgetId, key, default).first()
 
     // Suspend setters
     suspend fun setDeadline(context: Context, appWidgetId: Int, millis: Long) {
@@ -143,6 +160,15 @@ object SettingsManager {
 
     suspend fun setShape(context: Context, appWidgetId: Int, shape: String) {
         context.dataStore.edit { it[keyShape(appWidgetId)] = shape }
+    }
+
+    suspend fun setString(
+        context: Context,
+        appWidgetId: Int,
+        key: String,
+        value: String
+    ) {
+        context.dataStore.edit { it[keyString(appWidgetId, key)] = value }
     }
 
     // Removal helpers (try all supported types with same name)

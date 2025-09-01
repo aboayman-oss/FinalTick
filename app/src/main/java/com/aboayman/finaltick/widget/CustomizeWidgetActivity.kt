@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import com.aboayman.finaltick.CountdownWidget
 import com.aboayman.finaltick.Haptics
 import com.aboayman.finaltick.R
+import com.aboayman.finaltick.widget.WidgetPreferencesManager.FontChoice
 import com.aboayman.finaltick.widget.WidgetPreferencesManager.TimeDisplayStyle
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -49,6 +50,9 @@ class CustomizeWidgetActivity : AppCompatActivity() {
 
         observePreview()
 
+        // Font spinners: Title, Date, Timer, Percentage
+        initFontSpinners()
+
         // Info tooltips
         findViewById<android.widget.ImageView>(R.id.ivInfoShape)?.setOnClickListener {
             Haptics.perform(this, it)
@@ -67,31 +71,21 @@ class CustomizeWidgetActivity : AppCompatActivity() {
                 .show()
         }
 
-        val savedStyle = WidgetPreferencesManager.getTimeDisplayStyle(this, appWidgetId)
-
-        val radioButton = when (savedStyle) {
-            TimeDisplayStyle.COLON -> findViewById<androidx.appcompat.widget.AppCompatRadioButton>(R.id.rbColonFormat)
-            TimeDisplayStyle.LETTER -> findViewById<androidx.appcompat.widget.AppCompatRadioButton>(
-                R.id.rbLetterFormat
+        lifecycleScope.launch {
+            val savedStyle = WidgetPreferencesManager.getTimeDisplayStyle(
+                this@CustomizeWidgetActivity,
+                appWidgetId
             )
-
-            TimeDisplayStyle.NATURAL_LANGUAGE -> findViewById<androidx.appcompat.widget.AppCompatRadioButton>(
-                R.id.rbNaturalLanguageFormat
-            )
-
-            TimeDisplayStyle.VERBOSE_SINGLE -> findViewById<androidx.appcompat.widget.AppCompatRadioButton>(
-                R.id.rbVerboseSingleUnitFormat
-            )
-
-            TimeDisplayStyle.COUNTDOWN_WORDS -> findViewById<androidx.appcompat.widget.AppCompatRadioButton>(
-                R.id.rbCountdownWordsFormat
-            )
-
-            TimeDisplayStyle.MINIMAL_PROGRESS -> findViewById<androidx.appcompat.widget.AppCompatRadioButton>(
-                R.id.rbProgressOnlyFormat
-            )
+            val checkId = when (savedStyle) {
+                TimeDisplayStyle.COLON -> R.id.rbColonFormat
+                TimeDisplayStyle.LETTER -> R.id.rbLetterFormat
+                TimeDisplayStyle.NATURAL_LANGUAGE -> R.id.rbNaturalLanguageFormat
+                TimeDisplayStyle.VERBOSE_SINGLE -> R.id.rbVerboseSingleUnitFormat
+                TimeDisplayStyle.COUNTDOWN_WORDS -> R.id.rbCountdownWordsFormat
+                TimeDisplayStyle.MINIMAL_PROGRESS -> R.id.rbProgressOnlyFormat
+            }
+            findViewById<android.widget.RadioGroup>(R.id.timeFormatRadioGroup).check(checkId)
         }
-        radioButton.isChecked = true
 
         val radioToStyleMap = mapOf(
             R.id.rbColonFormat to TimeDisplayStyle.COLON,
@@ -107,8 +101,14 @@ class CustomizeWidgetActivity : AppCompatActivity() {
             val selectedStyle = radioToStyleMap[checkedId] ?: return@setOnCheckedChangeListener
 
             // Save the selected style immediately
-            WidgetPreferencesManager.saveTimeDisplayStyle(this, appWidgetId, selectedStyle)
-            toggleManager.applyTimeStyleConstraints(selectedStyle)
+            lifecycleScope.launch {
+                WidgetPreferencesManager.saveTimeDisplayStyle(
+                    this@CustomizeWidgetActivity,
+                    appWidgetId,
+                    selectedStyle
+                )
+                toggleManager.applyTimeStyleConstraints(selectedStyle)
+            }
 
             previewController.updateTimerText(
                 findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.cbDays).isChecked,
@@ -121,14 +121,20 @@ class CustomizeWidgetActivity : AppCompatActivity() {
             CountdownWidget.forceUpdateAll(this)
         }
 
-        toggleManager.applyTimeStyleConstraints(savedStyle)
-        previewController.updateTimerText(
-            findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.cbDays).isChecked,
-            findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.cbHours).isChecked,
-            findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.cbMinutes).isChecked,
-            findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.cbSeconds).isChecked,
-            savedStyle
-        )
+        lifecycleScope.launch {
+            val savedStyle = WidgetPreferencesManager.getTimeDisplayStyle(
+                this@CustomizeWidgetActivity,
+                appWidgetId
+            )
+            toggleManager.applyTimeStyleConstraints(savedStyle)
+            previewController.updateTimerText(
+                findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.cbDays).isChecked,
+                findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.cbHours).isChecked,
+                findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.cbMinutes).isChecked,
+                findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.cbSeconds).isChecked,
+                savedStyle
+            )
+        }
 
         findViewById<Button>(R.id.btnSaveCustomize).setOnClickListener {
             finish()
@@ -144,6 +150,133 @@ class CustomizeWidgetActivity : AppCompatActivity() {
             colorManager.reloadColors()
             Toast.makeText(this, "Widget reset to defaults.", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun initFontSpinners() {
+        val spinnerTitle = findViewById<android.widget.Spinner>(R.id.spinnerFontTitle)
+        val spinnerDate = findViewById<android.widget.Spinner>(R.id.spinnerFontDate)
+        val spinnerTimer = findViewById<android.widget.Spinner>(R.id.spinnerFontTimer)
+        val spinnerPercent = findViewById<android.widget.Spinner>(R.id.spinnerFontPercentage)
+
+        fun toIndex(choice: FontChoice): Int = when (choice) {
+            FontChoice.ROBOTO -> 0
+            FontChoice.ROBOTO_REGULAR -> 1
+            FontChoice.ROBOTO_MEDIUM -> 2
+            FontChoice.ROBOTO_LIGHT -> 3
+            FontChoice.ROBOTO_CONDENSED -> 4
+            FontChoice.ROBOTO_BLACK -> 5
+            FontChoice.ROBOTO_THIN -> 6
+            FontChoice.SERIF -> 7
+            FontChoice.MONOSPACE -> 8
+        }
+
+        fun toChoice(index: Int): FontChoice = when (index) {
+            0 -> FontChoice.ROBOTO
+            1 -> FontChoice.ROBOTO_REGULAR
+            2 -> FontChoice.ROBOTO_MEDIUM
+            3 -> FontChoice.ROBOTO_LIGHT
+            4 -> FontChoice.ROBOTO_CONDENSED
+            5 -> FontChoice.ROBOTO_BLACK
+            6 -> FontChoice.ROBOTO_THIN
+            7 -> FontChoice.SERIF
+            8 -> FontChoice.MONOSPACE
+            else -> FontChoice.ROBOTO
+        }
+
+        lifecycleScope.launch {
+            // Load saved selections
+            spinnerTitle?.setSelection(
+                toIndex(
+                    WidgetPreferencesManager.getTitleFont(
+                        this@CustomizeWidgetActivity,
+                        appWidgetId
+                    )
+                )
+            )
+            spinnerDate?.setSelection(
+                toIndex(
+                    WidgetPreferencesManager.getDateFont(
+                        this@CustomizeWidgetActivity,
+                        appWidgetId
+                    )
+                )
+            )
+            spinnerTimer?.setSelection(
+                toIndex(
+                    WidgetPreferencesManager.getTimerFont(
+                        this@CustomizeWidgetActivity,
+                        appWidgetId
+                    )
+                )
+            )
+            spinnerPercent?.setSelection(
+                toIndex(
+                    WidgetPreferencesManager.getPercentFont(
+                        this@CustomizeWidgetActivity,
+                        appWidgetId
+                    )
+                )
+            )
+        }
+
+        fun applyPreviewFontsFromSpinners() {
+            val t = toChoice(spinnerTitle?.selectedItemPosition ?: 0)
+            val d = toChoice(spinnerDate?.selectedItemPosition ?: 0)
+            val ti = toChoice(spinnerTimer?.selectedItemPosition ?: 0)
+            val p = toChoice(spinnerPercent?.selectedItemPosition ?: 0)
+            previewController.applyFonts(t, d, ti, p)
+        }
+
+        val listener = object : android.widget.AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: android.widget.AdapterView<*>,
+                view: android.view.View?,
+                position: Int,
+                id: Long
+            ) {
+                lifecycleScope.launch {
+                    when (parent.id) {
+                        R.id.spinnerFontTitle -> WidgetPreferencesManager.saveTitleFont(
+                            this@CustomizeWidgetActivity,
+                            appWidgetId,
+                            toChoice(position)
+                        )
+
+                        R.id.spinnerFontDate -> WidgetPreferencesManager.saveDateFont(
+                            this@CustomizeWidgetActivity,
+                            appWidgetId,
+                            toChoice(position)
+                        )
+
+                        R.id.spinnerFontTimer -> WidgetPreferencesManager.saveTimerFont(
+                            this@CustomizeWidgetActivity,
+                            appWidgetId,
+                            toChoice(position)
+                        )
+
+                        R.id.spinnerFontPercentage -> WidgetPreferencesManager.savePercentFont(
+                            this@CustomizeWidgetActivity,
+                            appWidgetId,
+                            toChoice(position)
+                        )
+                    }
+                    // Reflect immediately in live preview
+                    applyPreviewFontsFromSpinners()
+                    // Update any live preview text sizes or content if needed, then refresh widgets
+                    CountdownWidget.forceUpdateAll(this@CustomizeWidgetActivity)
+                }
+            }
+
+            override fun onNothingSelected(parent: android.widget.AdapterView<*>) {}
+        }
+
+        spinnerTitle?.onItemSelectedListener = listener
+        spinnerDate?.onItemSelectedListener = listener
+        spinnerTimer?.onItemSelectedListener = listener
+        spinnerPercent?.onItemSelectedListener = listener
+
+        // Apply initial preview fonts once selections are set
+        spinnerPercent?.post { applyPreviewFontsFromSpinners() }
     }
 
     private fun observePreview() {

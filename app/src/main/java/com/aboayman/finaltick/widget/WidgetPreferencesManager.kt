@@ -2,7 +2,6 @@ package com.aboayman.finaltick.widget
 
 import android.content.Context
 import com.aboayman.finaltick.SettingsManager
-import kotlinx.coroutines.runBlocking
 
 object WidgetPreferencesManager {
 
@@ -17,94 +16,148 @@ object WidgetPreferencesManager {
         MINIMAL_PROGRESS
     }
 
-    // New DataStore-backed APIs via SettingsManager
-    fun saveDeadline(context: Context, appWidgetId: Int, deadlineMillis: Long) = runBlocking {
+    enum class FontChoice {
+        ROBOTO,            // Default mapping
+        ROBOTO_REGULAR,    // sans-serif
+        ROBOTO_MEDIUM,     // sans-serif-medium
+        ROBOTO_LIGHT,      // sans-serif-light
+        ROBOTO_CONDENSED,  // sans-serif-condensed
+        ROBOTO_BLACK,      // sans-serif-black
+        ROBOTO_THIN,       // sans-serif-thin
+        SERIF,             // serif
+        MONOSPACE          // monospace
+    }
+
+    // New DataStore-backed APIs via SettingsManager (all suspend)
+    suspend fun saveDeadline(context: Context, appWidgetId: Int, deadlineMillis: Long) =
         SettingsManager.setDeadline(context, appWidgetId, deadlineMillis)
-    }
 
-    fun getDeadline(context: Context, appWidgetId: Int): Long = runBlocking {
+    suspend fun getDeadline(context: Context, appWidgetId: Int): Long =
         SettingsManager.getDeadline(context, appWidgetId)
-    }
 
-    fun saveFormat(context: Context, appWidgetId: Int, format: String) = runBlocking {
+    suspend fun saveFormat(context: Context, appWidgetId: Int, format: String) =
         SettingsManager.setFormat(context, appWidgetId, format)
-    }
 
-    fun getFormat(context: Context, appWidgetId: Int): String = runBlocking {
+    suspend fun getFormat(context: Context, appWidgetId: Int): String =
         SettingsManager.getFormat(context, appWidgetId)
-    }
 
-    fun deleteWidgetSettings(context: Context, appWidgetId: Int) = runBlocking {
+    suspend fun deleteWidgetSettings(context: Context, appWidgetId: Int) =
         SettingsManager.deleteWidgetSettings(context, appWidgetId)
-    }
 
-    fun savePrefsVersion(context: Context) = runBlocking {
+    suspend fun savePrefsVersion(context: Context) =
         SettingsManager.setPrefsVersion(context, CURRENT_PREFS_VERSION)
-    }
 
-    fun getPrefsVersion(context: Context): Int = runBlocking {
+    suspend fun getPrefsVersion(context: Context): Int =
         SettingsManager.getPrefsVersion(context)
-    }
 
-    fun saveTitle(context: Context, appWidgetId: Int, title: String) = runBlocking {
+    suspend fun saveTitle(context: Context, appWidgetId: Int, title: String) =
         SettingsManager.setTitle(context, appWidgetId, title)
-    }
 
-    fun getTitle(context: Context, appWidgetId: Int): String = runBlocking {
+    suspend fun getTitle(context: Context, appWidgetId: Int): String =
         SettingsManager.getTitle(context, appWidgetId)
-    }
 
-    fun saveToggle(context: Context, appWidgetId: Int, key: String, value: Boolean) = runBlocking {
+    suspend fun saveToggle(context: Context, appWidgetId: Int, key: String, value: Boolean) =
         SettingsManager.setToggle(context, appWidgetId, key, value)
-    }
 
-    fun getToggle(
+    suspend fun getToggle(
         context: Context,
         appWidgetId: Int,
         key: String,
         default: Boolean = true
-    ): Boolean = runBlocking {
-        SettingsManager.getToggle(context, appWidgetId, key, default)
-    }
+    ): Boolean = SettingsManager.getToggle(context, appWidgetId, key, default)
 
-    fun saveCreatedAt(context: Context, appWidgetId: Int, createdAt: Long) = runBlocking {
+    suspend fun saveCreatedAt(context: Context, appWidgetId: Int, createdAt: Long) =
         SettingsManager.setCreatedAt(context, appWidgetId, createdAt)
-    }
 
-    fun getCreatedAt(context: Context, appWidgetId: Int): Long = runBlocking {
+    suspend fun getCreatedAt(context: Context, appWidgetId: Int): Long =
         SettingsManager.getCreatedAt(context, appWidgetId)
-    }
 
-    fun saveColor(context: Context, appWidgetId: Int, key: String, color: Int) = runBlocking {
+    suspend fun saveColor(context: Context, appWidgetId: Int, key: String, color: Int) =
         SettingsManager.setColor(context, appWidgetId, key, color)
-    }
 
-    fun getColor(context: Context, appWidgetId: Int, key: String, defaultColor: Int): Int =
-        runBlocking {
-            SettingsManager.getColor(context, appWidgetId, key, defaultColor)
-    }
+    suspend fun getColor(context: Context, appWidgetId: Int, key: String, defaultColor: Int): Int =
+        SettingsManager.getColor(context, appWidgetId, key, defaultColor)
 
-    fun removeKey(context: Context, appWidgetId: Int, key: String) = runBlocking {
+    suspend fun removeKey(context: Context, appWidgetId: Int, key: String) =
         SettingsManager.removeKey(context, appWidgetId, key)
-    }
 
     private fun timeStyleKey(appWidgetId: Int) = "widget_${appWidgetId}_time_style"
 
-    fun saveTimeDisplayStyle(context: Context, appWidgetId: Int, style: TimeDisplayStyle) =
-        runBlocking {
-            SettingsManager.setTimeStyle(context, appWidgetId, style)
-        }
+    suspend fun saveTimeDisplayStyle(context: Context, appWidgetId: Int, style: TimeDisplayStyle) =
+        SettingsManager.setTimeStyle(context, appWidgetId, style)
 
-    fun getTimeDisplayStyle(context: Context, appWidgetId: Int): TimeDisplayStyle = runBlocking {
+    suspend fun getTimeDisplayStyle(context: Context, appWidgetId: Int): TimeDisplayStyle =
         SettingsManager.getTimeStyle(context, appWidgetId)
-    }
 
     // Shape style: "rounded" | "pill" | "square"
-    fun saveShape(context: Context, appWidgetId: Int, shape: String) = runBlocking {
+    suspend fun saveShape(context: Context, appWidgetId: Int, shape: String) =
         SettingsManager.setShape(context, appWidgetId, shape)
-    }
 
-    fun getShape(context: Context, appWidgetId: Int): String = runBlocking {
+    suspend fun getShape(context: Context, appWidgetId: Int): String =
         SettingsManager.getShape(context, appWidgetId)
-    }
+
+    private fun fontKeyTitle(appWidgetId: Int) = "font_title"
+    private fun fontKeyDate(appWidgetId: Int) = "font_date"
+    private fun fontKeyTimer(appWidgetId: Int) = "font_timer"
+    private fun fontKeyPercent(appWidgetId: Int) = "font_percentage"
+
+    suspend fun saveTitleFont(context: Context, appWidgetId: Int, font: FontChoice) =
+        SettingsManager.setString(context, appWidgetId, fontKeyTitle(appWidgetId), font.name)
+
+    suspend fun saveDateFont(context: Context, appWidgetId: Int, font: FontChoice) =
+        SettingsManager.setString(context, appWidgetId, fontKeyDate(appWidgetId), font.name)
+
+    suspend fun saveTimerFont(context: Context, appWidgetId: Int, font: FontChoice) =
+        SettingsManager.setString(context, appWidgetId, fontKeyTimer(appWidgetId), font.name)
+
+    suspend fun savePercentFont(context: Context, appWidgetId: Int, font: FontChoice) =
+        SettingsManager.setString(context, appWidgetId, fontKeyPercent(appWidgetId), font.name)
+
+    suspend fun getTitleFont(context: Context, appWidgetId: Int): FontChoice =
+        runCatching {
+            FontChoice.valueOf(
+                SettingsManager.getString(
+                    context,
+                    appWidgetId,
+                    fontKeyTitle(appWidgetId),
+                    FontChoice.ROBOTO.name
+                )
+            )
+        }.getOrDefault(FontChoice.ROBOTO)
+
+    suspend fun getDateFont(context: Context, appWidgetId: Int): FontChoice =
+        runCatching {
+            FontChoice.valueOf(
+                SettingsManager.getString(
+                    context,
+                    appWidgetId,
+                    fontKeyDate(appWidgetId),
+                    FontChoice.ROBOTO.name
+                )
+            )
+        }.getOrDefault(FontChoice.ROBOTO)
+
+    suspend fun getTimerFont(context: Context, appWidgetId: Int): FontChoice =
+        runCatching {
+            FontChoice.valueOf(
+                SettingsManager.getString(
+                    context,
+                    appWidgetId,
+                    fontKeyTimer(appWidgetId),
+                    FontChoice.ROBOTO.name
+                )
+            )
+        }.getOrDefault(FontChoice.ROBOTO)
+
+    suspend fun getPercentFont(context: Context, appWidgetId: Int): FontChoice =
+        runCatching {
+            FontChoice.valueOf(
+                SettingsManager.getString(
+                    context,
+                    appWidgetId,
+                    fontKeyPercent(appWidgetId),
+                    FontChoice.ROBOTO.name
+                )
+            )
+        }.getOrDefault(FontChoice.ROBOTO)
 }

@@ -9,12 +9,14 @@ import android.widget.Button
 import android.widget.RemoteViews
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aboayman.finaltick.CountdownWidget
 import com.aboayman.finaltick.DeadlineAdapter
 import com.aboayman.finaltick.DeadlineItem
 import com.aboayman.finaltick.R
+import kotlinx.coroutines.launch
 
 class WidgetSettingsActivity : AppCompatActivity() {
 
@@ -70,26 +72,44 @@ class WidgetSettingsActivity : AppCompatActivity() {
             return
         }
         recycler.adapter = DeadlineAdapter(items) { selected ->
-            WidgetPreferencesManager.saveDeadline(this, appWidgetId, selected.timestamp)
-            WidgetPreferencesManager.saveTitle(this, appWidgetId, selected.title)
-            WidgetPreferencesManager.saveCreatedAt(this, appWidgetId, selected.createdAt)
+            lifecycleScope.launch {
+                WidgetPreferencesManager.saveDeadline(
+                    this@WidgetSettingsActivity,
+                    appWidgetId,
+                    selected.timestamp
+                )
+                WidgetPreferencesManager.saveTitle(
+                    this@WidgetSettingsActivity,
+                    appWidgetId,
+                    selected.title
+                )
+                WidgetPreferencesManager.saveCreatedAt(
+                    this@WidgetSettingsActivity,
+                    appWidgetId,
+                    selected.createdAt
+                )
 
-            // Ensure launcher receives an initial layout right away
-            val manager = AppWidgetManager.getInstance(this)
-            manager.updateAppWidget(
-                appWidgetId,
-                RemoteViews(packageName, R.layout.widget_countdown)
-            )
+                // Ensure launcher receives an initial layout right away
+                val manager = AppWidgetManager.getInstance(this@WidgetSettingsActivity)
+                manager.updateAppWidget(
+                    appWidgetId,
+                    RemoteViews(packageName, R.layout.widget_countdown)
+                )
 
-            val resultIntent = Intent().apply {
-                putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+                val resultIntent = Intent().apply {
+                    putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+                }
+                setResult(Activity.RESULT_OK, resultIntent)
+
+                CountdownWidget.forceUpdateAll(this@WidgetSettingsActivity)
+
+                Toast.makeText(
+                    this@WidgetSettingsActivity,
+                    "Widget added with '${selected.title}'",
+                    Toast.LENGTH_SHORT
+                ).show()
+                finish()
             }
-            setResult(Activity.RESULT_OK, resultIntent)
-
-            CountdownWidget.forceUpdateAll(this)
-
-            Toast.makeText(this, "Widget added with '${selected.title}'", Toast.LENGTH_SHORT).show()
-            finish()
         }
     }
 

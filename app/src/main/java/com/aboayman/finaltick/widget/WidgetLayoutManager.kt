@@ -151,7 +151,7 @@ object WidgetLayoutManager {
         return sizeKey
     }
 
-    fun applyVisibilityOverrides(
+    suspend fun applyVisibilityOverrides(
         context: Context,
         appWidgetId: Int,
         base: LayoutConfig
