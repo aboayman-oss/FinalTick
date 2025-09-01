@@ -388,7 +388,8 @@ class CountdownWidget : AppWidgetProvider() {
                 "background_alpha",
                 0xCC
             ).coerceIn(0, 255)
-            val backgroundColor = (backgroundAlpha shl 24) or (backgroundBase and 0x00FFFFFF)
+                // Use RGB tint + view alpha to avoid unexpected blending
+                val backgroundTintRgb = (backgroundBase and 0x00FFFFFF) or (0xFF shl 24)
 
             views.setTextColor(R.id.widgetTitle, titleColor)
             views.setTextColor(R.id.widgetDate, dateColor)
@@ -403,7 +404,8 @@ class CountdownWidget : AppWidgetProvider() {
                 else -> R.drawable.widget_background_rounded
             }
             views.setImageViewResource(R.id.background_view, bgRes)
-            views.setInt(R.id.background_view, "setColorFilter", backgroundColor)
+                views.setInt(R.id.background_view, "setColorFilter", backgroundTintRgb)
+                views.setInt(R.id.background_view, "setImageAlpha", backgroundAlpha)
 
                 // --- Progress style + visibility ---
                 val stylePref = WidgetPreferencesManager.getProgressStyle(context, appWidgetId)

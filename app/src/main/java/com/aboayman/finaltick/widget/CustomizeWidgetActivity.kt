@@ -141,6 +141,8 @@ class CustomizeWidgetActivity : AppCompatActivity() {
         val radioGroup = findViewById<android.widget.RadioGroup>(R.id.timeFormatRadioGroup)
         radioGroup.setOnCheckedChangeListener { _, checkedId ->
             val selectedStyle = radioToStyleMap[checkedId] ?: return@setOnCheckedChangeListener
+            // Apply constraints immediately so preview reflects the new style
+            toggleManager.applyTimeStyleConstraints(selectedStyle)
 
             // Save the selected style immediately
             lifecycleScope.launch {
@@ -149,7 +151,7 @@ class CustomizeWidgetActivity : AppCompatActivity() {
                     appWidgetId,
                     selectedStyle
                 )
-                toggleManager.applyTimeStyleConstraints(selectedStyle)
+                // constraints already applied above to update preview instantly
             }
 
             previewController.updateTimerText(
@@ -188,9 +190,87 @@ class CustomizeWidgetActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.btnResetDefaults).setOnClickListener {
+            // Reset toggles/layout
             toggleManager.resetToDefaultConfig()
-            colorManager.reloadColors()
+
+            // Reset colors (including background + alpha)
+            colorManager.resetAllColorsToDefault()
+
+            // Reset time style to default (COLON) and re-apply constraints
+            val radio = findViewById<android.widget.RadioGroup>(R.id.timeFormatRadioGroup)
+            radio.check(R.id.rbColonFormat)
+            lifecycleScope.launch {
+                WidgetPreferencesManager.saveTimeDisplayStyle(
+                    this@CustomizeWidgetActivity,
+                    appWidgetId,
+                    TimeDisplayStyle.COLON
+                )
+            }
+            toggleManager.applyTimeStyleConstraints(TimeDisplayStyle.COLON)
+            previewController.updateTimerText(
+                findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.cbDays).isChecked,
+                findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.cbHours).isChecked,
+                findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.cbMinutes).isChecked,
+                findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.cbSeconds).isChecked,
+                TimeDisplayStyle.COLON
+            )
+
+            // Reset shape to rounded and UI chips
+            lifecycleScope.launch {
+                WidgetPreferencesManager.saveShape(
+                    this@CustomizeWidgetActivity,
+                    appWidgetId,
+                    "rounded"
+                )
+            }
+            previewController.applyShape("rounded")
+            runCatching {
+                val chipRounded =
+                    findViewById<com.google.android.material.chip.Chip>(R.id.chipShapeRounded)
+                val chipGroup =
+                    findViewById<com.google.android.material.chip.ChipGroup>(R.id.chipShapeGroup)
+                chipGroup.check(chipRounded.id)
+            }
+
+            // Reset progress style
+            val spinnerProgress = findViewById<android.widget.Spinner>(R.id.spinnerProgressStyle)
+            spinnerProgress?.setSelection(0)
+            lifecycleScope.launch {
+                WidgetPreferencesManager.saveProgressStyle(
+                    this@CustomizeWidgetActivity,
+                    appWidgetId,
+                    "solid"
+                )
+            }
+            previewController.applyProgressStyle("solid")
+
+            // Reset fonts to defaults (ROBOTO)
+            lifecycleScope.launch {
+                WidgetPreferencesManager.saveTitleFont(
+                    this@CustomizeWidgetActivity,
+                    appWidgetId,
+                    FontChoice.ROBOTO
+                )
+                WidgetPreferencesManager.saveDateFont(
+                    this@CustomizeWidgetActivity,
+                    appWidgetId,
+                    FontChoice.ROBOTO
+                )
+                WidgetPreferencesManager.saveTimerFont(
+                    this@CustomizeWidgetActivity,
+                    appWidgetId,
+                    FontChoice.ROBOTO
+                )
+                WidgetPreferencesManager.savePercentFont(
+                    this@CustomizeWidgetActivity,
+                    appWidgetId,
+                    FontChoice.ROBOTO
+                )
+            }
+            runCatching { initFontSpinners() }
+
             Toast.makeText(this, "Widget reset to defaults.", Toast.LENGTH_SHORT).show()
+            CountdownWidget.forceUpdateAll(this)
         }
     }
 

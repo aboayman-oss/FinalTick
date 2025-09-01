@@ -53,8 +53,10 @@ class FakeWidgetPreviewController(private val activity: Activity) {
     fun applyBackground(color: Int?, alpha: Int?) {
         val base = color ?: return
         val a = (alpha ?: 0xCC).coerceIn(0, 255)
-        val argb = (a shl 24) or (base and 0x00FFFFFF)
-        backgroundView.setColorFilter(argb)
+        // Apply RGB tint and control transparency via ImageView alpha for correct visual result
+        val rgb = (0x00FFFFFF and base) or (0xFF shl 24)
+        backgroundView.setColorFilter(rgb)
+        backgroundView.imageAlpha = a
     }
 
     fun applyShape(shape: String) {

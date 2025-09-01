@@ -51,6 +51,17 @@ class WidgetToggleManager(
                     if (isTimerToggle(key)) {
                         val style =
                             WidgetPreferencesManager.getTimeDisplayStyle(context, appWidgetId)
+
+                        // Enforce single-unit selection when required by style
+                        if (isCheckedNow && (style == TimeDisplayStyle.VERBOSE_SINGLE || style == TimeDisplayStyle.COUNTDOWN_WORDS)) {
+                            val timerKeys =
+                                listOf("show_days", "show_hours", "show_minutes", "show_seconds")
+                            timerKeys.filter { it != key }.forEach { otherKey ->
+                                val other = getSwitch(otherKey)
+                                if (other.isChecked) other.isChecked = false
+                            }
+                        }
+
                         previewController.updateTimerText(
                             getSwitch("show_days").isChecked,
                             getSwitch("show_hours").isChecked,
@@ -158,34 +169,32 @@ class WidgetToggleManager(
     fun applyTimeStyleConstraints(style: TimeDisplayStyle) {
         val keys = listOf("show_days", "show_hours", "show_minutes", "show_seconds")
         val switches = keys.map { getSwitch(it) }
+
         when (style) {
             TimeDisplayStyle.MINIMAL_PROGRESS -> {
-                switches.forEach {
-                    it.setOnCheckedChangeListener(null)
-                    it.isChecked = false
-                    it.isEnabled = false
+                // Disable and uncheck all unit toggles; base listeners remain attached
+                switches.forEach { s ->
+                    if (s.isChecked) s.isChecked = false
+                    s.isEnabled = false
                 }
             }
             TimeDisplayStyle.VERBOSE_SINGLE, TimeDisplayStyle.COUNTDOWN_WORDS -> {
-                switches.forEach { current ->
-                    current.isEnabled = true
-                    current.setOnCheckedChangeListener { _, isChecked ->
-                        if (isChecked) {
-                            switches.filter { it != current }.forEach {
-                                it.setOnCheckedChangeListener(null)
-                                it.isChecked = false
-                                it.isEnabled = true
-                            }
-                        }
-                    }
+                // Enable all and enforce exactly one selected
+                switches.forEach { it.isEnabled = true }
+                val checked = switches.filter { it.isChecked }
+                if (checked.isEmpty()) {
+                    // Default to days if none selected
+                    getSwitch("show_days").isChecked = true
+                } else if (checked.size > 1) {
+                    // Keep the first checked and uncheck the rest
+                    checked.drop(1).forEach { it.isChecked = false }
                 }
+                // When user toggles one ON later, base listener in init() will save
+                // and we rely on it to update preview; no need to override listeners here
             }
-
             else -> {
-                switches.forEach { s ->
-                    s.setOnCheckedChangeListener(null)
-                    s.isEnabled = true
-                }
+                // Free selection across units
+                switches.forEach { it.isEnabled = true }
             }
         }
     }
