@@ -174,6 +174,7 @@ class CountdownWidget : AppWidgetProvider() {
 
             var timerText = "00:00:00:00"
             var percentText = "0%"
+                var progressInt = 0
             val dateText =
                 android.text.format.DateFormat.format("EEE, MMM d · h:mm a", deadline).toString()
 
@@ -181,9 +182,8 @@ class CountdownWidget : AppWidgetProvider() {
                 var remaining = (deadline - now) / 1000
                 val totalDuration = (deadline - originalCreatedAt).coerceAtLeast(1L)
                 val progress = ((elapsed.coerceAtLeast(0L) * 100) / totalDuration).coerceIn(0, 100)
-                percentText = "$progress%"
-
-                views.setProgressBar(R.id.widgetProgressBar, 100, progress.toInt(), false)
+                progressInt = progress.toInt()
+                percentText = "$progressInt%"
 
                 val showDays = WidgetPreferencesManager.getToggle(context, appWidgetId, "show_days")
                 val showHours =
@@ -405,6 +405,44 @@ class CountdownWidget : AppWidgetProvider() {
             views.setImageViewResource(R.id.background_view, bgRes)
             views.setInt(R.id.background_view, "setColorFilter", backgroundColor)
 
+                // --- Progress style + visibility ---
+                val stylePref = WidgetPreferencesManager.getProgressStyle(context, appWidgetId)
+                val band = when (progressInt) {
+                    in 0..50 -> "blue"
+                    in 51..80 -> "yellow"
+                    else -> "red"
+                }
+                val progressBarId = when (stylePref) {
+                    "dashed" -> when (band) {
+                        "blue" -> R.id.widgetProgressBarDashedBlue
+                        "yellow" -> R.id.widgetProgressBarDashedYellow
+                        else -> R.id.widgetProgressBarDashedRed
+                    }
+
+                    "gradient" -> when (band) {
+                        "blue" -> R.id.widgetProgressBarGradientBlue
+                        "yellow" -> R.id.widgetProgressBarGradientYellow
+                        else -> R.id.widgetProgressBarGradientRed
+                    }
+
+                    else -> when (band) { // solid (default)
+                        "blue" -> R.id.widgetProgressBar
+                        "yellow" -> R.id.widgetProgressBarSolidYellow
+                        else -> R.id.widgetProgressBarSolidRed
+                    }
+                }
+                val allProgressBars = intArrayOf(
+                    R.id.widgetProgressBar,
+                    R.id.widgetProgressBarSolidYellow,
+                    R.id.widgetProgressBarSolidRed,
+                    R.id.widgetProgressBarDashedBlue,
+                    R.id.widgetProgressBarDashedYellow,
+                    R.id.widgetProgressBarDashedRed,
+                    R.id.widgetProgressBarGradientBlue,
+                    R.id.widgetProgressBarGradientYellow,
+                    R.id.widgetProgressBarGradientRed
+                )
+
             // --- Visibility ---
             views.setViewVisibility(
                 R.id.widgetTitle,
@@ -418,10 +456,14 @@ class CountdownWidget : AppWidgetProvider() {
                 R.id.widgetTimer,
                 if (layoutConfig.showTimer) View.VISIBLE else View.GONE
             )
-            views.setViewVisibility(
-                R.id.widgetProgressBar,
-                if (layoutConfig.showProgress) View.VISIBLE else View.GONE
-            )
+                // Progress bar visibility: show only the selected bar if allowed by layout
+                if (layoutConfig.showProgress) {
+                    for (bid in allProgressBars) views.setViewVisibility(bid, View.GONE)
+                    views.setViewVisibility(progressBarId, View.VISIBLE)
+                    views.setProgressBar(progressBarId, 100, progressInt, false)
+                } else {
+                    for (bid in allProgressBars) views.setViewVisibility(bid, View.GONE)
+                }
             views.setViewVisibility(
                 R.id.widgetProgressPercent,
                 if (layoutConfig.showPercent) View.VISIBLE else View.GONE

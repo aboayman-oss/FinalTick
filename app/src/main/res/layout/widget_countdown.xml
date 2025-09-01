@@ -21,10 +21,12 @@
     <!-- Timer Block (Centered) -->
     <LinearLayout
         android:id="@+id/timerBlock"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingTop="2dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
         android:paddingBottom="2dp"
         android:gravity="center"
         android:layout_centerInParent="true">
@@ -68,7 +70,8 @@
             android:layout_marginTop="4dp"
             android:visibility="gone" />
 
-        <!-- Progress Bar -->
+        <!-- Progress Bars (style + adaptive color variants); only one is visible at a time -->
+        <!-- solid-blue (default existing) -->
         <ProgressBar
             android:id="@+id/widgetProgressBar"
             style="?android:attr/progressBarStyleHorizontal"
@@ -78,6 +81,94 @@
             android:progress="0"
             android:max="100"
             android:progressDrawable="@drawable/widget_progress_bar"
+            android:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/widgetProgressBarSolidYellow"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:progress="0"
+            android:max="100"
+            android:progressDrawable="@drawable/widget_progress_solid_yellow"
+            android:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/widgetProgressBarSolidRed"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:progress="0"
+            android:max="100"
+            android:progressDrawable="@drawable/widget_progress_solid_red"
+            android:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/widgetProgressBarDashedBlue"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:progress="0"
+            android:max="100"
+            android:progressDrawable="@drawable/widget_progress_dashed_blue"
+            android:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/widgetProgressBarDashedYellow"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:progress="0"
+            android:max="100"
+            android:progressDrawable="@drawable/widget_progress_dashed_yellow"
+            android:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/widgetProgressBarDashedRed"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:progress="0"
+            android:max="100"
+            android:progressDrawable="@drawable/widget_progress_dashed_red"
+            android:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/widgetProgressBarGradientBlue"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:progress="0"
+            android:max="100"
+            android:progressDrawable="@drawable/widget_progress_gradient_blue"
+            android:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/widgetProgressBarGradientYellow"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:progress="0"
+            android:max="100"
+            android:progressDrawable="@drawable/widget_progress_gradient_yellow"
+            android:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/widgetProgressBarGradientRed"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:progress="0"
+            android:max="100"
+            android:progressDrawable="@drawable/widget_progress_gradient_red"
             android:visibility="gone" />
 
         <!-- Percentage -->
@@ -108,4 +199,3 @@
         android:layout_centerVertical="true" />
 
 </RelativeLayout>
-

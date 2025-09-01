@@ -96,6 +96,13 @@ object WidgetPreferencesManager {
     suspend fun getShape(context: Context, appWidgetId: Int): String =
         SettingsManager.getShape(context, appWidgetId)
 
+    // Progress bar style: "solid" | "dashed" | "gradient"
+    suspend fun saveProgressStyle(context: Context, appWidgetId: Int, style: String) =
+        SettingsManager.setProgressStyle(context, appWidgetId, style)
+
+    suspend fun getProgressStyle(context: Context, appWidgetId: Int): String =
+        SettingsManager.getProgressStyle(context, appWidgetId)
+
     private fun fontKeyTitle(appWidgetId: Int) = "font_title"
     private fun fontKeyDate(appWidgetId: Int) = "font_date"
     private fun fontKeyTimer(appWidgetId: Int) = "font_timer"

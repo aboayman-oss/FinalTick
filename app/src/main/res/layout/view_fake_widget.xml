@@ -21,10 +21,12 @@
     <!-- Timer Block (Centered) -->
     <LinearLayout
         android:id="@+id/fakeTimerBlock"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingTop="2dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
         android:paddingBottom="2dp"
         android:gravity="center"
         app:layout_constraintTop_toTopOf="parent"

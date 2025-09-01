@@ -11,4 +11,10 @@
         <item>Serif</item>
         <item>Monospace</item>
     </string-array>
+
+    <string-array name="progress_style_options">
+        <item>Solid</item>
+        <item>Dashed</item>
+        <item>Gradient</item>
+    </string-array>
 </resources>

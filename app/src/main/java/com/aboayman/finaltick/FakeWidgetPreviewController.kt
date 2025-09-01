@@ -66,6 +66,15 @@ class FakeWidgetPreviewController(private val activity: Activity) {
         backgroundView.setImageResource(res)
     }
 
+    fun applyProgressStyle(style: String) {
+        val drawableRes = when (style) {
+            "dashed" -> R.drawable.widget_progress_dashed_blue
+            "gradient" -> R.drawable.widget_progress_gradient_blue
+            else -> R.drawable.widget_progress_solid_blue
+        }
+        progressBar.progressDrawable = activity.getDrawable(drawableRes)
+    }
+
     fun updateTimerText(
         showDays: Boolean,
         showHours: Boolean,

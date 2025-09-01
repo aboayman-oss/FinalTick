@@ -53,6 +53,48 @@ class CustomizeWidgetActivity : AppCompatActivity() {
         // Font spinners: Title, Date, Timer, Percentage
         initFontSpinners()
 
+        // Progress style spinner
+        val spinnerProgress = findViewById<android.widget.Spinner>(R.id.spinnerProgressStyle)
+        // Initialize selection from saved preference and wire change listener
+        lifecycleScope.launch {
+            val saved =
+                WidgetPreferencesManager.getProgressStyle(this@CustomizeWidgetActivity, appWidgetId)
+            val index = when (saved) {
+                "dashed" -> 1
+                "gradient" -> 2
+                else -> 0
+            }
+            spinnerProgress?.setSelection(index)
+            previewController.applyProgressStyle(saved)
+        }
+        spinnerProgress?.onItemSelectedListener =
+            object : android.widget.AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: android.widget.AdapterView<*>?,
+                    view: android.view.View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    val style = when (position) {
+                        1 -> "dashed"
+                        2 -> "gradient"
+                        else -> "solid"
+                    }
+                    lifecycleScope.launch {
+                        WidgetPreferencesManager.saveProgressStyle(
+                            this@CustomizeWidgetActivity,
+                            appWidgetId,
+                            style
+                        )
+                        previewController.applyProgressStyle(style)
+                        CountdownWidget.forceUpdateWidget(this@CustomizeWidgetActivity, appWidgetId)
+                    }
+                }
+
+                override fun onNothingSelected(parent: android.widget.AdapterView<*>?) { /* no-op */
+                }
+            }
+
         // Info tooltips
         findViewById<android.widget.ImageView>(R.id.ivInfoShape)?.setOnClickListener {
             Haptics.perform(this, it)
@@ -369,6 +411,7 @@ class CustomizeWidgetActivity : AppCompatActivity() {
 
         val styleF = com.aboayman.finaltick.SettingsManager.timeStyleFlow(context, id)
         val shapeF = com.aboayman.finaltick.SettingsManager.shapeFlow(context, id)
+        val progressStyleF = com.aboayman.finaltick.SettingsManager.progressStyleFlow(context, id)
 
         val togglesPart1 =
             combine(showTitleF, showDateF, showTimerF) { a: Boolean, b: Boolean, c: Boolean ->
@@ -390,7 +433,8 @@ class CustomizeWidgetActivity : AppCompatActivity() {
         ) { a, b, c, d, e -> arrayOf(a, b, c, d, e) }
         val bgFlow = combine(bgColorF, bgAlphaF) { c, a -> c to a }
 
-        lifecycleScope.launch {
+        // Build a typed base state from 5 flows, then layer progress style
+        val baseStateFlow =
             combine(togglesFlow, colorsFlow, bgFlow, styleF, shapeF) { t, cols, bg, style, shape ->
                 PreviewState(
                     showTitle = t[0] as Boolean,
@@ -407,8 +451,14 @@ class CustomizeWidgetActivity : AppCompatActivity() {
                     bgColor = bg.first,
                     bgAlpha = bg.second,
                     style = style,
-                    shape = shape
+                    shape = shape,
+                    progressStyle = "solid"
                 )
+            }
+
+        lifecycleScope.launch {
+            combine(baseStateFlow, progressStyleF) { base, pstyle ->
+                base.copy(progressStyle = pstyle)
             }.collect { state ->
                 applyPreview(state)
             }
@@ -429,6 +479,7 @@ class CustomizeWidgetActivity : AppCompatActivity() {
         )
         previewController.applyShape(state.shape)
         previewController.applyBackground(state.bgColor, state.bgAlpha)
+        previewController.applyProgressStyle(state.progressStyle)
         previewController.updateTimerText(
             showDays = findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.cbDays).isChecked,
             showHours = findViewById<com.google.android.material.materialswitch.MaterialSwitch>(R.id.cbHours).isChecked,
@@ -453,6 +504,7 @@ class CustomizeWidgetActivity : AppCompatActivity() {
         val bgColor: Int,
         val bgAlpha: Int,
         val style: WidgetPreferencesManager.TimeDisplayStyle,
-        val shape: String
+        val shape: String,
+        val progressStyle: String
     )
 }
