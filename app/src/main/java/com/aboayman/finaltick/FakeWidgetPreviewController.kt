@@ -36,6 +36,11 @@ class FakeWidgetPreviewController(private val activity: Activity) {
         refreshIcon.visibility = if (showIcon) View.VISIBLE else View.GONE
     }
 
+    fun applyIconScale(scale: Float) {
+        refreshIcon.scaleX = scale
+        refreshIcon.scaleY = scale
+    }
+
     fun applyColors(
         titleColor: Int?,
         dateColor: Int?,

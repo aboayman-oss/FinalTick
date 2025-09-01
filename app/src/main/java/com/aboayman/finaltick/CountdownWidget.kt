@@ -475,6 +475,10 @@ class CountdownWidget : AppWidgetProvider() {
                 if (layoutConfig.showIcon) View.VISIBLE else View.GONE
             )
 
+                // Adaptive refresh icon scale
+                views.setFloat(R.id.widgetRefreshBtn, "setScaleX", layoutConfig.iconScale)
+                views.setFloat(R.id.widgetRefreshBtn, "setScaleY", layoutConfig.iconScale)
+
             // --- Text Sizes ---
             views.setTextViewTextSize(
                 R.id.widgetTitle,

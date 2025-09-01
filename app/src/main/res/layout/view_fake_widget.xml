@@ -43,7 +43,6 @@
             android:textSize="16sp"
             android:fontFamily="sans-serif-medium"
             android:maxLines="1"
-            android:ellipsize="end"
             android:gravity="center"
             android:visibility="visible" />
 
@@ -55,6 +54,7 @@
             android:textColor="@color/onSurface"
             android:textSize="14sp"
             android:fontFamily="sans-serif"
+            android:maxLines="1"
             android:layout_marginTop="2dp"
             android:gravity="center"
             android:visibility="visible" />
@@ -67,6 +67,7 @@
             android:textColor="@color/onSurface"
             android:textSize="28sp"
             android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
             android:layout_marginTop="4dp"
             android:visibility="visible" />
 
@@ -90,22 +91,25 @@
             android:textSize="12sp"
             android:textColor="@color/onSurface"
             android:fontFamily="sans-serif"
+            android:maxLines="1"
             android:gravity="center"
             android:visibility="visible" />
     </LinearLayout>
 
-    <!-- Refresh Icon (Right-Aligned) -->
+    <!-- Refresh Icon (Top-Right, adaptive scale applied by controller) -->
     <ImageView
         android:id="@+id/fakeWidgetRefreshBtn"
-        android:layout_width="43dp"
-        android:layout_height="43dp"
-        android:layout_marginEnd="4dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="6dp"
+        android:layout_marginTop="6dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
         android:src="@drawable/refresh_cycle_normal"
         android:contentDescription="Refresh"
         app:tint="@color/onSurface"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

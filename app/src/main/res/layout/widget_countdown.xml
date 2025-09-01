@@ -29,7 +29,8 @@
         android:paddingEnd="12dp"
         android:paddingBottom="2dp"
         android:gravity="center"
-        android:layout_centerInParent="true">
+        android:layout_centerVertical="true"
+        android:layout_alignParentStart="true">
 
         <!-- Title -->
         <TextView
@@ -41,7 +42,6 @@
             android:textSize="16sp"
             android:fontFamily="sans-serif-medium"
             android:maxLines="1"
-            android:ellipsize="end"
             android:gravity="center"
             android:visibility="gone" />
 
@@ -54,6 +54,7 @@
             android:textColor="@color/onSurface"
             android:textSize="14sp"
             android:fontFamily="sans-serif"
+            android:maxLines="1"
             android:layout_marginTop="2dp"
             android:gravity="center"
             android:visibility="gone" />
@@ -67,6 +68,7 @@
             android:textColor="@color/onSurface"
             android:textSize="28sp"
             android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
             android:layout_marginTop="4dp"
             android:visibility="gone" />
 
@@ -181,21 +183,25 @@
             android:textSize="12sp"
             android:textColor="@color/onSurface"
             android:fontFamily="sans-serif"
+            android:maxLines="1"
             android:gravity="center"
             android:visibility="gone" />
     </LinearLayout>
 
-    <!-- Refresh Icon (Right-Aligned) -->
+    <!-- Refresh Icon (Top-Right, adaptive scale applied in code) -->
     <ImageView
         android:id="@+id/widgetRefreshBtn"
-        android:layout_width="43dp"
-        android:layout_height="43dp"
-        android:layout_marginEnd="4dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        android:layout_marginEnd="6dp"
+        android:layout_marginTop="6dp"
         android:src="@drawable/refresh_cycle_normal"
         android:contentDescription="refresh"
         app:tint="@color/onSurface"
         android:visibility="visible"
         android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true" />
+        android:layout_alignParentTop="true" />
 
 </RelativeLayout>

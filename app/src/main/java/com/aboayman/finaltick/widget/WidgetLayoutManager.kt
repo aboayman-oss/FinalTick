@@ -14,6 +14,7 @@ object WidgetLayoutManager {
         val showProgress: Boolean,
         val showPercent: Boolean,
         val showIcon: Boolean,
+        val iconScale: Float,
         val titleSize: Float,
         val dateSize: Float,
         val timerSize: Float,
@@ -43,8 +44,8 @@ object WidgetLayoutManager {
     )
 
     private fun estimateSingleLineSp(textLength: Int, widthBudgetDp: Float): Float {
-        val avgCharWidthPerSp = 0.50f // Tuned for slightly larger text fit
-        return (widthBudgetDp / (textLength * avgCharWidthPerSp))
+        val avgCharWidthPerSp = 0.52f // conservative to avoid clipping
+        return if (textLength <= 0 || widthBudgetDp <= 0f) 8f else (widthBudgetDp / (textLength * avgCharWidthPerSp))
     }
 
     val defaultScaleProfile = TextScaleProfile(
@@ -53,6 +54,33 @@ object WidgetLayoutManager {
         dateDivisorW = 7.5f, dateDivisorH = 4.8f, dateMin = 11f, dateMax = 30f,
         percentDivisorW = 8.5f, percentDivisorH = 5.5f, percentMin = 11f, percentMax = 24f
     )
+
+    // Cell size assumptions (align with widget_info.xml intent)
+    private const val CELL_W_DP = 80f
+    private const val CELL_H_DP = 100f
+
+    private fun estCols(widthDp: Float) =
+        kotlin.math.max(1, kotlin.math.floor(widthDp / CELL_W_DP).toInt())
+
+    private fun estRows(heightDp: Float) =
+        kotlin.math.max(1, kotlin.math.floor(heightDp / CELL_H_DP).toInt())
+
+    private fun fitTextSp(
+        text: String,
+        widthBudgetDp: Float,
+        heightBudgetDp: Float,
+        minSp: Float,
+        maxSp: Float,
+        lineHeightFactor: Float = 1.22f,
+        avgCharWidthPerSp: Float = 0.55f,
+        safety: Float = 0.94f
+    ): Float {
+        val byWidth =
+            if (text.isEmpty()) minSp else (widthBudgetDp / (text.length * avgCharWidthPerSp))
+        val byHeight = if (heightBudgetDp > 0f) heightBudgetDp / lineHeightFactor else maxSp
+        val base = byWidth.coerceAtMost(byHeight)
+        return (base * safety).coerceIn(minSp, maxSp)
+    }
 
     fun getAdaptiveLayoutConfig(
         widthDp: Float,
@@ -63,16 +91,31 @@ object WidgetLayoutManager {
         percentText: String = "100%",
         dateText: String = "Wed, Jan 1 · 12:00 PM"
     ): LayoutConfig {
-        val verticalBudget = heightDp
+        val cols = floor(widthDp / CELL_W_DP).toInt().coerceAtLeast(1)
+        val rows = floor(heightDp / CELL_H_DP).toInt().coerceAtLeast(1)
 
-        // Tuned thresholds for smaller widgets
-        val showTitle = verticalBudget >= 100f
-        val showDate = verticalBudget >= 140f
-        val showPercent = verticalBudget >= 120f
+        // Smart Element Visibility based on grid
+        val showTitle = rows >= 2
+        val showDate = rows >= 2
+        val showPercent = rows >= 2
 
-        val showIcon = widthDp >= 120f
-        val iconDpWidth = 64f // Estimate: icon + margin
-        val availableWidthDp = if (showIcon) widthDp - iconDpWidth else widthDp
+        val showIcon = !(cols == 2 && rows == 1)
+        // Adaptive icon scale factor (applied via RemoteViews setScaleX/Y later)
+        val iconScale = when {
+            cols >= 4 && rows >= 2 -> 1.25f
+            cols >= 3 || rows >= 2 -> 1.0f
+            else -> 0.85f
+        }
+
+        // Do not reserve explicit space for the icon; only show it when cols >= 3
+        val sidePaddingDp = 12f
+        val availableWidthDp = (widthDp - sidePaddingDp).coerceAtLeast(40f)
+
+        // Vertical height budgets for each text element
+        val titleHeightBudget = if (rows >= 2) heightDp * 0.20f else 0f
+        val dateHeightBudget = if (rows >= 2) heightDp * 0.18f else 0f
+        val timerHeightBudget = if (rows >= 2) heightDp * 0.40f else heightDp * 0.55f
+        val percentHeightBudget = if (rows >= 2) heightDp * 0.14f else 0f
 
         fun scaleSmart(
             widthDiv: Float,
@@ -114,10 +157,52 @@ object WidgetLayoutManager {
             percentText.length, 0.25f
         )
 
+        // Second-pass fit to ensure no clipping within budgets
+        val timerSize2 = fitTextSp(
+            timerText,
+            widthBudgetDp = availableWidthDp * 0.96f,
+            heightBudgetDp = timerHeightBudget,
+            minSp = profile.timerMin,
+            maxSp = profile.timerMax,
+            lineHeightFactor = 1.24f,
+            avgCharWidthPerSp = 0.56f,
+            safety = 0.94f
+        )
+        val titleSize2 = fitTextSp(
+            titleText,
+            widthBudgetDp = availableWidthDp * 0.93f,
+            heightBudgetDp = titleHeightBudget,
+            minSp = profile.titleMin,
+            maxSp = profile.titleMax,
+            lineHeightFactor = 1.26f,
+            avgCharWidthPerSp = 0.58f,
+            safety = 0.94f
+        )
+        val dateSize2 = fitTextSp(
+            dateText,
+            widthBudgetDp = availableWidthDp * 0.93f,
+            heightBudgetDp = dateHeightBudget,
+            minSp = profile.dateMin,
+            maxSp = profile.dateMax,
+            lineHeightFactor = 1.26f,
+            avgCharWidthPerSp = 0.58f,
+            safety = 0.94f
+        )
+        val percentSize2 = fitTextSp(
+            percentText,
+            widthBudgetDp = availableWidthDp * 0.38f,
+            heightBudgetDp = percentHeightBudget,
+            minSp = profile.percentMin,
+            maxSp = profile.percentMax,
+            lineHeightFactor = 1.30f,
+            avgCharWidthPerSp = 0.56f,
+            safety = 0.94f
+        )
+
         Log.d("AdaptiveLayout", "widthDp=$widthDp, heightDp=$heightDp")
         Log.d(
             "AdaptiveLayout",
-            "timer=$timerSize, title=$titleSize, date=$dateSize, percent=$percentSize"
+            "timer=$timerSize2, title=$titleSize2, date=$dateSize2, percent=$percentSize2, iconScale=$iconScale"
         )
 
         return LayoutConfig(
@@ -127,10 +212,11 @@ object WidgetLayoutManager {
             showProgress = true,
             showPercent = showPercent,
             showIcon = showIcon,
-            titleSize = titleSize,
-            dateSize = dateSize,
-            timerSize = timerSize,
-            percentSize = percentSize
+            iconScale = iconScale,
+            titleSize = titleSize2,
+            dateSize = dateSize2,
+            timerSize = timerSize2,
+            percentSize = percentSize2
         )
     }
 
@@ -139,8 +225,8 @@ object WidgetLayoutManager {
         val widthDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 0).toFloat()
         val heightDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 0).toFloat()
 
-        val oneCellWidthDp = 80f
-        val oneCellHeightDp = 100f
+        val oneCellWidthDp = CELL_W_DP
+        val oneCellHeightDp = CELL_H_DP
 
         val colSpan = floor(widthDp / oneCellWidthDp).toInt().coerceAtLeast(1)
         val rowSpan = floor(heightDp / oneCellHeightDp).toInt().coerceAtLeast(1)
@@ -156,7 +242,7 @@ object WidgetLayoutManager {
         appWidgetId: Int,
         base: LayoutConfig
     ): LayoutConfig {
-        return base.copy(
+        val withPrefs = base.copy(
             showTitle = WidgetPreferencesManager.getToggle(
                 context,
                 appWidgetId,
@@ -193,6 +279,19 @@ object WidgetLayoutManager {
                 "show_icon",
                 base.showIcon
             )
+        )
+        // Enforce size constraints: hide icon only for 2x1
+        val options = AppWidgetManager.getInstance(context).getAppWidgetOptions(appWidgetId)
+        val minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 0)
+        val maxWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, minWidth)
+        val minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 0)
+        val maxHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, minHeight)
+        val widthDp = ((minWidth + maxWidth) / 2f)
+        val heightDp = ((minHeight + maxHeight) / 2f)
+        val cols = estCols(widthDp)
+        val rows = estRows(heightDp)
+        return withPrefs.copy(
+            showIcon = withPrefs.showIcon && !(cols == 2 && rows == 1)
         )
     }
 }

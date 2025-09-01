@@ -1,7 +1,9 @@
 <!-- res/xml/widget_info.xml -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-    android:minWidth="100dp"
-    android:minHeight="226dp"
+    android:minWidth="110dp"
+    android:minHeight="40dp"
+    android:minResizeWidth="110dp"
+    android:minResizeHeight="40dp"
     android:updatePeriodMillis="0"
     android:initialLayout="@layout/widget_countdown"
     android:configure="com.aboayman.finaltick.widget.WidgetSettingsActivity"

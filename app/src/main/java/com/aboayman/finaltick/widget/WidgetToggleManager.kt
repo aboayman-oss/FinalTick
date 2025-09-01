@@ -74,6 +74,18 @@ class WidgetToggleManager(
                 }
             }
         }
+        // Apply preview icon scale based on current widget size
+        activity.lifecycleScope.launch {
+            val options = AppWidgetManager.getInstance(context).getAppWidgetOptions(appWidgetId)
+            val minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 0)
+            val maxWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, minWidth)
+            val minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 0)
+            val maxHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, minHeight)
+            val widthDp = ((minWidth + maxWidth) / 2f)
+            val heightDp = ((minHeight + maxHeight) / 2f)
+            val cfg = WidgetLayoutManager.getAdaptiveLayoutConfig(widthDp, heightDp)
+            previewController.applyIconScale(cfg.iconScale)
+        }
         refreshPreview()
     }
 
@@ -123,6 +135,7 @@ class WidgetToggleManager(
                 style
             )
             refreshPreview()
+            previewController.applyIconScale(config.iconScale)
             CountdownWidget.forceUpdateAll(context)
         }
     }
@@ -133,13 +146,21 @@ class WidgetToggleManager(
     }
 
     private fun refreshPreview() {
+        val options = AppWidgetManager.getInstance(context).getAppWidgetOptions(appWidgetId)
+        val minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 0)
+        val maxWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, minWidth)
+        val minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 0)
+        val maxHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, minHeight)
+        val widthDp = ((minWidth + maxWidth) / 2f)
+        val heightDp = ((minHeight + maxHeight) / 2f)
+        val cfg = WidgetLayoutManager.getAdaptiveLayoutConfig(widthDp, heightDp)
         previewController.updateVisibility(
             showTitle = getSwitch("show_title").isChecked,
             showDate = getSwitch("show_date").isChecked,
             showTimer = getSwitch("show_timer").isChecked,
             showProgress = getSwitch("show_progress").isChecked,
             showPercent = getSwitch("show_percentage").isChecked,
-            showIcon = getSwitch("show_icon").isChecked
+            showIcon = getSwitch("show_icon").isChecked && cfg.showIcon
         )
     }
 
