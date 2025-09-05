@@ -1,8 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    // Compose compiler plugin for Kotlin 2.x
-    id("org.jetbrains.kotlin.plugin.compose") version "2.0.21"
 }
 
 android {
@@ -19,8 +17,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildFeatures {
-        viewBinding = true
-        compose = true
+        viewBinding=true
     }
 
     buildTypes {
@@ -59,16 +56,7 @@ dependencies {
     // Lifecycle + ViewModel + Coroutines
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.4")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
     // Jetpack DataStore (Preferences)
     implementation("androidx.datastore:datastore-preferences:1.1.1")
-
-    // Jetpack Compose BOM + core UI
-    implementation(platform("androidx.compose:compose-bom:2024.09.01"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.activity:activity-compose:1.9.3")
-    debugImplementation("androidx.compose.ui:ui-tooling")
 }

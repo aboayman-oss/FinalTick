@@ -4,13 +4,11 @@ import android.content.Context
 import android.os.Build
 import android.view.HapticFeedbackConstants
 import android.view.View
-import kotlinx.coroutines.runBlocking
 
 object Haptics {
     fun perform(context: Context, anchor: View? = null, feedbackType: Int? = null) {
-        // Read from DataStore (single source of truth). Fallback true by default.
-        val enabled = runBlocking { GlobalSettingsManager.getHapticsEnabled(context) }
-        if (!enabled) return
+        val prefs = context.getSharedPreferences("finaltick_prefs", Context.MODE_PRIVATE)
+        if (!prefs.getBoolean("haptic_feedback", true)) return
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val vib = context.getSystemService(Context.VIBRATOR_SERVICE) as android.os.Vibrator
             val effect = when (feedbackType) {

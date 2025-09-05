@@ -332,12 +332,9 @@ class CountdownActivity : AppCompatActivity() {
         prefs.edit().apply {
             putBoolean(PREF_USE_GLOBAL, useGlobal)
             if (useGlobal) {
-                // Persist via DataStore (single source of truth)
-                kotlinx.coroutines.runBlocking {
-                    GlobalSettingsManager.setDefaultTimerWeight(this@CountdownActivity, weight)
-                    GlobalSettingsManager.setDefaultTimerColor(this@CountdownActivity, color)
-                    GlobalSettingsManager.setDefaultTimerDynamic(this@CountdownActivity, dynamic)
-                }
+                putInt(PREF_WEIGHT, weight)
+                putInt(PREF_COLOR, color)
+                putBoolean(PREF_DYNAMIC_COLOR, dynamic)
             } else {
                 putInt(PREF_CUSTOM_WEIGHT, weight)
                 putInt(PREF_CUSTOM_COLOR, color)
@@ -349,22 +346,18 @@ class CountdownActivity : AppCompatActivity() {
     private fun applyCustomization() {
         val prefs = getSharedPreferences("finaltick_prefs", Context.MODE_PRIVATE)
         val useGlobal = prefs.getBoolean(PREF_USE_GLOBAL, true)
-        val (weight, color, dynamic) = if (useGlobal) {
-            // Read from DataStore for global defaults
-            val w =
-                kotlinx.coroutines.runBlocking { GlobalSettingsManager.getTimerWeight(this@CountdownActivity) }
-            val c =
-                kotlinx.coroutines.runBlocking { GlobalSettingsManager.getTimerColor(this@CountdownActivity) }
-            val d =
-                kotlinx.coroutines.runBlocking { GlobalSettingsManager.getTimerDynamic(this@CountdownActivity) }
-            Triple(w, c, d)
-        } else {
-            Triple(
-                prefs.getInt(PREF_CUSTOM_WEIGHT, 600),
-                prefs.getInt(PREF_CUSTOM_COLOR, getColorFromAttrPrimary()),
-                prefs.getBoolean(PREF_CUSTOM_DYNAMIC, false)
+        val weight =
+            if (useGlobal) prefs.getInt(PREF_WEIGHT, 600) else prefs.getInt(PREF_CUSTOM_WEIGHT, 600)
+        val color =
+            if (useGlobal) prefs.getInt(PREF_COLOR, getColorFromAttrPrimary()) else prefs.getInt(
+                PREF_CUSTOM_COLOR,
+                getColorFromAttrPrimary()
             )
-        }
+        val dynamic =
+            if (useGlobal) prefs.getBoolean(PREF_DYNAMIC_COLOR, false) else prefs.getBoolean(
+                PREF_CUSTOM_DYNAMIC,
+                false
+            )
         val expandedTimer = findViewById<TextView>(R.id.tvCountdownTimer)
         expandedTimer.typeface = getPoppinsByWeight(weight)
         if (!dynamic) {
